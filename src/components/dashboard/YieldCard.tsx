@@ -4,11 +4,15 @@ interface YieldCardProps {
   enabled: boolean;
   apy: number;
   estimatedMonthly?: string;
+  onToggle?: () => void;
 }
 
-export function YieldCard({ enabled, apy, estimatedMonthly }: YieldCardProps) {
+export function YieldCard({ enabled, apy, estimatedMonthly, onToggle }: YieldCardProps) {
   return (
-    <div className={`rounded-2xl p-4 shadow-sm ${enabled ? "bg-green-50" : "bg-white"}`}>
+    <button
+      onClick={onToggle}
+      className={`w-full rounded-2xl p-4 text-left shadow-sm transition-colors ${enabled ? "bg-green-50" : "bg-white"}`}
+    >
       <div className="mb-2 flex items-center justify-between">
         <span className="text-sm font-medium text-gray-700">Yield</span>
         <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-green-500" : "bg-gray-300"}`}>
@@ -35,6 +39,6 @@ export function YieldCard({ enabled, apy, estimatedMonthly }: YieldCardProps) {
           <span className="text-xs font-medium">Growing</span>
         </div>
       ) : null}
-    </div>
+    </button>
   );
 }

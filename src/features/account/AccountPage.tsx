@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useBorrowStore } from "@/stores/borrowStore";
@@ -7,8 +8,10 @@ import { useRecurringStore } from "@/stores/recurringStore";
 import { useWallet } from "@/hooks/useWallet";
 import { DonutChart } from "@/components/account/DonutChart";
 import { RecurringConfig } from "@/components/account/RecurringConfig";
+import { RecurringModal } from "@/components/account/RecurringModal";
 import { TransactionHistory } from "@/components/vault/TransactionHistory";
 import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon } from "./AccountIcons";
+import type { RecurringFrequency } from "@/stores/recurringStore";
 
 export function AccountPage() {
   const address = useWalletStore((s) => s.address);
@@ -16,9 +19,10 @@ export function AccountPage() {
   const { borrowedAmount, healthFactor } = useBorrowStore();
   const goals = useGoalsStore((s) => s.goals);
   const challenges = useChallengesStore((s) => s.challenges);
-  const { schedules, deleteSchedule, togglePause } = useRecurringStore();
+  const { schedules, addSchedule, deleteSchedule, togglePause } = useRecurringStore();
   const { transactions } = useVaultStore();
   const { disconnect } = useWallet();
+  const [recurringModalOpen, setRecurringModalOpen] = useState(false);
 
   const vaultNum = Number(balance) || 0;
   const totalSaved = vaultNum + goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
@@ -32,6 +36,24 @@ export function AccountPage() {
       color: goalColors[i % goalColors.length]!,
     })),
   ].filter((s) => s.value > 0);
+
+  const handleCreateSchedule = (
+    amount: string,
+    frequency: RecurringFrequency,
+    dayOfWeek?: number,
+    dayOfMonth?: number,
+    goalId?: string,
+  ) => {
+    addSchedule({
+      id: crypto.randomUUID(),
+      amount,
+      frequency,
+      paused: false,
+      createdAt: new Date().toISOString(),
+      ...(frequency === "weekly" ? { dayOfWeek } : { dayOfMonth }),
+      ...(goalId ? { goalId } : {}),
+    });
+  };
 
   return (
     <div className="flex flex-col gap-4 pb-6">
@@ -124,9 +146,16 @@ export function AccountPage() {
       {/* Recurring Savings */}
       <RecurringConfig
         schedules={schedules}
-        onAdd={() => {}}
+        onAdd={() => setRecurringModalOpen(true)}
         onDelete={deleteSchedule}
         onTogglePause={togglePause}
+      />
+
+      <RecurringModal
+        open={recurringModalOpen}
+        onClose={() => setRecurringModalOpen(false)}
+        onSubmit={handleCreateSchedule}
+        goals={goals.map((g) => ({ id: g.id, title: g.title }))}
       />
 
       {/* Transaction History */}

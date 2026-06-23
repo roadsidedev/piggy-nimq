@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useBorrowStore } from "@/stores/borrowStore";
@@ -29,19 +29,50 @@ export function useBorrow() {
     refetchInterval: 15000,
   });
 
+  const { data: reserveData } = useQuery({
+    queryKey: ["borrowReserveData"],
+    queryFn: () => aaveService.getReserveData(),
+    enabled: !!address,
+    refetchInterval: 30000,
+  });
+
   useEffect(() => {
     if (!accountData) return;
-    const decimals = 6;
-    setAvailableBorrow(aaveService.fromUSDC(accountData.availableBorrowsBase, decimals));
-    setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
+    (async () => {
+      const decimals = await aaveService.getDecimals();
+      setAvailableBorrow(aaveService.fromUSDC(accountData.availableBorrowsBase, decimals));
+      setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
+    })();
     setHealthFactor(Number(accountData.healthFactor) / 1e18);
     setLiquidationThreshold(Number(accountData.currentLiquidationThreshold) / 1e4);
   }, [accountData, setAvailableBorrow, setBorrowedAmount, setHealthFactor, setLiquidationThreshold]);
 
-  const simulatedHealthFactor =
-    Number(simulatedBorrow) > 0 && Number(availableBorrow) > 0
-      ? healthFactor * (1 - Number(simulatedBorrow) / Number(availableBorrow))
-      : healthFactor;
+  const borrowApy = useMemo(() => {
+    if (!reserveData) return 0;
+    return aaveService.getVariableBorrowRatePercent(reserveData.variableBorrowRate);
+  }, [reserveData]);
+
+  const currentDebt = useMemo(() => {
+    const avail = Number(availableBorrow);
+    const hf = healthFactor;
+    if (avail <= 0 || hf <= 0) return 0;
+    return avail / (1 + hf);
+  }, [availableBorrow, healthFactor]);
+
+  const simulatedHealthFactor = useMemo(() => {
+    const simAmt = Number(simulatedBorrow);
+    const avail = Number(availableBorrow);
+    const hf = healthFactor;
+    if (simAmt <= 0 || avail <= 0 || hf <= 0 || currentDebt <= 0) return hf;
+    const newDebt = currentDebt + simAmt;
+    return (hf * currentDebt) / newDebt;
+  }, [simulatedBorrow, availableBorrow, healthFactor, currentDebt]);
+
+  const monthlyInterest = useMemo(() => {
+    const simAmt = Number(simulatedBorrow);
+    if (simAmt <= 0 || borrowApy <= 0) return "0.00";
+    return ((simAmt * borrowApy) / 100 / 12).toFixed(2);
+  }, [simulatedBorrow, borrowApy]);
 
   const riskLevel: "safe" | "warning" | "danger" =
     simulatedHealthFactor > 3 ? "safe" : simulatedHealthFactor > 1.5 ? "warning" : "danger";
@@ -53,7 +84,7 @@ export function useBorrow() {
       setTxError(null);
 
       try {
-        const decimals = 6;
+        const decimals = await aaveService.getDecimals();
         const parsed = aaveService.toUSDC(amount, decimals);
         setTxStatus("confirming");
         const hash = await aaveService.borrowWithConfirm(parsed, address);
@@ -76,7 +107,7 @@ export function useBorrow() {
       setTxError(null);
 
       try {
-        const decimals = 6;
+        const decimals = await aaveService.getDecimals();
         const parsed = aaveService.toUSDC(amount, decimals);
         setTxStatus("confirming");
         const hash = await aaveService.repayWithConfirm(parsed, address);
@@ -97,6 +128,9 @@ export function useBorrow() {
     borrowedAmount,
     healthFactor,
     liquidationThreshold,
+    borrowApy,
+    monthlyInterest,
+    currentDebt,
     txStatus,
     txError,
     simulatedBorrow,

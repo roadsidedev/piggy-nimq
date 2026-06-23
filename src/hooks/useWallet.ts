@@ -1,11 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { useWalletStore } from "@/stores/walletStore";
+import { useVaultStore } from "@/stores/vaultStore";
+import { useBorrowStore } from "@/stores/borrowStore";
+import { useGoalsStore } from "@/stores/goalsStore";
+import { useChallengesStore } from "@/stores/challengesStore";
+import { useRecurringStore } from "@/stores/recurringStore";
 import { walletService } from "@/integrations/wallet";
 import { isNimiqPay, getEthereumProvider, initNimiqSDK, getLanguage, requestId } from "@/integrations/nimiq";
 
 export function useWallet() {
   const { status, profile, address, error, connect: storeConnect, disconnect, setProfile, setAddress, setError } =
     useWalletStore();
+  const resetVault = useVaultStore((s) => s.reset);
+  const resetBorrow = useBorrowStore((s) => s.reset);
+  const resetGoals = useGoalsStore((s) => s.reset);
+  const resetChallenges = useChallengesStore((s) => s.reset);
+  const resetRecurring = useRecurringStore((s) => s.reset);
   const [language, setLanguage] = useState<string | undefined>();
   const [nimiqAddress, setNimiqAddress] = useState<string | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
@@ -41,7 +51,12 @@ export function useWallet() {
   const handleDisconnect = useCallback(() => {
     walletService.disconnect();
     disconnect();
-  }, [disconnect]);
+    resetVault();
+    resetBorrow();
+    resetGoals();
+    resetChallenges();
+    resetRecurring();
+  }, [disconnect, resetVault, resetBorrow, resetGoals, resetChallenges, resetRecurring]);
 
   const requestDeviceId = useCallback(async (reason: string) => {
     try {

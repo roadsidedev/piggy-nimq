@@ -8,6 +8,9 @@ export function BorrowPage() {
     availableBorrow,
     borrowedAmount,
     healthFactor,
+    liquidationThreshold,
+    borrowApy,
+    monthlyInterest,
     txStatus,
     txError,
     simulatedBorrow,
@@ -97,7 +100,11 @@ export function BorrowPage() {
 
       <RiskSimulator
         availableBorrow={availableBorrow}
+        borrowedAmount={borrowedAmount}
         healthFactor={healthFactor}
+        liquidationThreshold={liquidationThreshold}
+        borrowApy={borrowApy}
+        monthlyInterest={monthlyInterest}
         simulatedBorrow={simulatedBorrow}
         simulatedHealthFactor={simulatedHealthFactor}
         riskLevel={riskLevel}

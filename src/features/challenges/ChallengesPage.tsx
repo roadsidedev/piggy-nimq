@@ -55,7 +55,7 @@ export function ChallengesPage() {
         </Card>
       ) : (
         challenges
-          .filter(() => tab === "browse" || true)
+          .filter((c) => tab === "browse" || c.members.includes("__current_user__"))
           .map((c) => {
             const sorted = [...c.members].sort(
               (a, b) => Number(c.memberProgress[b] ?? 0) - Number(c.memberProgress[a] ?? 0),

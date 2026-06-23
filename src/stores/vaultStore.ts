@@ -1,16 +1,5 @@
 import { create } from "zustand";
-
-export type TxStatus = "idle" | "pending" | "confirming" | "confirmed" | "failed";
-
-interface TransactionRecord {
-  id: string;
-  type: "deposit" | "withdraw" | "borrow" | "repay" | "yield";
-  amount: string;
-  timestamp: Date;
-  status: TxStatus;
-  txHash?: string;
-  error?: string;
-}
+import type { TransactionRecord, TxStatus } from "@/types";
 
 interface VaultState {
   balance: string;
@@ -34,6 +23,7 @@ interface VaultState {
   setWithdrawModalOpen: (open: boolean) => void;
   setTxStatus: (status: TxStatus) => void;
   setTxError: (error: string | null) => void;
+  reset: () => void;
 }
 
 export const useVaultStore = create<VaultState>((set) => ({
@@ -64,4 +54,17 @@ export const useVaultStore = create<VaultState>((set) => ({
   setWithdrawModalOpen: (withdrawModalOpen) => set({ withdrawModalOpen }),
   setTxStatus: (txStatus) => set({ txStatus }),
   setTxError: (txError) => set({ txError }),
+  reset: () =>
+    set({
+      balance: "0.00",
+      yieldEnabled: false,
+      apy: 0,
+      earnings: "0.00",
+      vaultAge: 0,
+      transactions: [],
+      depositModalOpen: false,
+      withdrawModalOpen: false,
+      txStatus: "idle",
+      txError: null,
+    }),
 }));

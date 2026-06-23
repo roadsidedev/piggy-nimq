@@ -15,6 +15,7 @@ interface BorrowState {
   setLiquidationThreshold: (value: number) => void;
   setTxStatus: (status: TxStatus) => void;
   setTxError: (error: string | null) => void;
+  reset: () => void;
 }
 
 export const useBorrowStore = create<BorrowState>((set) => ({
@@ -30,4 +31,15 @@ export const useBorrowStore = create<BorrowState>((set) => ({
   setLiquidationThreshold: (liquidationThreshold) => set({ liquidationThreshold }),
   setTxStatus: (txStatus) => set({ txStatus }),
   setTxError: (txError) => set({ txError }),
+  reset: () =>
+    set({
+      availableBorrow: "0.00",
+      borrowedAmount: "0.00",
+      healthFactor: 0,
+      liquidationThreshold: 0,
+      txStatus: "idle",
+      txError: null,
+    }),
 }));
+
+export { type BorrowState };

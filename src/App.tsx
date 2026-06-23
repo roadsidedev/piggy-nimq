@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import { Button } from "@/components/common";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
+import { PiggyLogo } from "@/components/common/PiggyLogo";
 import { VaultPage } from "@/features/vault";
 import { BorrowPage } from "@/features/borrow";
 import { GoalsPage } from "@/features/goals";
@@ -27,7 +29,7 @@ function ConnectScreen() {
     <div className="flex h-dvh flex-col items-center justify-center px-6 text-center">
       <div className="mb-8">
         <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-pink-100">
-          <span className="text-5xl">🐷</span>
+          <PiggyLogo size={80} />
         </div>
         <h1 className="text-3xl font-bold text-gray-900">Piggy</h1>
         <p className="mt-2 text-gray-500">Save smarter. Borrow smarter. Together.</p>
@@ -54,8 +56,8 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
     <div className="flex h-dvh flex-col">
       <header className="flex items-center justify-between px-5 pt-3 pb-2">
         <div className="flex items-center gap-1.5">
+          <PiggyLogo size={28} />
           <span className="text-xl font-bold text-gray-900">Piggy</span>
-          <span className="text-lg">🐷</span>
         </div>
         <button
           onClick={() => onTabChange("account")}
@@ -66,19 +68,21 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
       </header>
 
       <main className="flex-1 overflow-y-auto px-4 pt-2 pb-24">
-        {activeTab === "home" ? (
-          <DashboardPage />
-        ) : activeTab === "vault" ? (
-          <VaultPage />
-        ) : activeTab === "borrow" ? (
-          <BorrowPage />
-        ) : activeTab === "goals" ? (
-          <GoalsPage />
-        ) : activeTab === "challenges" ? (
-          <ChallengesPage />
-        ) : activeTab === "account" ? (
-          <AccountPage />
-        ) : null}
+        <ErrorBoundary>
+          {activeTab === "home" ? (
+            <DashboardPage />
+          ) : activeTab === "vault" ? (
+            <VaultPage />
+          ) : activeTab === "borrow" ? (
+            <BorrowPage />
+          ) : activeTab === "goals" ? (
+            <GoalsPage />
+          ) : activeTab === "challenges" ? (
+            <ChallengesPage />
+          ) : activeTab === "account" ? (
+            <AccountPage />
+          ) : null}
+        </ErrorBoundary>
       </main>
 
       <nav className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white/90 backdrop-blur-md">
@@ -92,6 +96,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
                   ? "text-pink-600"
                   : "text-gray-400 hover:text-gray-600"
               }`}
+              aria-current={activeTab === id ? "page" : undefined}
             >
               <Icon size={22} />
               <span className="text-[10px] font-medium">{label}</span>
@@ -108,7 +113,8 @@ function App() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
 
   useEffect(() => {
-    registerTabSetter(setActiveTab);
+    const unregister = registerTabSetter(setActiveTab);
+    return unregister;
   }, []);
 
   if (!isConnected) {

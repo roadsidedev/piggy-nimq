@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
@@ -13,7 +14,7 @@ export function useDashboard() {
   const goals = useGoalsStore((s) => s.goals);
   const challenges = useChallengesStore((s) => s.challenges);
 
-  const { data: usdcBalance } = useQuery({
+  const { data: usdcBalance, isLoading: balanceLoading } = useQuery({
     queryKey: ["usdcBalance", address],
     queryFn: async () => {
       if (!address) return null;
@@ -22,39 +23,50 @@ export function useDashboard() {
       return aaveService.fromUSDC(raw, decimals);
     },
     enabled: !!address,
-    refetchInterval: 15000,
+    refetchInterval: 30000,
   });
 
-  const { data: accountData } = useQuery({
+  const { data: accountData, isLoading: accountLoading } = useQuery({
     queryKey: ["accountData", address],
     queryFn: () => aaveService.getUserAccountData(address!),
     enabled: !!address,
-    refetchInterval: 15000,
+    refetchInterval: 30000,
   });
 
-  const { data: reserveData } = useQuery({
+  const { data: reserveData, isLoading: reserveLoading } = useQuery({
     queryKey: ["reserveData"],
     queryFn: () => aaveService.getReserveData(),
     refetchInterval: 30000,
   });
 
-  if (usdcBalance) setBalance(usdcBalance);
-  if (reserveData) setApy(aaveService.getLiquidityRatePercent(reserveData.liquidityRate));
-  if (accountData) {
-    const decimals = 6;
-    setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
-    setHealthFactor(Number(accountData.healthFactor) / 1e18);
-  }
+  useEffect(() => {
+    if (usdcBalance) setBalance(usdcBalance);
+  }, [usdcBalance, setBalance]);
+
+  useEffect(() => {
+    if (reserveData) setApy(aaveService.getLiquidityRatePercent(reserveData.liquidityRate));
+  }, [reserveData, setApy]);
+
+  useEffect(() => {
+    if (accountData) {
+      const decimals = 6;
+      setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
+      setHealthFactor(Number(accountData.healthFactor) / 1e18);
+    }
+  }, [accountData, setBorrowedAmount, setHealthFactor]);
 
   const monthlyEarnings =
     yieldEnabled && apy > 0 && Number(balance) > 0
       ? ((Number(balance) * apy) / 100 / 12).toFixed(2)
       : "0.00";
 
+  const isLoading = balanceLoading || accountLoading || reserveLoading;
+
   return {
     balance,
     yieldEnabled,
     apy,
+    isLoading,
     monthlyEarnings,
     borrowedAmount,
     healthFactor,

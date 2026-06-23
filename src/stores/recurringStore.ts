@@ -20,6 +20,7 @@ interface RecurringState {
   updateSchedule: (id: string, updates: Partial<RecurringSchedule>) => void;
   deleteSchedule: (id: string) => void;
   togglePause: (id: string) => void;
+  reset: () => void;
 }
 
 export const useRecurringStore = create<RecurringState>()(
@@ -48,6 +49,7 @@ export const useRecurringStore = create<RecurringState>()(
             s.id === id ? { ...s, paused: !s.paused } : s,
           ),
         })),
+      reset: () => set({ schedules: [] }),
     }),
     { name: "piggy-recurring" },
   ),

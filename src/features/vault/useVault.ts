@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
+import { trackError } from "@/utils/analytics";
 
 export function useVault() {
   const address = useWalletStore((s) => s.address);
@@ -49,8 +50,8 @@ export function useVault() {
       const rawBalance = await aaveService.getAUsdcBalance(address);
       const formatted = aaveService.fromUSDC(rawBalance, decimals);
       setBalance(formatted);
-    } catch {
-      // provider may not be ready
+    } catch (err) {
+      trackError(err instanceof Error ? err : new Error("fetchBalance failed"), { context: "useVault" });
     }
   }, [address, setBalance]);
 
@@ -84,6 +85,7 @@ export function useVault() {
         await fetchBalance();
       } catch (err) {
         const message = err instanceof Error ? err.message : "Deposit failed";
+        trackError(err instanceof Error ? err : new Error(message), { context: "useVault.deposit" });
         setTxStatus("failed");
         setTxError(message);
         throw err;
@@ -118,6 +120,7 @@ export function useVault() {
         await fetchBalance();
       } catch (err) {
         const message = err instanceof Error ? err.message : "Withdraw failed";
+        trackError(err instanceof Error ? err : new Error(message), { context: "useVault.withdraw" });
         setTxStatus("failed");
         setTxError(message);
         throw err;

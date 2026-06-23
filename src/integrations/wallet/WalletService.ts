@@ -6,6 +6,8 @@ export class WalletService {
   private address: `0x${string}` | null = null;
   private nimiqAddress: string | null = null;
   private nimiqConsensus: boolean | null = null;
+  private accountsChangedHandler: ((accounts: string[]) => void) | null = null;
+  private chainChangedHandler: ((chainId: string) => void) | null = null;
 
   async connect(): Promise<NimiqProfile> {
     const provider = getEthereumProvider();
@@ -108,19 +110,27 @@ export class WalletService {
 
   onAccountsChanged(handler: (accounts: string[]) => void): void {
     const provider = getEthereumProvider();
+    this.accountsChangedHandler = handler;
     provider?.on(NIMIQ_EVENTS.ACCOUNT_CHANGED, handler as (...args: unknown[]) => void);
   }
 
   onChainChanged(handler: (chainId: string) => void): void {
     const provider = getEthereumProvider();
+    this.chainChangedHandler = handler;
     provider?.on(NIMIQ_EVENTS.CHAIN_CHANGED, handler as (...args: unknown[]) => void);
   }
 
   removeListeners(): void {
     const provider = getEthereumProvider();
     if (!provider) return;
-    provider.removeListener(NIMIQ_EVENTS.ACCOUNT_CHANGED, () => {});
-    provider.removeListener(NIMIQ_EVENTS.CHAIN_CHANGED, () => {});
+    if (this.accountsChangedHandler) {
+      provider.removeListener(NIMIQ_EVENTS.ACCOUNT_CHANGED, this.accountsChangedHandler as (...args: unknown[]) => void);
+    }
+    if (this.chainChangedHandler) {
+      provider.removeListener(NIMIQ_EVENTS.CHAIN_CHANGED, this.chainChangedHandler as (...args: unknown[]) => void);
+    }
+    this.accountsChangedHandler = null;
+    this.chainChangedHandler = null;
   }
 }
 

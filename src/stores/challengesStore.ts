@@ -20,6 +20,7 @@ interface ChallengesState {
   joinChallenge: (id: string, address: string) => void;
   leaveChallenge: (id: string, address: string) => void;
   updateProgress: (id: string, address: string, amount: string) => void;
+  reset: () => void;
 }
 
 export const useChallengesStore = create<ChallengesState>()(
@@ -52,14 +53,16 @@ export const useChallengesStore = create<ChallengesState>()(
         set((state) => ({
           challenges: state.challenges.map((c) => {
             if (c.id !== id) return c;
-            const current = Number(c.memberProgress[address] ?? "0");
+            const current = c.memberProgress[address] ?? "0";
+            const updated = (BigInt(Math.round(Number(current) * 1e6)) + BigInt(Math.round(Number(amount) * 1e6))).toString();
             return {
               ...c,
-              memberProgress: { ...c.memberProgress, [address]: (current + Number(amount)).toString() },
+              memberProgress: { ...c.memberProgress, [address]: (Number(updated) / 1e6).toFixed(2) },
               streak: c.streak + 1,
             };
           }),
         })),
+      reset: () => set({ challenges: [] }),
     }),
     { name: "piggy-challenges" },
   ),

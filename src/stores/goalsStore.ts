@@ -1,6 +1,21 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+function addAmounts(a: string, b: string): string {
+  const partsA = a.split(".");
+  const partsB = b.split(".");
+  const dA = partsA[1]?.length ?? 0;
+  const dB = partsB[1]?.length ?? 0;
+  const scale = Math.max(dA, dB);
+  const factor = 10 ** scale;
+  const result = (Math.round(Number(a) * factor) + Math.round(Number(b) * factor)) / factor;
+  return result.toFixed(scale);
+}
+
+function negate(v: string): string {
+  return v.startsWith("-") ? v.slice(1) : "-" + v;
+}
+
 export interface StoredGoal {
   id: string;
   title: string;
@@ -17,6 +32,7 @@ interface GoalsState {
   deleteGoal: (id: string) => void;
   allocateFunds: (id: string, amount: string) => void;
   transferFunds: (fromId: string, toId: string, amount: string) => void;
+  reset: () => void;
 }
 
 export const useGoalsStore = create<GoalsState>()(
@@ -40,7 +56,7 @@ export const useGoalsStore = create<GoalsState>()(
         set((state) => ({
           goals: state.goals.map((g) =>
             g.id === id
-              ? { ...g, currentAmount: (Number(g.currentAmount) + Number(amount)).toString() }
+              ? { ...g, currentAmount: addAmounts(g.currentAmount, amount) }
               : g,
           ),
         })),
@@ -49,14 +65,15 @@ export const useGoalsStore = create<GoalsState>()(
         set((state) => ({
           goals: state.goals.map((g) => {
             if (g.id === fromId) {
-              return { ...g, currentAmount: (Number(g.currentAmount) - Number(amount)).toString() };
+              return { ...g, currentAmount: addAmounts(g.currentAmount, negate(amount)) };
             }
             if (g.id === toId) {
-              return { ...g, currentAmount: (Number(g.currentAmount) + Number(amount)).toString() };
+              return { ...g, currentAmount: addAmounts(g.currentAmount, amount) };
             }
             return g;
           }),
         })),
+      reset: () => set({ goals: [] }),
     }),
     { name: "piggy-goals" },
   ),

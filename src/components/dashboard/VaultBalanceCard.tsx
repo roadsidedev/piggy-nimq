@@ -1,4 +1,4 @@
-import { PiggyBank } from "@/components/common/PiggyBank";
+import { PiggyLogo } from "@/components/common/PiggyLogo";
 
 interface VaultBalanceCardProps {
   balance: string;
@@ -25,7 +25,7 @@ export function VaultBalanceCard({ balance, yieldEnabled, apy, earningsToday }: 
         )}
       </div>
       <div className="absolute -right-2 -top-2 opacity-80">
-        <PiggyBank size={100} />
+        <PiggyLogo size={100} />
       </div>
     </div>
   );

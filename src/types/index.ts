@@ -39,11 +39,14 @@ export interface LeaderboardEntry {
   streak: number;
 }
 
-export interface Transaction {
+export type TxStatus = "idle" | "pending" | "confirming" | "confirmed" | "failed";
+
+export interface TransactionRecord {
   id: string;
   type: "deposit" | "withdraw" | "borrow" | "repay" | "yield";
-  amount: bigint;
+  amount: string;
   timestamp: Date;
-  status: "pending" | "confirming" | "confirmed" | "failed";
+  status: TxStatus;
   txHash?: string;
+  error?: string;
 }
