@@ -234,6 +234,3 @@ Current status: **D+** — Functional but gaps remain. See the [Production Audit
 
 ---
 
-## License
-
-MIT
