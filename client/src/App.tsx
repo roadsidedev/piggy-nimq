@@ -30,7 +30,7 @@ function ConnectScreen() {
     <div className="flex h-dvh flex-col items-center justify-center px-6 text-center">
       <div className="mb-8">
         <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-pink-100">
-          <PiggyLogo size={80} />
+          <PiggyLogo size={80} showBackground={false} />
         </div>
         <h1 className="text-3xl font-bold text-gray-900">Piggy</h1>
         <p className="mt-2 text-gray-500">Save smarter. Borrow smarter. Together.</p>
@@ -85,7 +85,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
     <div className="flex h-dvh flex-col">
       <header className="flex items-center justify-between px-5 pt-3 pb-2">
         <div className="flex items-center gap-1.5">
-          <PiggyLogo size={28} />
+          <PiggyLogo size={28} showBackground={false} />
           <span className="text-xl font-bold text-gray-900">Piggy</span>
         </div>
         <button
