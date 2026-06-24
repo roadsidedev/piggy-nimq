@@ -16,7 +16,6 @@
   "dependencies": {
     "@hono/node-server": "^1.14.3",
     "@neondatabase/serverless": "^0.10.4",
-    "@piggy/shared": "*",
     "drizzle-orm": "^0.44.2",
     "hono": "^4.8.3",
     "nanoid": "^5.1.5",
