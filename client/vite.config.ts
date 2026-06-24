@@ -11,6 +11,15 @@ export default defineConfig({
     },
   },
   build: {
-    modulePreload: false,
+    modulePreload: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          if (id.includes("node_modules/react") || id.includes("node_modules/zustand") || id.includes("node_modules/@tanstack")) return "vendor";
+          if (id.includes("node_modules/viem")) return "web3";
+          if (id.includes("node_modules")) return "deps";
+        },
+      },
+    },
   },
 });

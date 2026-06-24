@@ -1,16 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useWallet } from "@/hooks/useWallet";
-import { Button } from "@/components/common";
+import { Button, PageSkeleton } from "@/components/common";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { PiggyLogo } from "@/components/common/PiggyLogo";
-import { VaultPage } from "@/features/vault";
-import { BorrowPage } from "@/features/borrow";
-import { GoalsPage } from "@/features/goals";
-import { ChallengesPage } from "@/features/challenges";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
-import { AccountPage } from "@/features/account";
 import { registerTabSetter } from "@/hooks/useNavigate";
 import { HomeIcon, VaultIcon, GoalIcon, BorrowIcon, ChallengeIcon, UserIcon } from "@/components/common/Icons";
+
+const VaultPage = lazy(() => import("@/features/vault/VaultPage").then((m) => ({ default: m.VaultPage })));
+const BorrowPage = lazy(() => import("@/features/borrow/BorrowPage").then((m) => ({ default: m.BorrowPage })));
+const GoalsPage = lazy(() => import("@/features/goals/GoalsPage").then((m) => ({ default: m.GoalsPage })));
+const ChallengesPage = lazy(() => import("@/features/challenges/ChallengesPage").then((m) => ({ default: m.ChallengesPage })));
+const AccountPage = lazy(() => import("@/features/account/AccountPage").then((m) => ({ default: m.AccountPage })));
 
 type Tab = "home" | "vault" | "goals" | "borrow" | "challenges" | "account";
 
@@ -49,8 +50,36 @@ function ConnectScreen() {
   );
 }
 
+function PageContent({ activeTab }: { activeTab: Tab }) {
+  switch (activeTab) {
+    case "home":
+      return <DashboardPage />;
+    case "vault":
+      return <VaultPage />;
+    case "borrow":
+      return <BorrowPage />;
+    case "goals":
+      return <GoalsPage />;
+    case "challenges":
+      return <ChallengesPage />;
+    case "account":
+      return <AccountPage />;
+  }
+}
+
 function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (tab: Tab) => void }) {
   const { address } = useWallet();
+  const [prefetched, setPrefetched] = useState(false);
+
+  useEffect(() => {
+    if (prefetched) return;
+    const timer = setTimeout(() => {
+      import("@/features/vault/VaultPage");
+      import("@/features/account/AccountPage");
+      setPrefetched(true);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [prefetched]);
 
   return (
     <div className="flex h-dvh flex-col">
@@ -69,19 +98,9 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
 
       <main className="flex-1 overflow-y-auto px-4 pt-2 pb-24">
         <ErrorBoundary>
-          {activeTab === "home" ? (
-            <DashboardPage />
-          ) : activeTab === "vault" ? (
-            <VaultPage />
-          ) : activeTab === "borrow" ? (
-            <BorrowPage />
-          ) : activeTab === "goals" ? (
-            <GoalsPage />
-          ) : activeTab === "challenges" ? (
-            <ChallengesPage />
-          ) : activeTab === "account" ? (
-            <AccountPage />
-          ) : null}
+          <Suspense fallback={<PageSkeleton />}>
+            <PageContent activeTab={activeTab} />
+          </Suspense>
         </ErrorBoundary>
       </main>
 
@@ -91,6 +110,16 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
             <button
               key={id}
               onClick={() => onTabChange(id)}
+              onMouseEnter={() => {
+                const map: Record<string, () => Promise<any>> = {
+                  vault: () => import("@/features/vault/VaultPage"),
+                  borrow: () => import("@/features/borrow/BorrowPage"),
+                  goals: () => import("@/features/goals/GoalsPage"),
+                  challenges: () => import("@/features/challenges/ChallengesPage"),
+                  account: () => import("@/features/account/AccountPage"),
+                };
+                map[id]?.();
+              }}
               className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 transition-colors ${
                 activeTab === id
                   ? "text-pink-600"
