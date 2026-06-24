@@ -12,6 +12,7 @@
     "dev:client": "npm run dev --workspace=@piggy/client",
     "dev:server": "npm run dev --workspace=@piggy/server",
     "build": "npm run build --workspace=@piggy/server && npm run build --workspace=@piggy/client",
+    "start": "node server/dist/index.js",
     "lint": "npm run lint --workspace=@piggy/client && npm run lint --workspace=@piggy/server",
     "test": "npm run test --workspaces",
     "db:generate": "npm run db:generate --workspace=@piggy/server",

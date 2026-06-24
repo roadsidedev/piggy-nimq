@@ -1,0 +1,44 @@
+services:
+  # ─── API Server ────────────────────────────────────────────
+  - type: web
+    name: piggy-api
+    runtime: node
+    repo: https://github.com/roadsidedev/piggy-nimq
+    rootDir: .
+    plan: free
+    region: frankfurt
+    buildCommand: npm install --legacy-peer-deps && npm run build --workspace=@piggy/server
+    startCommand: node server/dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: SESSION_EXPIRY_HOURS
+        value: 720
+      - key: CLIENT_ORIGIN
+        sync: false
+
+  # ─── Cron Job (Recurring Reminders) ────────────────────────
+  - type: cron
+    name: piggy-cron
+    runtime: node
+    repo: https://github.com/roadsidedev/piggy-nimq
+    rootDir: .
+    plan: free
+    region: frankfurt
+    schedule: "0 9 * * *"
+    buildCommand: npm install --legacy-peer-deps
+    startCommand: npx tsx server/src/cron.ts
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        sync: false
