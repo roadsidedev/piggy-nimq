@@ -1,9 +1,10 @@
 interface PiggyLogoProps {
   size?: number;
   className?: string;
+  showBackground?: boolean;
 }
 
-export function PiggyLogo({ size = 100, className = "" }: PiggyLogoProps) {
+export function PiggyLogo({ size = 100, className = "", showBackground = true }: PiggyLogoProps) {
   return (
     <svg
       width={size}
@@ -13,56 +14,88 @@ export function PiggyLogo({ size = 100, className = "" }: PiggyLogoProps) {
       xmlns="http://www.w3.org/2000/svg"
       className={className}
     >
-      {/* Body */}
+      {/* Background */}
+      {showBackground && (
+        <rect width="200" height="200" fill="#FFF9C4" />
+      )}
+      
+      {/* 3D Shadow */}
       <path
-        d="M100 50 C60 50, 30 80, 30 115 C30 150, 60 180, 100 180 C140 180, 170 150, 170 115 C170 80, 140 50, 100 50Z"
-        fill="white"
-        stroke="black"
-        strokeWidth="6"
-      />
-      {/* Ear */}
-      <path
-        d="M75 60 L65 35 L85 50 Z"
-        fill="white"
-        stroke="black"
-        strokeWidth="5"
-        strokeLinejoin="round"
-      />
-      {/* Coin slot */}
-      <path
-        d="M90 58 Q100 52, 110 58"
-        stroke="black"
-        strokeWidth="5"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Eye */}
-      <path
-        d="M72 105 Q78 98, 84 105"
-        stroke="black"
-        strokeWidth="4"
-        strokeLinecap="round"
-        fill="none"
-      />
-      {/* Snout */}
-      <ellipse
-        cx="55"
-        cy="115"
-        rx="8"
-        ry="6"
+        d="M105 55 C65 55, 35 85, 35 120 C35 155, 65 185, 105 185 C145 185, 175 155, 175 120 C175 85, 145 55, 105 55Z"
         fill="black"
       />
-      {/* Tail */}
+      <rect x="70" y="173" width="16" height="18" rx="4" fill="black" />
+      <rect x="125" y="173" width="16" height="18" rx="4" fill="black" />
+      
+      {/* Main Body (Thick Outline) */}
+      <path
+        d="M100 50 C60 50, 30 80, 30 115 C30 150, 60 180, 100 180 C140 180, 170 150, 170 115 C170 80, 140 50, 100 50Z"
+        fill="black"
+      />
+      
+      {/* White Body Fill */}
+      <path
+        d="M100 58 C68 58, 42 84, 42 115 C42 146, 68 172, 100 172 C132 172, 158 146, 158 115 C158 84, 132 58, 100 58Z"
+        fill="white"
+      />
+
+      {/* Ear (Shadow) */}
+      <path
+        d="M80 65 L70 40 L90 55 Z"
+        fill="black"
+      />
+      {/* Ear (Main) */}
+      <path
+        d="M75 60 L65 35 L85 50 Z"
+        fill="black"
+      />
+      <path
+        d="M75 64 L69 44 L81 56 Z"
+        fill="white"
+      />
+
+      {/* Coin slot */}
+      <path
+        d="M90 75 Q105 68, 120 75"
+        stroke="black"
+        strokeWidth="10"
+        strokeLinecap="round"
+        fill="none"
+      />
+
+      {/* Eye */}
+      <circle cx="75" cy="115" r="7" fill="black" />
+
+      {/* Tail (Shadow) */}
+      <path
+        d="M173 125 Q185 120, 183 110 Q181 100, 190 103"
+        stroke="black"
+        strokeWidth="8"
+        strokeLinecap="round"
+        fill="none"
+      />
+      {/* Tail (Main) */}
       <path
         d="M168 120 Q180 115, 178 105 Q176 95, 185 98"
         stroke="black"
+        strokeWidth="8"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M168 120 Q180 115, 178 105 Q176 95, 185 98"
+        stroke="white"
         strokeWidth="4"
         strokeLinecap="round"
         fill="none"
       />
-      {/* Legs */}
-      <rect x="65" y="168" width="16" height="18" rx="4" fill="white" stroke="black" strokeWidth="4" />
-      <rect x="120" y="168" width="16" height="18" rx="4" fill="white" stroke="black" strokeWidth="4" />
+
+      {/* Legs (Main) */}
+      <rect x="65" y="168" width="16" height="18" rx="4" fill="black" />
+      <rect x="69" y="168" width="8" height="14" rx="2" fill="white" />
+      
+      <rect x="120" y="168" width="16" height="18" rx="4" fill="black" />
+      <rect x="124" y="168" width="8" height="14" rx="2" fill="white" />
     </svg>
   );
 }
