@@ -1,0 +1,35 @@
+{
+  "name": "@piggy/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "prettier --check \"src/**/*.ts\"",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.14.3",
+    "@neondatabase/serverless": "^0.10.4",
+    "@piggy/shared": "*",
+    "drizzle-orm": "^0.44.2",
+    "hono": "^4.8.3",
+    "nanoid": "^5.1.5",
+    "pg": "^8.13.3",
+    "viem": "^2.53.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/pg": "^8.11.11",
+    "drizzle-kit": "^0.31.1",
+    "prettier": "^3.8.4",
+    "tsx": "^4.19.4",
+    "typescript": "^6.0.3"
+  }
+}

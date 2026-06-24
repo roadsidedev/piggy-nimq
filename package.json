@@ -2,55 +2,30 @@
   "name": "piggy",
   "version": "0.1.0",
   "private": true,
-  "type": "module",
+  "workspaces": [
+    "client",
+    "server",
+    "shared"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "lint": "eslint src --ext .ts,.tsx",
-    "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "prepare": "husky"
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "npm run dev --workspace=@piggy/client",
+    "dev:server": "npm run dev --workspace=@piggy/server",
+    "build": "npm run build --workspace=@piggy/server && npm run build --workspace=@piggy/client",
+    "lint": "npm run lint --workspace=@piggy/client && npm run lint --workspace=@piggy/server",
+    "test": "npm run test --workspaces",
+    "db:generate": "npm run db:generate --workspace=@piggy/server",
+    "db:migrate": "npm run db:migrate --workspace=@piggy/server",
+    "db:push": "npm run db:push --workspace=@piggy/server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "*.css": [
       "prettier --write"
     ]
-  },
-  "dependencies": {
-    "@hookform/resolvers": "^5.4.0",
-    "@nimiq/mini-app-sdk": "^0.1.0",
-    "@tailwindcss/vite": "^4.3.1",
-    "@tanstack/react-query": "^5.101.0",
-    "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "react-hook-form": "^7.80.0",
-    "tailwindcss": "^4.3.1",
-    "viem": "^2.53.1",
-    "zod": "^4.4.3",
-    "zustand": "^5.0.14"
-  },
-  "devDependencies": {
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.2",
-    "eslint": "^10.5.0",
-    "eslint-config-prettier": "^10.1.8",
-    "husky": "^9.1.7",
-    "jsdom": "^29.1.1",
-    "lint-staged": "^17.0.8",
-    "prettier": "^3.8.4",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.16",
-    "vitest": "^4.1.9"
   }
 }
