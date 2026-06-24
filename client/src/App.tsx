@@ -124,4 +124,10 @@ function App() {
   return <AppShell activeTab={activeTab} onTabChange={setActiveTab} />;
 }
 
-export default App;
+export default function AppRoot() {
+  return (
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  );
+}
