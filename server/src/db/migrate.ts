@@ -10,7 +10,8 @@ const serverRoot = resolve(__dirname, "../../");
 export async function runMigrations() {
   console.log("[DB] Pushing schema to database...");
   try {
-    execSync("npx drizzle-kit push", {
+    // Use npm script which resolves binaries through npm's own lookup
+    execSync("npm run db:push", {
       cwd: serverRoot,
       stdio: "inherit",
       env: { ...process.env },
