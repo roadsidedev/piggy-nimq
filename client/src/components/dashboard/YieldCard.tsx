@@ -5,22 +5,28 @@ interface YieldCardProps {
   apy: number;
   estimatedMonthly?: string;
   onToggle?: () => void;
+  loading?: boolean;
 }
 
-export function YieldCard({ enabled, apy, estimatedMonthly, onToggle }: YieldCardProps) {
+export function YieldCard({ enabled, apy, estimatedMonthly, onToggle, loading }: YieldCardProps) {
   return (
     <button
       onClick={onToggle}
-      className={`w-full rounded-2xl p-4 text-left shadow-sm transition-colors ${enabled ? "bg-green-50" : "bg-white"}`}
+      disabled={loading}
+      className={`w-full rounded-2xl p-4 text-left shadow-sm transition-colors ${enabled ? "bg-green-50" : "bg-white"} ${loading ? "opacity-60 cursor-wait" : ""}`}
     >
       <div className="mb-2 flex items-center justify-between">
         <span className="text-sm font-medium text-gray-700">Yield</span>
         <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-green-500" : "bg-gray-300"}`}>
-          <div className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? "translate-x-4" : "translate-x-0.5"}`} />
+          {loading ? (
+            <div className="h-5 w-5 rounded-full bg-white shadow-sm animate-pulse translate-x-0.5" />
+          ) : (
+            <div className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? "translate-x-4" : "translate-x-0.5"}`} />
+          )}
         </div>
       </div>
       <p className={`text-xs font-medium ${enabled ? "text-green-600" : "text-gray-400"}`}>
-        {enabled ? "ON" : "OFF"}
+        {loading ? "Confirm in wallet..." : enabled ? "ON" : "OFF"}
       </p>
       <div className="mt-2">
         <p className="text-xs text-gray-500">Current APY</p>

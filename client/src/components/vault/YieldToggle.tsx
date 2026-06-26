@@ -86,7 +86,10 @@ export function YieldPanel({
           </div>
           <div className="flex gap-2">
             <button
-              onClick={onAdjust}
+              onClick={() => {
+                setExpanded(true);
+                onAdjust();
+              }}
               className="rounded-lg bg-green-800 px-3 py-1.5 text-xs font-medium text-green-200 transition-colors hover:bg-green-700"
             >
               Adjust
@@ -235,7 +238,9 @@ export function YieldPanel({
             >
               {txStatus === "pending" || txStatus === "confirming"
                 ? "Confirm in wallet..."
-                : "Enable Yield"}
+                : yieldEnabled
+                  ? "Update Yield"
+                  : "Enable Yield"}
             </Button>
           </div>
         )}
