@@ -29,7 +29,7 @@ export function AccountPage() {
 
   const goalColors: string[] = ["#8b5cf6", "#06b6d4", "#f59e0b", "#10b981", "#ef4444"];
   const segments = [
-    { label: "Vault", value: vaultNum, color: "#ec4899" },
+    { label: "Vault", value: vaultNum, color: "#38761d" },
     ...goals.map((g, i) => ({
       label: g.title,
       value: Number(g.currentAmount),
@@ -59,7 +59,7 @@ export function AccountPage() {
     <div className="flex flex-col gap-4 pb-6">
       {/* Header */}
       <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pink-100 text-xl font-bold text-pink-600">
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-xl font-bold text-green-600">
           {address ? address.slice(2, 4).toUpperCase() : "??"}
         </div>
         <div className="flex-1">

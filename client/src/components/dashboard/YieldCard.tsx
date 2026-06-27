@@ -40,7 +40,7 @@ export function YieldCard({ enabled, apy, estimatedMonthly, onToggle, loading }:
         ) : null}
       </div>
       {enabled ? (
-        <div className="mt-2 flex items-center gap-1 text-green-600">
+        <div className="mt-2 flex items-center gap-1 text-green-700">
           <TrendingUpIcon size={14} />
           <span className="text-xs font-medium">Growing</span>
         </div>

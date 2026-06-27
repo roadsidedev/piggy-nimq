@@ -32,7 +32,7 @@ export function ChallengesPage() {
         <button
           onClick={() => setTab("browse")}
           className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
-            tab === "browse" ? "bg-pink-600 text-white" : "bg-neutral-800 text-neutral-400"
+            tab === "browse" ? "bg-green-600 text-white" : "bg-neutral-800 text-neutral-400"
           }`}
         >
           Browse
@@ -40,7 +40,7 @@ export function ChallengesPage() {
         <button
           onClick={() => setTab("mine")}
           className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
-            tab === "mine" ? "bg-pink-600 text-white" : "bg-neutral-800 text-neutral-400"
+            tab === "mine" ? "bg-green-600 text-white" : "bg-neutral-800 text-neutral-400"
           }`}
         >
           My Challenges
@@ -91,7 +91,7 @@ export function ChallengesPage() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => joinChallenge(c.id)}
-                      className="text-pink-400 hover:text-pink-300"
+                      className="text-green-400 hover:text-green-300"
                     >
                       Join
                     </button>
@@ -132,7 +132,7 @@ export function ChallengesPage() {
                   onClick={() => setFrequency(f)}
                   className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
                     frequency === f
-                      ? "bg-pink-600 text-white"
+                      ? "bg-green-600 text-white"
                       : "bg-neutral-800 text-neutral-400"
                   }`}
                 >

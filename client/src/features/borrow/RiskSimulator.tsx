@@ -76,7 +76,7 @@ export function RiskSimulator({
         <label className="mb-1.5 block text-xs text-neutral-500">
           Simulate borrow amount
         </label>
-        <div className="mb-2 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 focus-within:ring-2 focus-within:ring-pink-600">
+        <div className="mb-2 flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 focus-within:ring-2 focus-within:ring-green-600">
           <span className="text-neutral-500">$</span>
           <input
             type="number"
@@ -99,7 +99,7 @@ export function RiskSimulator({
           {maxBorrow > 0 && (
             <button
               onClick={() => onSimulateChange(maxBorrow.toString())}
-              className="rounded bg-pink-600/20 px-2 py-0.5 text-[10px] font-medium text-pink-400 hover:bg-pink-600/30"
+              className="rounded bg-green-600/20 px-2 py-0.5 text-[10px] font-medium text-green-400 hover:bg-green-600/30"
             >
               MAX
             </button>
@@ -112,7 +112,7 @@ export function RiskSimulator({
           step={maxBorrow > 1000 ? "1" : "0.01"}
           value={simAmt}
           onChange={(e) => onSimulateChange(e.target.value)}
-          className="w-full accent-pink-600"
+          className="w-full accent-green-600"
         />
         <div className="mt-1 flex justify-between text-xs text-neutral-500">
           <span>$0</span>
@@ -211,7 +211,7 @@ export function RiskSimulator({
                 onClick={() => onSimulateChange(val.toString())}
                 className={`flex-1 rounded-lg py-1.5 text-xs font-medium transition-colors ${
                   Math.abs(simAmt - val) < 0.01
-                    ? "bg-pink-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
                 }`}
               >

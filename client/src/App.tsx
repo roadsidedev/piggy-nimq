@@ -29,7 +29,7 @@ function ConnectScreen() {
   return (
     <div className="flex h-dvh flex-col items-center justify-center px-6 text-center">
       <div className="mb-8">
-        <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-pink-100">
+        <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
           <PiggyLogo size={80} showBackground={false} />
         </div>
         <h1 className="text-3xl font-bold text-gray-900">Piggy</h1>
@@ -90,7 +90,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
         </div>
         <button
           onClick={() => onTabChange("account")}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-600 transition-colors hover:bg-pink-200"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-600 transition-colors hover:bg-green-200"
         >
           {address ? address.slice(2, 4).toUpperCase() : <UserIcon size={18} />}
         </button>
@@ -122,7 +122,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
               }}
               className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 transition-colors ${
                 activeTab === id
-                  ? "text-pink-600"
+                  ? "text-green-600"
                   : "text-gray-400 hover:text-gray-600"
               }`}
               aria-current={activeTab === id ? "page" : undefined}

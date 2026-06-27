@@ -117,7 +117,7 @@ export function WithdrawModal({
                   source.disabled
                     ? "cursor-not-allowed border-neutral-800 bg-neutral-900/50 opacity-40"
                     : selectedSource === source.id
-                      ? "border-pink-600 bg-pink-900/20"
+                      ? "border-green-600 bg-green-900/20"
                       : "border-neutral-700 bg-neutral-800 hover:border-neutral-600"
                 }`}
               >
@@ -153,7 +153,7 @@ export function WithdrawModal({
           {maxForSource > 0 && (
             <button
               onClick={handleMax}
-              className="absolute right-3 top-[38px] rounded bg-pink-600 px-2 py-0.5 text-xs font-medium text-white transition-colors hover:bg-pink-700"
+              className="absolute right-3 top-[38px] rounded bg-green-600 px-2 py-0.5 text-xs font-medium text-white transition-colors hover:bg-green-700"
             >
               MAX
             </button>
