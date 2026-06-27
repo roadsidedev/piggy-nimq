@@ -55,7 +55,7 @@ export function RecurringModal({ open, onClose, onSubmit, goals }: RecurringModa
         {/* Amount */}
         <div className="flex flex-col gap-1.5">
           <label className="text-sm font-medium text-neutral-300">Amount (USDC)</label>
-          <div className="flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 focus-within:ring-2 focus-within:ring-pink-600">
+          <div className="flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 focus-within:ring-2 focus-within:ring-green-600">
             <span className="text-neutral-500">$</span>
             <input
               type="number"
@@ -79,7 +79,7 @@ export function RecurringModal({ open, onClose, onSubmit, goals }: RecurringModa
                 onClick={() => setFrequency(f)}
                 className={`flex-1 rounded-lg py-2.5 text-sm font-medium transition-colors ${
                   frequency === f
-                    ? "bg-pink-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
                 }`}
               >
@@ -100,7 +100,7 @@ export function RecurringModal({ open, onClose, onSubmit, goals }: RecurringModa
                   onClick={() => setDayOfWeek(d.value)}
                   className={`rounded-lg py-2 text-xs font-medium transition-colors ${
                     dayOfWeek === d.value
-                      ? "bg-pink-600 text-white"
+                      ? "bg-green-600 text-white"
                       : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
                   }`}
                 >
@@ -122,7 +122,7 @@ export function RecurringModal({ open, onClose, onSubmit, goals }: RecurringModa
                   onClick={() => setDayOfMonth(d)}
                   className={`rounded-lg py-2 text-xs font-medium transition-colors ${
                     dayOfMonth === d
-                      ? "bg-pink-600 text-white"
+                      ? "bg-green-600 text-white"
                       : "bg-neutral-800 text-neutral-400 hover:bg-neutral-700"
                   }`}
                 >
@@ -140,7 +140,7 @@ export function RecurringModal({ open, onClose, onSubmit, goals }: RecurringModa
             <select
               value={goalId}
               onChange={(e) => setGoalId(e.target.value)}
-              className="rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-pink-600"
+              className="rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-sm text-white outline-none focus:ring-2 focus:ring-green-600"
             >
               <option value="">No goal — general vault</option>
               {goals.map((g) => (

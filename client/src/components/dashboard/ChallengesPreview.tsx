@@ -13,7 +13,7 @@ export function ChallengesPreview({ challenges, onNavigate }: ChallengesPreviewP
     <div className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="mb-2 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-900">Save with Frens</h3>
-        <button onClick={onNavigate} className="flex items-center text-xs text-pink-600">
+        <button onClick={onNavigate} className="flex items-center text-xs text-green-600">
           View all <ChevronRightIcon size={14} />
         </button>
       </div>

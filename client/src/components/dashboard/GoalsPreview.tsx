@@ -13,7 +13,7 @@ export function GoalsPreview({ goals, onNavigate }: GoalsPreviewProps) {
     <div className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-semibold text-gray-900">Active Goals</h3>
-        <button onClick={onNavigate} className="flex items-center text-xs text-pink-600">
+        <button onClick={onNavigate} className="flex items-center text-xs text-green-600">
           View all <ChevronRightIcon size={14} />
         </button>
       </div>
@@ -35,7 +35,7 @@ export function GoalsPreview({ goals, onNavigate }: GoalsPreviewProps) {
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
                   <div
-                    className="h-full rounded-full bg-pink-500 transition-all"
+                    className="h-full rounded-full bg-green-600 transition-all"
                     style={{ width: `${pct}%` }}
                   />
                 </div>

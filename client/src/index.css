@@ -1,23 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --color-pink-50: #fdf2f8;
-  --color-pink-100: #fce7f3;
-  --color-pink-200: #fbcfe8;
-  --color-pink-300: #f9a8d4;
-  --color-pink-400: #f472b6;
-  --color-pink-500: #ec4899;
-  --color-pink-600: #db2777;
-  --color-pink-700: #be185d;
-  --color-pink-800: #9d174d;
-  --color-pink-900: #831843;
+  --color-green-50: #f0f7ed;
+  --color-green-100: #dcebd6;
+  --color-green-200: #bdd7b2;
+  --color-green-300: #93c47d;
+  --color-green-400: #6aa84f;
+  --color-green-500: #38761d;
+  --color-green-600: #274e13;
+  --color-green-700: #1a330d;
+  --color-green-800: #0d1a06;
+  --color-green-900: #050a03;
 
-  --color-sand-50: #faf8f5;
-  --color-sand-100: #f5f0ea;
-  --color-sand-200: #ede5db;
-  --color-sand-300: #ddd2c4;
-  --color-sand-400: #c4b5a2;
-  --color-sand-500: #a89880;
+  --color-sand-50: #f7f9f6;
+  --color-sand-100: #eff2ee;
+  --color-sand-200: #e1e8df;
+  --color-sand-300: #c9d6c4;
+  --color-sand-400: #a9ba9f;
+  --color-sand-500: #899c7d;
 }
 
 html, body, #root {
@@ -29,7 +29,7 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(180deg, #f8e8e0 0%, #f0ddd4 30%, #e8d0c8 100%);
+  background: linear-gradient(180deg, #f0f7ed 0%, #e1e8df 30%, #dcebd6 100%);
   color: #1a1a1a;
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
