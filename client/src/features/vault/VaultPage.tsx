@@ -59,7 +59,7 @@ export function VaultPage() {
         earnings={earnings}
         txStatus={txStatus}
         onConfirm={confirmYield}
-        onAdjust={() => {}}
+        onAdjust={() => {}} // YieldPanel handles expanded state internally
         onDisable={disableYield}
       />
 

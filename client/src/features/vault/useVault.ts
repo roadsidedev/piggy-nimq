@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
+import { piggyVaultService } from "@/integrations/contracts";
 import { trackError } from "@/utils/analytics";
 
 export function useVault() {
@@ -23,6 +24,7 @@ export function useVault() {
     setYieldEnabled,
     setYieldAmount,
     setApy,
+    setEarnings,
     addTransaction,
     updateTransaction,
     setDepositModalOpen,
@@ -50,17 +52,32 @@ export function useVault() {
   const fetchBalance = useCallback(async () => {
     if (!address) return;
     try {
-      const decimals = await aaveService.getDecimals();
-      const rawBalance = await aaveService.getAUsdcBalance(address);
-      const formatted = aaveService.fromUSDC(rawBalance, decimals);
+      const decimals = await piggyVaultService.getDecimals();
+      const position = await piggyVaultService.getUserPosition(address);
+      // Total balance = idle (non-yield) + yield value
+      const totalRaw = position.unallocated + position.yieldValue;
+      const formatted = piggyVaultService.fromUSDC(totalRaw, decimals);
       setBalance(formatted);
+
+      // Yield state: if yieldValue > 0, yield is enabled
+      if (position.yieldValue > 0n) {
+        setYieldEnabled(true);
+        const yv = piggyVaultService.fromUSDC(position.yieldValue, decimals);
+        setYieldAmount(yv);
+
+        // Estimate earnings: yieldValue - principal is not tracked on-chain,
+        // so display yieldValue as the "earning" balance
+        setEarnings(yv);
+      } else {
+        setEarnings("0.00");
+      }
     } catch (err) {
       trackError(
         err instanceof Error ? err : new Error("fetchBalance failed"),
         { context: "useVault" },
       );
     }
-  }, [address, setBalance]);
+  }, [address, setBalance, setYieldEnabled, setYieldAmount, setEarnings]);
 
   const deposit = useCallback(
     async (amount: string) => {
@@ -69,13 +86,13 @@ export function useVault() {
       setTxError(null);
 
       try {
-        const decimals = await aaveService.getDecimals();
-        const parsed = aaveService.toUSDC(amount, decimals);
+        const decimals = await piggyVaultService.getDecimals();
+        const parsed = piggyVaultService.toUSDC(amount, decimals);
 
         const txRecord = {
           id: crypto.randomUUID(),
           type: "deposit" as const,
-          amount: parsed.toString(),
+          amount: amount,
           timestamp: new Date(),
           status: "pending" as const,
         };
@@ -84,15 +101,12 @@ export function useVault() {
         setTxStatus("confirming");
         updateTransaction(txRecord.id, { status: "confirming" });
 
-        const { supplyHash } = await aaveService.supplyWithAllowanceCheck(
-          parsed,
-          address,
-        );
+        const hash = await piggyVaultService.deposit(parsed);
 
         setTxStatus("confirmed");
         updateTransaction(txRecord.id, {
           status: "confirmed",
-          txHash: supplyHash,
+          txHash: hash,
         });
 
         await fetchBalance();
@@ -118,16 +132,20 @@ export function useVault() {
       setTxError(null);
 
       try {
-        const decimals = await aaveService.getDecimals();
-        const parsed = aaveService.toUSDC(amount, decimals);
+        const decimals = await piggyVaultService.getDecimals();
+        const parsed = piggyVaultService.toUSDC(amount, decimals);
 
         setTxStatus("confirming");
-        const hash = await aaveService.withdrawWithConfirm(parsed, address);
+        // If source is "yield", withdraw from yield position instead
+        if (_source === "yield") {
+          await piggyVaultService.disableYield(parsed);
+        }
+        const hash = await piggyVaultService.withdraw(parsed);
 
         addTransaction({
           id: crypto.randomUUID(),
           type: "withdraw",
-          amount: parsed.toString(),
+          amount,
           timestamp: new Date(),
           status: "confirmed",
           txHash: hash,
@@ -157,13 +175,13 @@ export function useVault() {
       setTxError(null);
 
       try {
-        const decimals = await aaveService.getDecimals();
-        const parsed = aaveService.toUSDC(amount, decimals);
+        const decimals = await piggyVaultService.getDecimals();
+        const parsed = piggyVaultService.toUSDC(amount, decimals);
 
         const txRecord = {
           id: crypto.randomUUID(),
           type: "yield" as const,
-          amount: parsed.toString(),
+          amount,
           timestamp: new Date(),
           status: "pending" as const,
         };
@@ -172,16 +190,19 @@ export function useVault() {
         setTxStatus("confirming");
         updateTransaction(txRecord.id, { status: "confirming" });
 
-        // Supply to Aave for yield
-        const { supplyHash } = await aaveService.supplyWithAllowanceCheck(
-          parsed,
-          address,
-        );
+        let hash: `0x${string}`;
+        if (yieldEnabled) {
+          // Already has yield position → adjust (disable all + enable new amount)
+          hash = await piggyVaultService.adjustYield(parsed);
+        } else {
+          // New yield enable
+          hash = await piggyVaultService.enableYield(parsed);
+        }
 
         setTxStatus("confirmed");
         updateTransaction(txRecord.id, {
           status: "confirmed",
-          txHash: supplyHash,
+          txHash: hash,
         });
 
         setYieldEnabled(true);
@@ -201,6 +222,7 @@ export function useVault() {
     },
     [
       address,
+      yieldEnabled,
       setTxStatus,
       setTxError,
       addTransaction,
@@ -221,16 +243,14 @@ export function useVault() {
     setTxError(null);
 
     try {
-      const decimals = await aaveService.getDecimals();
-      const parsed = aaveService.toUSDC(yieldAmount, decimals);
-
       setTxStatus("confirming");
-      const hash = await aaveService.withdrawWithConfirm(parsed, address);
+      // Disable all yield at once
+      const hash = await piggyVaultService.disableAllYield();
 
       addTransaction({
         id: crypto.randomUUID(),
         type: "withdraw",
-        amount: parsed.toString(),
+        amount: yieldAmount,
         timestamp: new Date(),
         status: "confirmed",
         txHash: hash,

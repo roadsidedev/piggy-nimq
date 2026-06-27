@@ -1,6 +1,7 @@
+import { useCallback, useState } from "react";
 import { useNavigate } from "@/hooks/useNavigate";
 import { useDashboard } from "./useDashboard";
-import { useVaultStore } from "@/stores/vaultStore";
+import { useVault } from "@/features/vault/useVault";
 import { VaultBalanceCard } from "@/components/dashboard/VaultBalanceCard";
 import { YieldCard } from "@/components/dashboard/YieldCard";
 import { BorrowedCard } from "@/components/dashboard/BorrowedCard";
@@ -27,7 +28,25 @@ export function DashboardPage() {
   const { balance, yieldEnabled, apy, isLoading, monthlyEarnings, borrowedAmount, healthFactor, goals, challenges } =
     useDashboard();
   const { goToVault, goToBorrow, goToGoals, goToChallenges } = useNavigate();
-  const setYieldEnabled = useVaultStore((s) => s.setYieldEnabled);
+  const { disableYield } = useVault();
+  const [toggleLoading, setToggleLoading] = useState(false);
+
+  const handleYieldToggle = useCallback(async () => {
+    if (yieldEnabled) {
+      // Yield is ON → disable it via on-chain transaction
+      setToggleLoading(true);
+      try {
+        await disableYield();
+      } catch {
+        // Error is handled by useVault (sets txError in store)
+      } finally {
+        setToggleLoading(false);
+      }
+    } else {
+      // Yield is OFF → navigate to vault page to pick amount
+      goToVault();
+    }
+  }, [yieldEnabled, disableYield, goToVault]);
 
   if (isLoading) return <LoadingSkeleton />;
 
@@ -41,7 +60,13 @@ export function DashboardPage() {
       />
 
       <div className="grid grid-cols-2 gap-3">
-        <YieldCard enabled={yieldEnabled} apy={apy} estimatedMonthly={monthlyEarnings} onToggle={() => setYieldEnabled(!yieldEnabled)} />
+        <YieldCard
+          enabled={yieldEnabled}
+          apy={apy}
+          estimatedMonthly={monthlyEarnings}
+          onToggle={handleYieldToggle}
+          loading={toggleLoading}
+        />
         <BorrowedCard borrowedAmount={borrowedAmount} healthFactor={healthFactor} />
       </div>
 
