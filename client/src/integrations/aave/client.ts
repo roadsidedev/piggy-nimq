@@ -1,14 +1,14 @@
-import { createPublicClient, createWalletClient, custom, http } from "viem";
-import { polygon, polygonAmoy } from "viem/chains";
+import { type Chain, createPublicClient, createWalletClient, custom, http } from "viem";
+import { polygon, baseSepolia } from "viem/chains";
 import { getEthereumProvider } from "@/integrations/nimiq";
-import { POLYGON_MAINNET, POLYGON_AMOY } from "./constants";
+import { POLYGON_MAINNET, BASE_SEPOLIA } from "./constants";
 
-function getChain(useTestnet: boolean) {
-  return useTestnet ? polygonAmoy : polygon;
+function getChain(useTestnet: boolean): Chain {
+  return useTestnet ? baseSepolia : polygon;
 }
 
 function getRpcUrl(useTestnet: boolean) {
-  return useTestnet ? POLYGON_AMOY.RPC_URL : POLYGON_MAINNET.RPC_URL;
+  return useTestnet ? BASE_SEPOLIA.RPC_URL : POLYGON_MAINNET.RPC_URL;
 }
 
 export function createPublicViemClient(useTestnet = false) {

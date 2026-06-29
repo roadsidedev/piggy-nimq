@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWalletStore } from "@/stores/walletStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useBorrowStore } from "@/stores/borrowStore";
 import { useGoalsStore } from "@/stores/goalsStore";
@@ -10,11 +11,14 @@ import { DonutChart } from "@/components/account/DonutChart";
 import { RecurringConfig } from "@/components/account/RecurringConfig";
 import { RecurringModal } from "@/components/account/RecurringModal";
 import { TransactionHistory } from "@/components/vault/TransactionHistory";
-import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon } from "./AccountIcons";
+import { Avatar } from "@/components/account/Avatar";
+import { EditProfileModal } from "@/components/account/EditProfileModal";
+import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon, PencilIcon } from "./AccountIcons";
 import type { RecurringFrequency } from "@/stores/recurringStore";
 
 export function AccountPage() {
   const address = useWalletStore((s) => s.address);
+  const { username, avatarUrl } = useProfileStore();
   const { balance } = useVaultStore();
   const { borrowedAmount, healthFactor } = useBorrowStore();
   const goals = useGoalsStore((s) => s.goals);
@@ -23,6 +27,7 @@ export function AccountPage() {
   const { transactions } = useVaultStore();
   const { disconnect } = useWallet();
   const [recurringModalOpen, setRecurringModalOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const vaultNum = Number(balance) || 0;
   const totalSaved = vaultNum + goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
@@ -71,6 +76,13 @@ export function AccountPage() {
           </p>
         </div>
         <button
+          onClick={() => setEditProfileOpen(true)}
+          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-pink-600"
+          title="Edit profile"
+        >
+          <PencilIcon size={18} />
+        </button>
+        <button
           onClick={disconnect}
           className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-500"
           title="Disconnect wallet"
@@ -78,6 +90,8 @@ export function AccountPage() {
           <LogOutIcon size={18} />
         </button>
       </div>
+
+      <EditProfileModal open={editProfileOpen} onClose={() => setEditProfileOpen(false)} />
 
       {/* Savings Overview Donut */}
       <div className="rounded-2xl bg-white p-4 shadow-sm">

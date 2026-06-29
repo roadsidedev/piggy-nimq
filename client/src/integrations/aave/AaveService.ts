@@ -1,5 +1,5 @@
 import { type Address, type PublicClient, type TransactionReceipt, parseUnits, formatUnits, maxUint256 } from "viem";
-import { AAVE_ABI, ERC20_ABI, INTEREST_RATE_MODE, POLYGON_MAINNET, POLYGON_AMOY } from "./constants";
+import { AAVE_ABI, ERC20_ABI, INTEREST_RATE_MODE, POLYGON_MAINNET, BASE_SEPOLIA } from "./constants";
 import { createPublicViemClient, createWalletViemClient } from "./client";
 
 export interface ReserveData {
@@ -28,11 +28,11 @@ export class AaveService {
   }
 
   getPoolAddress(): Address {
-    return this.useTestnet ? POLYGON_AMOY.AAVE_POOL as Address : POLYGON_MAINNET.AAVE_POOL as Address;
+    return this.useTestnet ? BASE_SEPOLIA.AAVE_POOL as Address : POLYGON_MAINNET.AAVE_POOL as Address;
   }
 
   getUsdcAddress(): Address {
-    return this.useTestnet ? POLYGON_AMOY.USDC as Address : POLYGON_MAINNET.USDC as Address;
+    return this.useTestnet ? BASE_SEPOLIA.USDC as Address : POLYGON_MAINNET.USDC as Address;
   }
 
   async getUsdcBalance(userAddress: Address): Promise<bigint> {

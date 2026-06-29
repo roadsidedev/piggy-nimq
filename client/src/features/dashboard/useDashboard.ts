@@ -6,61 +6,83 @@ import { useBorrowStore } from "@/stores/borrowStore";
 import { useGoalsStore } from "@/stores/goalsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import { aaveService } from "@/integrations/aave";
+import { piggyVaultService } from "@/integrations/contracts";
 
 export function useDashboard() {
   const address = useWalletStore((s) => s.address);
-  const { balance, yieldEnabled, apy, setBalance, setApy } = useVaultStore();
+  const { balance, yieldEnabled, apy, setBalance, setApy, setYieldEnabled, setYieldAmount } = useVaultStore();
   const { borrowedAmount, healthFactor, setBorrowedAmount, setHealthFactor } = useBorrowStore();
   const goals = useGoalsStore((s) => s.goals);
   const challenges = useChallengesStore((s) => s.challenges);
 
-  const { data: usdcBalance, isLoading: balanceLoading } = useQuery({
-    queryKey: ["usdcBalance", address],
+  // Read user's vault position
+  const { data: vaultPosition, isLoading: vaultLoading } = useQuery({
+    queryKey: ["vaultPosition", address],
     queryFn: async () => {
       if (!address) return null;
-      const decimals = await aaveService.getDecimals();
-      const raw = await aaveService.getUsdcBalance(address);
-      return aaveService.fromUSDC(raw, decimals);
+      return piggyVaultService.getUserPosition(address);
     },
     enabled: !!address,
     refetchInterval: 30000,
   });
 
-  const { data: accountData, isLoading: accountLoading } = useQuery({
-    queryKey: ["accountData", address],
-    queryFn: () => aaveService.getUserAccountData(address!),
-    enabled: !!address,
-    refetchInterval: 30000,
-  });
-
+  // Read Aave reserve data for APY
   const { data: reserveData, isLoading: reserveLoading } = useQuery({
     queryKey: ["reserveData"],
     queryFn: () => aaveService.getReserveData(),
     refetchInterval: 30000,
   });
 
+  // Sync vault position to store
   useEffect(() => {
-    if (usdcBalance) setBalance(usdcBalance);
-  }, [usdcBalance, setBalance]);
+    if (!vaultPosition) return;
+    (async () => {
+      const decimals = await piggyVaultService.getDecimals();
+      const totalRaw = vaultPosition.unallocated + vaultPosition.yieldValue;
+      setBalance(piggyVaultService.fromUSDC(totalRaw, decimals));
+
+      // Debt from vault
+      const debtRaw = vaultPosition.debtValue;
+      setBorrowedAmount(piggyVaultService.fromUSDC(debtRaw, decimals));
+
+      // Yield state
+      const hasYield = vaultPosition.yieldValue > 0n;
+      setYieldEnabled(hasYield);
+      if (hasYield) {
+        setYieldAmount(piggyVaultService.fromUSDC(vaultPosition.yieldValue, decimals));
+      }
+    })();
+  }, [vaultPosition, setBalance, setBorrowedAmount, setYieldEnabled, setYieldAmount]);
 
   useEffect(() => {
     if (reserveData) setApy(aaveService.getLiquidityRatePercent(reserveData.liquidityRate));
   }, [reserveData, setApy]);
 
+  // Read health factor from Aave adapter via vault's debt tracking
   useEffect(() => {
-    if (accountData) {
-      const decimals = 6;
-      setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
-      setHealthFactor(Number(accountData.healthFactor) / 1e18);
+    if (!address || !vaultPosition) return;
+    // Health factor comes from Aave's user account data (pooled position)
+    // For display we estimate based on debt/collateral ratio
+    const debtValue = Number(vaultPosition.debtValue);
+    const yieldValue = Number(vaultPosition.yieldValue);
+    if (debtValue > 0 && yieldValue > 0) {
+      const ratio = yieldValue / debtValue;
+      // Rough health factor (actual value depends on Aave's liquidation threshold)
+      const hf = (ratio * 0.75).toFixed(2); // 75% liquidation threshold assumption
+      setHealthFactor(Number(hf));
+    } else if (debtValue === 0 && yieldValue > 0) {
+      setHealthFactor(999); // No debt = infinite health
+    } else {
+      setHealthFactor(0);
     }
-  }, [accountData, setBorrowedAmount, setHealthFactor]);
+  }, [address, vaultPosition, setHealthFactor]);
 
   const monthlyEarnings =
     yieldEnabled && apy > 0 && Number(balance) > 0
       ? ((Number(balance) * apy) / 100 / 12).toFixed(2)
       : "0.00";
 
-  const isLoading = balanceLoading || accountLoading || reserveLoading;
+  const isLoading = vaultLoading || reserveLoading;
 
   return {
     balance,

@@ -1,26 +1,26 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useWallet } from "@/hooks/useWallet";
+import { useProfileStore } from "@/stores/profileStore";
 import { Button, PageSkeleton } from "@/components/common";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { PiggyLogo } from "@/components/common/PiggyLogo";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { registerTabSetter } from "@/hooks/useNavigate";
-import { HomeIcon, VaultIcon, GoalIcon, BorrowIcon, ChallengeIcon, UserIcon } from "@/components/common/Icons";
+import { HomeIcon, VaultIcon, SavingsIcon, BorrowIcon } from "@/components/common/Icons";
+import { Avatar } from "@/components/account/Avatar";
 
 const VaultPage = lazy(() => import("@/features/vault/VaultPage").then((m) => ({ default: m.VaultPage })));
 const BorrowPage = lazy(() => import("@/features/borrow/BorrowPage").then((m) => ({ default: m.BorrowPage })));
-const GoalsPage = lazy(() => import("@/features/goals/GoalsPage").then((m) => ({ default: m.GoalsPage })));
-const ChallengesPage = lazy(() => import("@/features/challenges/ChallengesPage").then((m) => ({ default: m.ChallengesPage })));
+const GrowthPage = lazy(() => import("@/features/growth/GrowthPage").then((m) => ({ default: m.GrowthPage })));
 const AccountPage = lazy(() => import("@/features/account/AccountPage").then((m) => ({ default: m.AccountPage })));
 
-type Tab = "home" | "vault" | "goals" | "borrow" | "challenges" | "account";
+type Tab = "home" | "vault" | "growth" | "borrow" | "account";
 
 const tabs: { id: Tab; label: string; Icon: typeof HomeIcon }[] = [
   { id: "home", label: "Home", Icon: HomeIcon },
   { id: "vault", label: "Vault", Icon: VaultIcon },
-  { id: "goals", label: "Goals", Icon: GoalIcon },
+  { id: "growth", label: "Growth", Icon: SavingsIcon },
   { id: "borrow", label: "Borrow", Icon: BorrowIcon },
-  { id: "challenges", label: "Challenges", Icon: ChallengeIcon },
 ];
 
 function ConnectScreen() {
@@ -58,10 +58,8 @@ function PageContent({ activeTab }: { activeTab: Tab }) {
       return <VaultPage />;
     case "borrow":
       return <BorrowPage />;
-    case "goals":
-      return <GoalsPage />;
-    case "challenges":
-      return <ChallengesPage />;
+    case "growth":
+      return <GrowthPage />;
     case "account":
       return <AccountPage />;
   }
@@ -69,6 +67,7 @@ function PageContent({ activeTab }: { activeTab: Tab }) {
 
 function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (tab: Tab) => void }) {
   const { address } = useWallet();
+  const { username, avatarUrl } = useProfileStore();
   const [prefetched, setPrefetched] = useState(false);
 
   useEffect(() => {
@@ -92,7 +91,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
           onClick={() => onTabChange("account")}
           className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-600 transition-colors hover:bg-green-200"
         >
-          {address ? address.slice(2, 4).toUpperCase() : <UserIcon size={18} />}
+          <Avatar address={address} username={username} avatarUrl={avatarUrl} size="sm" />
         </button>
       </header>
 
@@ -114,8 +113,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
                 const map: Record<string, () => Promise<any>> = {
                   vault: () => import("@/features/vault/VaultPage"),
                   borrow: () => import("@/features/borrow/BorrowPage"),
-                  goals: () => import("@/features/goals/GoalsPage"),
-                  challenges: () => import("@/features/challenges/ChallengesPage"),
+                  growth: () => import("@/features/growth/GrowthPage"),
                   account: () => import("@/features/account/AccountPage"),
                 };
                 map[id]?.();

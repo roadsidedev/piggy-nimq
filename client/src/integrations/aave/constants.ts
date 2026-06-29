@@ -8,6 +8,13 @@ export const POLYGON_MAINNET = {
   AAVE_POOL_DATA_PROVIDER: "0x69eE097F950Dc98eBdA62d8E3A5Bf0b0cA1dF3a1",
 };
 
+export const BASE_SEPOLIA = {
+  CHAIN_ID: 84532,
+  RPC_URL: config.rpc.baseSepolia,
+  AAVE_POOL: "0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27",
+  USDC: "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+};
+
 export const POLYGON_AMOY = {
   CHAIN_ID: 80002,
   RPC_URL: config.rpc.polygonAmoy,
