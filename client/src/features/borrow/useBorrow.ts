@@ -43,7 +43,8 @@ export function useBorrow() {
       setAvailableBorrow(aaveService.fromUSDC(accountData.availableBorrowsBase, decimals));
       setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
     })();
-    setHealthFactor(Number(accountData.healthFactor) / 1e18);
+    const rawHf = Number(accountData.healthFactor) / 1e18;
+    setHealthFactor(!isFinite(rawHf) || rawHf > 999 ? 999 : rawHf);
     setLiquidationThreshold(Number(accountData.currentLiquidationThreshold) / 1e4);
   }, [accountData, setAvailableBorrow, setBorrowedAmount, setHealthFactor, setLiquidationThreshold]);
 

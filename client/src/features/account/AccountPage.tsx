@@ -68,20 +68,20 @@ export function AccountPage() {
           <p className="text-sm font-semibold text-gray-900">
             {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             {address ? "Connected via Nimiq Pay" : ""}
           </p>
         </div>
         <button
           onClick={() => setEditProfileOpen(true)}
-          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-pink-600"
+          className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-sage-600"
           title="Edit profile"
         >
           <PencilIcon size={18} />
         </button>
         <button
           onClick={disconnect}
-          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-500"
+          className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
           title="Disconnect wallet"
         >
           <LogOutIcon size={18} />
@@ -96,7 +96,7 @@ export function AccountPage() {
         {segments.length > 0 ? (
           <DonutChart segments={segments} total={totalSaved} />
         ) : (
-          <p className="py-4 text-center text-sm text-gray-400">No savings yet</p>
+          <p className="py-4 text-center text-sm text-gray-500">No savings yet</p>
         )}
       </div>
 
@@ -109,21 +109,21 @@ export function AccountPage() {
         <div className="mt-3 flex items-center justify-between">
           <div>
             <p className="text-2xl font-bold text-gray-900">${borrowedAmount}</p>
-            <p className="text-xs text-gray-400">Borrowed against vault</p>
+            <p className="text-xs text-gray-500">Borrowed against vault</p>
           </div>
           <div className="flex flex-col items-center">
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold ${
                 healthFactor > 2
-                  ? "bg-green-100 text-green-700"
+                  ? "bg-sage-100 text-sage-700"
                   : healthFactor > 1.5
-                    ? "bg-yellow-100 text-yellow-700"
+                    ? "bg-amber-100 text-amber-700"
                     : "bg-red-100 text-red-700"
               }`}
             >
-              {healthFactor.toFixed(1)}
+              {!isFinite(healthFactor) || healthFactor > 999 ? "999+" : healthFactor.toFixed(1)}
             </div>
-            <span className="mt-1 text-[10px] text-gray-400">Health</span>
+            <span className="mt-1 text-[11px] font-medium text-gray-500">Health</span>
           </div>
         </div>
       </div>
@@ -135,7 +135,7 @@ export function AccountPage() {
           <h3 className="text-sm font-semibold text-gray-900">Active Challenges</h3>
         </div>
         {challenges.length === 0 ? (
-          <p className="mt-2 text-center text-sm text-gray-400">No active challenges</p>
+          <p className="mt-2 text-center text-sm text-gray-500">No active challenges</p>
         ) : (
           <div className="mt-2 flex flex-col gap-2">
             {challenges.slice(0, 3).map((c) => (
