@@ -74,6 +74,31 @@ export class PiggyVaultService {
     }) as Promise<bigint>;
   }
 
+  // ─── Chain helpers ─────────────────────────────────────────────────────
+
+  private async ensureCorrectChain(): Promise<void> {
+    const provider = getEthereumProvider();
+    if (!provider) throw new Error("No EVM provider available");
+
+    const currentChainId = await provider.request({ method: "eth_chainId" }) as string;
+    const targetChainId = `0x${baseSepolia.id.toString(16)}`;
+
+    if (currentChainId === targetChainId) return;
+
+    try {
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: targetChainId }],
+      });
+    } catch (error: unknown) {
+      const err = error as { code?: number };
+      if (err.code === 4902) {
+        throw new Error("Base Sepolia is not available in your wallet. Please add it manually.");
+      }
+      throw error;
+    }
+  }
+
   // ─── Write helpers ─────────────────────────────────────────────────────
 
   private async getAccount(): Promise<Address> {
@@ -90,6 +115,7 @@ export class PiggyVaultService {
   ): Promise<`0x${string}`> {
     const provider = getEthereumProvider();
     if (!provider) throw new Error("No EVM provider available");
+    await this.ensureCorrectChain();
     const account = await this.getAccount();
 
     const walletClient = createWalletClient({
@@ -118,6 +144,7 @@ export class PiggyVaultService {
   async approveUsdc(): Promise<`0x${string}`> {
     const provider = getEthereumProvider();
     if (!provider) throw new Error("No EVM provider available");
+    await this.ensureCorrectChain();
     const account = await this.getAccount();
 
     const walletClient = createWalletClient({
