@@ -5,6 +5,7 @@ import { useBorrowStore } from "@/stores/borrowStore";
 import { useGoalsStore } from "@/stores/goalsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import { useRecurringStore } from "@/stores/recurringStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { walletService } from "@/integrations/wallet";
 import { isNimiqPay, getEthereumProvider, initNimiqSDK, getLanguage, requestId } from "@/integrations/nimiq";
 
@@ -16,6 +17,8 @@ export function useWallet() {
   const resetGoals = useGoalsStore((s) => s.reset);
   const resetChallenges = useChallengesStore((s) => s.reset);
   const resetRecurring = useRecurringStore((s) => s.reset);
+  const fetchProfile = useProfileStore((s) => s.fetchProfile);
+  const resetProfile = useProfileStore((s) => s.reset);
   const [language, setLanguage] = useState<string | undefined>();
   const [nimiqAddress, setNimiqAddress] = useState<string | null>(null);
   const [deviceId, setDeviceId] = useState<string | null>(null);
@@ -43,10 +46,12 @@ export function useWallet() {
       setAddress(profile.address as `0x${string}`);
       const nAddr = walletService.getNimiqAddress();
       if (nAddr) setNimiqAddress(nAddr);
+      // Fetch server-side profile (username, avatar)
+      fetchProfile();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to connect wallet");
     }
-  }, [storeConnect, setProfile, setAddress, setError]);
+  }, [storeConnect, setProfile, setAddress, setError, fetchProfile]);
 
   const handleDisconnect = useCallback(() => {
     walletService.disconnect();
@@ -56,7 +61,8 @@ export function useWallet() {
     resetGoals();
     resetChallenges();
     resetRecurring();
-  }, [disconnect, resetVault, resetBorrow, resetGoals, resetChallenges, resetRecurring]);
+    resetProfile();
+  }, [disconnect, resetVault, resetBorrow, resetGoals, resetChallenges, resetRecurring, resetProfile]);
 
   const requestDeviceId = useCallback(async (reason: string) => {
     try {

@@ -1,4 +1,4 @@
-type Tab = "home" | "vault" | "goals" | "borrow" | "challenges" | "account";
+type Tab = "home" | "vault" | "growth" | "borrow" | "account";
 
 let tabSetter: ((tab: Tab) => void) | null = null;
 let registeredCount = 0;
@@ -20,9 +20,8 @@ export function useNavigate() {
   return {
     goToHome: () => goTo("home"),
     goToVault: () => goTo("vault"),
-    goToGoals: () => goTo("goals"),
+    goToGrowth: () => goTo("growth"),
     goToBorrow: () => goTo("borrow"),
-    goToChallenges: () => goTo("challenges"),
     goToAccount: () => goTo("account"),
   };
 }

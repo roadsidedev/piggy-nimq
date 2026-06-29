@@ -1,15 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useChallenges } from "./useChallenges";
+import { useProfileStore } from "@/stores/profileStore";
 import { Card, Button, Input, Modal } from "@/components/common";
+import { Avatar } from "@/components/account/Avatar";
 
 export function ChallengesPage() {
   const { challenges, createChallenge, joinChallenge, leaveChallenge } = useChallenges();
+  const { profiles, fetchProfiles } = useProfileStore();
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState("");
   const [target, setTarget] = useState("");
   const [frequency, setFrequency] = useState<"daily" | "weekly" | "monthly">("daily");
   const [duration, setDuration] = useState(7);
   const [tab, setTab] = useState<"browse" | "mine">("browse");
+
+  // Fetch profiles for all challenge members
+  useEffect(() => {
+    const allMembers = challenges.flatMap((c) => c.members);
+    if (allMembers.length > 0) {
+      fetchProfiles(allMembers);
+    }
+  }, [challenges, fetchProfiles]);
 
   const handleCreate = () => {
     if (!title || !target) return;
@@ -71,19 +82,30 @@ export function ChallengesPage() {
 
                 <div className="mb-3">
                   <p className="mb-1 text-xs font-medium text-neutral-400">Leaderboard</p>
-                  {sorted.slice(0, 5).map((member, i) => (
-                    <div key={member} className="flex items-center justify-between py-1">
-                      <div className="flex items-center gap-2">
-                        <span className="w-4 text-xs text-neutral-500">#{i + 1}</span>
-                        <span className="text-xs text-white">
-                          {member.slice(0, 6)}...{member.slice(-4)}
+                  {sorted.slice(0, 5).map((member, i) => {
+                    const profile = profiles[member.toLowerCase()];
+                    return (
+                      <div key={member} className="flex items-center justify-between py-1">
+                        <div className="flex items-center gap-2">
+                          <span className="w-4 text-xs text-neutral-500">#{i + 1}</span>
+                          <Avatar
+                            address={member}
+                            username={profile?.username}
+                            avatarUrl={profile?.avatarUrl}
+                            size="sm"
+                          />
+                          <span className="text-xs text-white">
+                            {profile?.username
+                              ? `@${profile.username}`
+                              : `${member.slice(0, 6)}...${member.slice(-4)}`}
+                          </span>
+                        </div>
+                        <span className="text-xs text-neutral-400">
+                          ${c.memberProgress[member] ?? "0"}
                         </span>
                       </div>
-                      <span className="text-xs text-neutral-400">
-                        ${c.memberProgress[member] ?? "0"}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="flex justify-between text-xs">

@@ -6,3 +6,8 @@ dist/
 coverage/
 .vite/
 .agents/
+
+# Hardhat / Foundry artifacts
+packages/contracts/cache/
+packages/contracts/artifacts/
+packages/contracts/typechain-types/

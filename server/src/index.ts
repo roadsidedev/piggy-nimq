@@ -11,6 +11,7 @@ import { challengeRoutes } from "./routes/challenges.js";
 import { recurringRoutes } from "./routes/recurring.js";
 import { transactionRoutes } from "./routes/transactions.js";
 import { analyticsRoutes } from "./routes/analytics.js";
+import { profileRoutes } from "./routes/profile.js";
 
 const app = new Hono()
   .use("*", logger())
@@ -37,6 +38,7 @@ const app = new Hono()
   .route("/challenges", challengeRoutes)
   .route("/recurring", recurringRoutes)
   .route("/transactions", transactionRoutes)
+  .route("/profile", profileRoutes)
   .route("/api", analyticsRoutes)
   .notFound((c) =>
     c.json({ success: false, error: "Not found" }, 404),

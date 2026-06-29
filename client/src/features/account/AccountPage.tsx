@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useWalletStore } from "@/stores/walletStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useBorrowStore } from "@/stores/borrowStore";
 import { useGoalsStore } from "@/stores/goalsStore";
@@ -10,11 +11,14 @@ import { DonutChart } from "@/components/account/DonutChart";
 import { RecurringConfig } from "@/components/account/RecurringConfig";
 import { RecurringModal } from "@/components/account/RecurringModal";
 import { TransactionHistory } from "@/components/vault/TransactionHistory";
-import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon } from "./AccountIcons";
+import { Avatar } from "@/components/account/Avatar";
+import { EditProfileModal } from "@/components/account/EditProfileModal";
+import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon, PencilIcon } from "./AccountIcons";
 import type { RecurringFrequency } from "@/stores/recurringStore";
 
 export function AccountPage() {
   const address = useWalletStore((s) => s.address);
+  const { username, avatarUrl } = useProfileStore();
   const { balance } = useVaultStore();
   const { borrowedAmount, healthFactor } = useBorrowStore();
   const goals = useGoalsStore((s) => s.goals);
@@ -23,6 +27,7 @@ export function AccountPage() {
   const { transactions } = useVaultStore();
   const { disconnect } = useWallet();
   const [recurringModalOpen, setRecurringModalOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const vaultNum = Number(balance) || 0;
   const totalSaved = vaultNum + goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
@@ -59,17 +64,35 @@ export function AccountPage() {
     <div className="flex flex-col gap-4 pb-6">
       {/* Header */}
       <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-pink-100 text-xl font-bold text-pink-600">
-          {address ? address.slice(2, 4).toUpperCase() : "??"}
-        </div>
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-gray-900">
-            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
+        <button
+          onClick={() => setEditProfileOpen(true)}
+          className="relative flex-shrink-0"
+          title="Edit profile"
+        >
+          <Avatar address={address} username={username} avatarUrl={avatarUrl} size="lg" />
+          <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600">
+            <PencilIcon size={10} className="text-white" />
+          </div>
+        </button>
+        <div className="flex-1 min-w-0">
+          {username ? (
+            <p className="text-sm font-semibold text-gray-900 truncate">@{username}</p>
+          ) : (
+            <p className="text-sm font-semibold text-gray-900 truncate">
+              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
+            </p>
+          )}
+          <p className="text-xs text-gray-400 truncate">
+            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
           </p>
-          <p className="text-xs text-gray-400">
-            {address ? "Connected via Nimiq Pay" : ""}
-          </p>
         </div>
+        <button
+          onClick={() => setEditProfileOpen(true)}
+          className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-pink-600"
+          title="Edit profile"
+        >
+          <PencilIcon size={18} />
+        </button>
         <button
           onClick={disconnect}
           className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-red-500"
@@ -78,6 +101,8 @@ export function AccountPage() {
           <LogOutIcon size={18} />
         </button>
       </div>
+
+      <EditProfileModal open={editProfileOpen} onClose={() => setEditProfileOpen(false)} />
 
       {/* Savings Overview Donut */}
       <div className="rounded-2xl bg-white p-4 shadow-sm">

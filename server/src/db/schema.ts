@@ -17,10 +17,15 @@ export const users = pgTable(
     address: text("address").primaryKey(),
     nimiqAddress: text("nimiq_address"),
     displayName: text("display_name"),
+    username: text("username"),
+    avatarUrl: text("avatar_url"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     lastSeenAt: timestamp("last_seen_at").defaultNow().notNull(),
   },
-  (t) => [index("users_nimiq_idx").on(t.nimiqAddress)],
+  (t) => [
+    index("users_nimiq_idx").on(t.nimiqAddress),
+    uniqueIndex("users_username_idx").on(t.username),
+  ],
 );
 
 // ─── Sessions ────────────────────────────────────────────────

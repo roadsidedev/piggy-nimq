@@ -47,10 +47,23 @@ export interface AuthVerifyResponse {
   user: UserProfile;
 }
 
+// ─── Profile Types ─────────────────────────────────────────
+
+export interface UpdateProfileRequest {
+  username?: string;
+  avatarUrl?: string;
+}
+
+export interface CheckUsernameResponse {
+  available: boolean;
+}
+
 export interface UserProfile {
   address: string;
   nimiqAddress?: string;
   displayName?: string;
+  username?: string;
+  avatarUrl?: string;
   createdAt: string;
   lastSeenAt: string;
 }
@@ -109,6 +122,8 @@ export interface ChallengeMember {
   savedAmount: string;
   joinedAt: string;
   displayName?: string;
+  username?: string;
+  avatarUrl?: string;
 }
 
 export interface CreateChallengeRequest {

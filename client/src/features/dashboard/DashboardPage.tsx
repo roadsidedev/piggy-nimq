@@ -27,7 +27,7 @@ function LoadingSkeleton() {
 export function DashboardPage() {
   const { balance, yieldEnabled, apy, isLoading, monthlyEarnings, borrowedAmount, healthFactor, goals, challenges } =
     useDashboard();
-  const { goToVault, goToBorrow, goToGoals, goToChallenges } = useNavigate();
+  const { goToVault, goToBorrow, goToGrowth } = useNavigate();
   const { disableYield } = useVault();
   const [toggleLoading, setToggleLoading] = useState(false);
 
@@ -73,13 +73,13 @@ export function DashboardPage() {
       <QuickActions
         onDeposit={goToVault}
         onBorrow={goToBorrow}
-        onCreateGoal={goToGoals}
-        onJoinChallenge={goToChallenges}
+        onCreateGoal={goToGrowth}
+        onJoinChallenge={goToGrowth}
       />
 
-      <GoalsPreview goals={goals} onNavigate={goToGoals} />
+      <GoalsPreview goals={goals} onNavigate={goToGrowth} />
 
-      <ChallengesPreview challenges={challenges} onNavigate={goToChallenges} />
+      <ChallengesPreview challenges={challenges} onNavigate={goToGrowth} />
     </div>
   );
 }

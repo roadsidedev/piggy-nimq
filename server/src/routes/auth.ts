@@ -160,6 +160,8 @@ app.post(
           address: user?.address ?? normalizedAddress,
           nimiqAddress: user?.nimiqAddress,
           displayName: user?.displayName,
+          username: user?.username,
+          avatarUrl: user?.avatarUrl,
           createdAt: user?.createdAt?.toISOString() ?? new Date().toISOString(),
           lastSeenAt:
             user?.lastSeenAt?.toISOString() ?? new Date().toISOString(),
@@ -189,6 +191,8 @@ app.get("/me", authMiddleware, async (c) => {
       address: user.address,
       nimiqAddress: user.nimiqAddress,
       displayName: user.displayName,
+      username: user.username,
+      avatarUrl: user.avatarUrl,
       createdAt: user.createdAt.toISOString(),
       lastSeenAt: user.lastSeenAt.toISOString(),
     },

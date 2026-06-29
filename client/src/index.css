@@ -18,6 +18,17 @@
   --color-sand-300: #ddd2c4;
   --color-sand-400: #c4b5a2;
   --color-sand-500: #a89880;
+
+  --color-sage-50: #f0f4f1;
+  --color-sage-100: #dce6de;
+  --color-sage-200: #b8ccb9;
+  --color-sage-300: #8fb393;
+  --color-sage-400: #6b9470;
+  --color-sage-500: #4d7a54;
+  --color-sage-600: #3d6343;
+  --color-sage-700: #2d4a32;
+  --color-sage-800: #1e3222;
+  --color-sage-900: #111c13;
 }
 
 html, body, #root {
@@ -39,4 +50,18 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+@keyframes fab-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(77, 122, 84, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(77, 122, 84, 0); }
 }
