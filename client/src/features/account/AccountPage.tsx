@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useWalletStore } from "@/stores/walletStore";
-import { useProfileStore } from "@/stores/profileStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useBorrowStore } from "@/stores/borrowStore";
 import { useGoalsStore } from "@/stores/goalsStore";
@@ -11,14 +10,12 @@ import { DonutChart } from "@/components/account/DonutChart";
 import { RecurringConfig } from "@/components/account/RecurringConfig";
 import { RecurringModal } from "@/components/account/RecurringModal";
 import { TransactionHistory } from "@/components/vault/TransactionHistory";
-import { Avatar } from "@/components/account/Avatar";
 import { EditProfileModal } from "@/components/account/EditProfileModal";
 import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon, PencilIcon } from "./AccountIcons";
 import type { RecurringFrequency } from "@/stores/recurringStore";
 
 export function AccountPage() {
   const address = useWalletStore((s) => s.address);
-  const { username, avatarUrl } = useProfileStore();
   const { balance } = useVaultStore();
   const { borrowedAmount, healthFactor } = useBorrowStore();
   const goals = useGoalsStore((s) => s.goals);
