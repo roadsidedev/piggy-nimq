@@ -45,13 +45,13 @@ export function BorrowedCard({ borrowedAmount, healthFactor }: BorrowedCardProps
 
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm">
-      <p className="text-sm font-medium text-gray-700">Borrowed</p>
+      <p className="text-sm font-medium text-gray-800">Borrowed</p>
       <p className="mt-1 text-2xl font-bold text-gray-900">${borrowedAmount}</p>
       <div className="mt-3 flex justify-center">
         <CircularGauge percentage={gaugePercentage} color={gaugeColor} />
       </div>
-      <p className="mt-1 text-center text-xs text-gray-500">
-        Health Factor {healthFactor.toFixed(2)}
+      <p className="mt-1 text-center text-xs text-gray-600">
+        Health Factor {healthFactor > 99 ? "99+" : healthFactor.toFixed(1)}
       </p>
     </div>
   );

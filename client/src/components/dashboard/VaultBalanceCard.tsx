@@ -21,7 +21,7 @@ export function VaultBalanceCard({ balance, yieldEnabled, apy, earningsToday }: 
             +${earningsToday ?? "0.00"} today (Yield ON &middot; {apy.toFixed(1)}% APY)
           </p>
         ) : (
-          <p className="mt-1 text-sm text-green-500/60">Yield is off</p>
+          <p className="mt-1 text-sm text-green-600">Yield is off</p>
         )}
       </div>
       <div className="absolute -right-2 -top-2 opacity-80">

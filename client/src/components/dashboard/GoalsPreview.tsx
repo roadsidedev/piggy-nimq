@@ -19,7 +19,7 @@ export function GoalsPreview({ goals, onNavigate }: GoalsPreviewProps) {
       </div>
 
       {activeGoals.length === 0 ? (
-        <p className="py-2 text-center text-sm text-gray-400">No active goals</p>
+        <p className="py-2 text-center text-sm text-gray-500">No active goals</p>
       ) : (
         <div className="flex flex-col gap-3">
           {activeGoals.map((goal) => {
@@ -31,7 +31,7 @@ export function GoalsPreview({ goals, onNavigate }: GoalsPreviewProps) {
               <div key={goal.id}>
                 <div className="mb-1 flex items-center justify-between">
                   <span className="text-sm font-medium text-gray-800">{goal.title}</span>
-                  <span className="text-xs text-gray-500">{Math.round(pct)}%</span>
+                  <span className="text-xs font-medium text-gray-600">{Math.round(pct)}%</span>
                 </div>
                 <div className="h-2 w-full overflow-hidden rounded-full bg-gray-100">
                   <div
@@ -39,7 +39,7 @@ export function GoalsPreview({ goals, onNavigate }: GoalsPreviewProps) {
                     style={{ width: `${pct}%` }}
                   />
                 </div>
-                <p className="mt-1 text-xs text-gray-400">
+                <p className="mt-1 text-xs text-gray-500">
                   ${goal.currentAmount} / ${goal.targetAmount}
                 </p>
               </div>

@@ -274,7 +274,7 @@ function GoalCard({
           </span>
           <button
             onClick={() => onDelete(goal.id)}
-            className="text-xs text-gray-400 hover:text-red-400"
+            className="text-xs text-gray-500 hover:text-red-400"
           >
             Delete
           </button>
@@ -289,12 +289,12 @@ function GoalCard({
       </div>
       <div className="mt-1.5 flex items-center justify-between">
         {daysRemaining !== null && !completed && (
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             {daysRemaining === 0 ? "Due today" : `${daysRemaining} day${daysRemaining !== 1 ? "s" : ""} remaining`}
           </p>
         )}
         {goal.targetDate && (
-          <p className={`text-xs ${daysRemaining !== null && !completed ? "" : "text-gray-400"}`}>
+          <p className={`text-xs ${daysRemaining !== null && !completed ? "" : "text-gray-500"}`}>
             Target: {new Date(goal.targetDate).toLocaleDateString()}
           </p>
         )}
@@ -338,9 +338,9 @@ function ChallengeCard({
 
   const rankColor = (i: number) => {
     if (i === 0) return "text-amber-500";
-    if (i === 1) return "text-gray-400";
+    if (i === 1) return "text-gray-500";
     if (i === 2) return "text-orange-400";
-    return "text-gray-400";
+    return "text-gray-500";
   };
 
   return (
@@ -363,7 +363,7 @@ function ChallengeCard({
 
       {sorted.length > 0 && (
         <div className="mb-3">
-          <p className="mb-1.5 text-xs font-medium text-gray-400">Leaderboard</p>
+          <p className="mb-1.5 text-xs font-medium text-gray-500">Leaderboard</p>
           {sorted.slice(0, 5).map((member, i) => {
             const p = profilesMap[member.toLowerCase()];
             const memberAmt = Number(challenge.memberProgress[member] ?? 0);
@@ -413,7 +413,7 @@ function ChallengeCard({
           </button>
           <button
             onClick={() => onLeave(challenge.id)}
-            className="text-gray-400 hover:text-red-400"
+            className="text-gray-500 hover:text-red-400"
           >
             Leave
           </button>
@@ -514,7 +514,7 @@ function ChallengesTab({
       {subTab === "browse" && (
         <div className="relative">
           <svg
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -530,7 +530,7 @@ function ChallengesTab({
             placeholder="Search challenges..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:border-sage-300 focus:outline-none focus:ring-2 focus:ring-sage-200"
+            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 transition-colors focus:border-sage-300 focus:outline-none focus:ring-2 focus:ring-sage-200"
           />
         </div>
       )}
@@ -650,21 +650,14 @@ export function GrowthPage() {
       {/* ── Page Header ── */}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-gray-900">Growth</h1>
-        <div className="flex items-center gap-1.5 rounded-full bg-sage-50 px-3 py-1 ring-1 ring-sage-100">
-          <SparkleIcon size={14} className="text-sage-500" />
-          <span className="text-xs font-medium text-sage-600">
-            {goals.length + challenges.length} active
-          </span>
-        </div>
       </div>
 
       {/* ── Dashboard Summary Card ── */}
       <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-sage-50 to-white shadow-sm ring-1 ring-sage-100">
-        {/* Top section: Tree + Balance */}
+        {/* Top section: Balance + Tree */}
         <div className="flex items-center gap-4 p-5">
-          <SavingsTree balance={totalBalance} size={100} />
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-gray-400 mb-1">Total Growth Balance</p>
+            <p className="text-xs font-medium text-gray-500 mb-1">Total Growth Balance</p>
             <p className="text-3xl font-bold text-gray-900">
               ${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
@@ -674,26 +667,27 @@ export function GrowthPage() {
               </p>
             )}
           </div>
+          <SavingsTree balance={totalBalance} size={100} />
         </div>
 
         {/* Bottom metrics strip */}
         <div className="grid grid-cols-3 border-t border-sage-100 bg-white/60 px-5 py-3">
           <div className="flex flex-col items-center gap-1">
-            <GoalIcon size={14} className="text-sage-400" />
-            <p className="text-lg font-bold text-sage-600">{goals.length}</p>
-            <p className="text-[10px] font-medium text-gray-400 uppercase">Goals</p>
+            <GoalIcon size={14} className="text-sage-500" />
+            <p className="text-lg font-bold text-sage-700">{goals.length}</p>
+            <p className="text-[11px] font-medium text-gray-500 uppercase">Goals</p>
           </div>
           <div className="flex flex-col items-center gap-1 border-x border-sage-100">
-            <TrophyIcon size={14} className="text-sage-400" />
-            <p className="text-lg font-bold text-sage-600">{challenges.length}</p>
-            <p className="text-[10px] font-medium text-gray-400 uppercase">Challenges</p>
+            <TrophyIcon size={14} className="text-sage-500" />
+            <p className="text-lg font-bold text-sage-700">{challenges.length}</p>
+            <p className="text-[11px] font-medium text-gray-500 uppercase">Challenges</p>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <FlameIcon size={14} className="text-orange-400" />
-            <p className="text-lg font-bold text-sage-600">
+            <FlameIcon size={14} className="text-orange-500" />
+            <p className="text-lg font-bold text-sage-700">
               {challenges.reduce((max, c) => Math.max(max, c.streak), 0)}
             </p>
-            <p className="text-[10px] font-medium text-gray-400 uppercase">Best Streak</p>
+            <p className="text-[11px] font-medium text-gray-500 uppercase">Best Streak</p>
           </div>
         </div>
       </div>

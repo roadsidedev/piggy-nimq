@@ -19,7 +19,7 @@ export function ChallengesPreview({ challenges, onNavigate }: ChallengesPreviewP
       </div>
 
       {!topChallenge ? (
-        <p className="py-2 text-center text-sm text-gray-400">No active challenges</p>
+        <p className="py-2 text-center text-sm text-gray-500">No active challenges</p>
       ) : (
         <div className="flex items-center justify-between">
           <div>

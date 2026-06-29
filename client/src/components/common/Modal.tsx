@@ -73,11 +73,11 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
       <div className="absolute inset-0 bg-black/60" onClick={onClose} />
       <div
         ref={dialogRef}
-        className="relative w-full max-w-md rounded-t-2xl bg-neutral-900 p-6 sm:rounded-2xl"
+        className="relative w-full max-w-md rounded-t-2xl bg-white p-6 sm:rounded-2xl shadow-xl"
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-white">{title}</h2>
-          <button onClick={onClose} className="text-neutral-400 hover:text-white" aria-label="Close">
+          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-700" aria-label="Close">
             ✕
           </button>
         </div>

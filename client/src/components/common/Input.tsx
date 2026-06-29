@@ -10,16 +10,16 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="flex flex-col gap-1.5">
         {label ? (
-          <label className="text-sm font-medium text-neutral-300">{label}</label>
+          <label className="text-sm font-medium text-gray-700">{label}</label>
         ) : null}
         <input
           ref={ref}
-          className={`rounded-lg border bg-neutral-800 px-3 py-2.5 text-sm text-white placeholder-neutral-500 transition-colors focus:outline-none focus:ring-2 focus:ring-green-600 ${
-            error ? "border-red-500" : "border-neutral-700"
+          className={`rounded-lg border bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 transition-colors focus:outline-none focus:ring-2 focus:ring-sage-300 ${
+            error ? "border-red-400" : "border-gray-200"
           } ${className}`}
           {...props}
         />
-        {error ? <span className="text-xs text-red-400">{error}</span> : null}
+        {error ? <span className="text-xs text-red-500">{error}</span> : null}
       </div>
     );
   },
