@@ -71,15 +71,15 @@ export function YieldPanel({
   // ─── Active State: yield is on and amount is set ────────────
   if (yieldEnabled && yieldAmount !== "0.00" && !expanded) {
     return (
-      <div className="rounded-xl border border-green-700 bg-green-900/30 p-4">
+      <div className="rounded-xl border border-green-600 bg-green-100 p-4">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-white">Yield Active</p>
-            <p className="text-xs text-green-400">
+            <p className="text-sm font-medium text-green-900">Yield Active</p>
+            <p className="text-xs text-green-700">
               ${yieldAmount} earning {apy.toFixed(2)}% APY
             </p>
             {Number(earnings) > 0 && (
-              <p className="text-xs text-green-500">
+              <p className="text-xs text-green-600">
                 ${earnings} earned so far
               </p>
             )}
@@ -112,7 +112,7 @@ export function YieldPanel({
       <div
         className={`rounded-xl border p-4 transition-colors ${
           expanded
-            ? "border-green-700 bg-green-900/20"
+            ? "border-green-600 bg-green-100"
             : "border-neutral-800 bg-neutral-900"
         }`}
       >
@@ -123,7 +123,7 @@ export function YieldPanel({
             className="flex w-full items-center justify-between"
           >
             <div className="text-left">
-              <p className="text-sm font-medium text-white">Yield</p>
+              <p className="text-sm font-medium text-green-900">Yield</p>
               <p className="text-xs text-neutral-400">
                 Earn {apy > 0 ? `${apy.toFixed(2)}% APY` : "yield"} on idle USDC
               </p>
@@ -136,7 +136,7 @@ export function YieldPanel({
           // Full input panel
           <div className="flex flex-col gap-4">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-green-900">
                 How much do you want earning yield?
               </p>
               <button
@@ -179,18 +179,18 @@ export function YieldPanel({
                 step="1"
                 value={sliderPercent}
                 onChange={(e) => handleSliderChange(Number(e.target.value))}
-                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-neutral-700 accent-green-500
+                className="w-full h-2 rounded-full appearance-none cursor-pointer bg-neutral-700 accent-green-600
                   [&::-webkit-slider-thumb]:appearance-none
                   [&::-webkit-slider-thumb]:h-5
                   [&::-webkit-slider-thumb]:w-5
                   [&::-webkit-slider-thumb]:rounded-full
-                  [&::-webkit-slider-thumb]:bg-green-500
+                  [&::-webkit-slider-thumb]:bg-green-600
                   [&::-webkit-slider-thumb]:shadow-lg
-                  [&::-webkit-slider-thumb]:shadow-green-500/30
+                  [&::-webkit-slider-thumb]:shadow-green-600/30
                   [&::-moz-range-thumb]:h-5
                   [&::-moz-range-thumb]:w-5
                   [&::-moz-range-thumb]:rounded-full
-                  [&::-moz-range-thumb]:bg-green-500
+                  [&::-moz-range-thumb]:bg-green-600
                   [&::-moz-range-thumb]:border-0"
               />
               <div className="flex justify-between text-xs text-neutral-500">

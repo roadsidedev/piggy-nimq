@@ -34,7 +34,7 @@ export function AccountPage() {
 
   const goalColors: string[] = ["#8b5cf6", "#06b6d4", "#f59e0b", "#10b981", "#ef4444"];
   const segments = [
-    { label: "Vault", value: vaultNum, color: "#ec4899" },
+    { label: "Vault", value: vaultNum, color: "#38761d" },
     ...goals.map((g, i) => ({
       label: g.title,
       value: Number(g.currentAmount),
@@ -64,26 +64,15 @@ export function AccountPage() {
     <div className="flex flex-col gap-4 pb-6">
       {/* Header */}
       <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
-        <button
-          onClick={() => setEditProfileOpen(true)}
-          className="relative flex-shrink-0"
-          title="Edit profile"
-        >
-          <Avatar address={address} username={username} avatarUrl={avatarUrl} size="lg" />
-          <div className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-pink-600">
-            <PencilIcon size={10} className="text-white" />
-          </div>
-        </button>
-        <div className="flex-1 min-w-0">
-          {username ? (
-            <p className="text-sm font-semibold text-gray-900 truncate">@{username}</p>
-          ) : (
-            <p className="text-sm font-semibold text-gray-900 truncate">
-              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
-            </p>
-          )}
-          <p className="text-xs text-gray-400 truncate">
-            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : ""}
+        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-xl font-bold text-green-600">
+          {address ? address.slice(2, 4).toUpperCase() : "??"}
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-gray-900">
+            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
+          </p>
+          <p className="text-xs text-gray-400">
+            {address ? "Connected via Nimiq Pay" : ""}
           </p>
         </div>
         <button

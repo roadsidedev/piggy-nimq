@@ -26,7 +26,7 @@ export function RecurringConfig({ schedules, onAdd, onDelete, onTogglePause }: R
           <RepeatIcon size={18} className="text-gray-600" />
           <h3 className="text-sm font-semibold text-gray-900">Recurring Savings</h3>
         </div>
-        <button onClick={onAdd} className="text-xs font-medium text-pink-600">
+        <button onClick={onAdd} className="text-xs font-medium text-green-600">
           + Add
         </button>
       </div>

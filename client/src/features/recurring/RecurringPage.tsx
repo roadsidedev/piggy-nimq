@@ -83,7 +83,7 @@ export function RecurringPage() {
                 onClick={() => setFrequency("weekly")}
                 className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
                   frequency === "weekly"
-                    ? "bg-pink-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-neutral-800 text-neutral-400"
                 }`}
               >
@@ -93,7 +93,7 @@ export function RecurringPage() {
                 onClick={() => setFrequency("monthly")}
                 className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors ${
                   frequency === "monthly"
-                    ? "bg-pink-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-neutral-800 text-neutral-400"
                 }`}
               >

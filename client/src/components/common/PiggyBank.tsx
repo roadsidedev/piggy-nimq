@@ -11,16 +11,13 @@ export function PiggyBank({ size = 120, className = "" }: PiggyBankProps) {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      // Reset coin
       setCoinY(-40);
       setCoinOpacity(0);
       
-      // Start animation after a short delay
       setTimeout(() => {
         setCoinOpacity(1);
-        setCoinY(60); // Drop into slot
+        setCoinY(60); 
         
-        // Fade out as it enters
         setTimeout(() => {
           setCoinOpacity(0);
         }, 600);
@@ -48,7 +45,7 @@ export function PiggyBank({ size = 120, className = "" }: PiggyBankProps) {
         <text x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" fill="#B45309" fontSize="20" fontWeight="bold">$</text>
       </svg>
 
-      {/* Piggy Body (New Logo Style) */}
+      {/* Piggy Body (Refined Style) */}
       <svg
         width={size}
         height={size}
@@ -59,13 +56,13 @@ export function PiggyBank({ size = 120, className = "" }: PiggyBankProps) {
       >
         {/* 3D Shadow */}
         <path
-          d="M105 55 C65 55, 35 85, 35 120 C35 155, 65 185, 105 185 C145 185, 175 155, 175 120 C175 85, 145 55, 105 55Z"
+          d="M108 58 C68 58, 38 88, 38 123 C38 158, 68 188, 108 188 C148 188, 178 158, 178 123 C178 88, 148 58, 108 58Z"
           fill="black"
         />
-        <rect x="70" y="173" width="16" height="18" rx="4" fill="black" />
-        <rect x="125" y="173" width="16" height="18" rx="4" fill="black" />
+        <rect x="75" y="178" width="20" height="20" rx="6" fill="black" />
+        <rect x="130" y="178" width="20" height="20" rx="6" fill="black" />
         
-        {/* Main Body (Thick Outline) */}
+        {/* Main Body */}
         <path
           d="M100 50 C60 50, 30 80, 30 115 C30 150, 60 180, 100 180 C140 180, 170 150, 170 115 C170 80, 140 50, 100 50Z"
           fill="black"
@@ -73,37 +70,37 @@ export function PiggyBank({ size = 120, className = "" }: PiggyBankProps) {
         
         {/* White Body Fill */}
         <path
-          d="M100 58 C68 58, 42 84, 42 115 C42 146, 68 172, 100 172 C132 172, 158 146, 158 115 C158 84, 132 58, 100 58Z"
+          d="M100 60 C70 60, 44 86, 44 115 C44 144, 70 170, 100 170 C130 170, 156 144, 156 115 C156 86, 130 60, 100 60Z"
           fill="white"
         />
 
-        {/* Ear (Main) */}
+        {/* Ear */}
         <path
           d="M75 60 L65 35 L85 50 Z"
           fill="black"
         />
         <path
-          d="M75 64 L69 44 L81 56 Z"
+          d="M75 66 L69 46 L81 58 Z"
           fill="white"
         />
 
         {/* Coin slot */}
         <path
-          d="M90 75 Q105 68, 120 75"
+          d="M85 78 Q105 68, 125 78"
           stroke="black"
-          strokeWidth="10"
+          strokeWidth="12"
           strokeLinecap="round"
           fill="none"
         />
 
         {/* Eye */}
-        <circle cx="75" cy="115" r="7" fill="black" />
+        <circle cx="75" cy="115" r="9" fill="black" />
 
         {/* Tail */}
         <path
           d="M168 120 Q180 115, 178 105 Q176 95, 185 98"
           stroke="black"
-          strokeWidth="8"
+          strokeWidth="10"
           strokeLinecap="round"
           fill="none"
         />
@@ -116,11 +113,11 @@ export function PiggyBank({ size = 120, className = "" }: PiggyBankProps) {
         />
 
         {/* Legs */}
-        <rect x="65" y="168" width="16" height="18" rx="4" fill="black" />
-        <rect x="69" y="168" width="8" height="14" rx="2" fill="white" />
+        <rect x="65" y="168" width="20" height="20" rx="6" fill="black" />
+        <rect x="70" y="168" width="10" height="14" rx="3" fill="white" />
         
-        <rect x="120" y="168" width="16" height="18" rx="4" fill="black" />
-        <rect x="124" y="168" width="8" height="14" rx="2" fill="white" />
+        <rect x="120" y="168" width="20" height="20" rx="6" fill="black" />
+        <rect x="125" y="168" width="10" height="14" rx="3" fill="white" />
       </svg>
     </div>
   );

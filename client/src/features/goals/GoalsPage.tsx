@@ -7,7 +7,7 @@ function ProgressBar({ current, target }: { current: number; target: number }) {
   return (
     <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-neutral-800">
       <div
-        className="h-full rounded-full bg-pink-600 transition-all"
+        className="h-full rounded-full bg-green-600 transition-all"
         style={{ width: `${pct}%` }}
       />
     </div>
