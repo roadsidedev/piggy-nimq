@@ -10,7 +10,7 @@ export function Card({ children, className = "", onClick }: CardProps) {
   return (
     <div
       onClick={onClick}
-      className={`rounded-xl border border-neutral-800 bg-neutral-900 p-4 ${onClick ? "cursor-pointer" : ""} ${className}`}
+      className={`rounded-xl border border-gray-200 bg-white p-4 shadow-sm ${onClick ? "cursor-pointer" : ""} ${className}`}
     >
       {children}
     </div>
@@ -18,9 +18,9 @@ export function Card({ children, className = "", onClick }: CardProps) {
 }
 
 export function CardTitle({ children }: { children: ReactNode }) {
-  return <h3 className="text-sm font-medium text-neutral-400">{children}</h3>;
+  return <h3 className="text-sm font-medium text-gray-600">{children}</h3>;
 }
 
 export function CardValue({ children }: { children: ReactNode }) {
-  return <p className="text-2xl font-semibold text-white">{children}</p>;
+  return <p className="text-2xl font-semibold text-gray-900">{children}</p>;
 }

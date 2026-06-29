@@ -96,9 +96,8 @@ export function WithdrawModal({
   return (
     <Modal open={open} onClose={onClose} title="Withdraw">
       <div className="flex flex-col gap-4">
-        {/* Source Selection */}
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium text-neutral-300">
+          <label className="text-sm font-medium text-gray-700">
             Withdraw from
           </label>
           <div className="grid grid-cols-2 gap-2">
@@ -113,19 +112,21 @@ export function WithdrawModal({
                   }
                 }}
                 disabled={source.disabled}
-                className={`rounded-lg border p-3 text-left transition-colors ${
+                className={`rounded-xl border-2 p-3 text-left transition-all ${
                   source.disabled
-                    ? "cursor-not-allowed border-neutral-800 bg-neutral-900/50 opacity-40"
+                    ? "cursor-not-allowed border-gray-100 bg-gray-50 opacity-40"
                     : selectedSource === source.id
-                      ? "border-green-600 bg-green-900/20"
-                      : "border-neutral-700 bg-neutral-800 hover:border-neutral-600"
+                      ? "border-sage-500 bg-sage-50 shadow-sm ring-1 ring-sage-200"
+                      : "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm"
                 }`}
               >
-                <p className="text-sm font-medium text-white">{source.label}</p>
-                <p className="text-xs text-neutral-400">{source.description}</p>
+                <p className={`text-sm font-semibold ${selectedSource === source.id ? "text-sage-800" : "text-gray-800"}`}>
+                  {source.label}
+                </p>
+                <p className="text-xs text-gray-500">{source.description}</p>
                 <p
-                  className={`mt-1 text-sm font-semibold ${
-                    Number(source.balance) > 0 ? "text-green-400" : "text-neutral-500"
+                  className={`mt-1 text-sm font-bold ${
+                    Number(source.balance) > 0 ? (selectedSource === source.id ? "text-sage-600" : "text-sage-500") : "text-gray-400"
                   }`}
                 >
                   ${source.balance}
@@ -135,7 +136,6 @@ export function WithdrawModal({
           </div>
         </div>
 
-        {/* Amount Input */}
         <div className="relative">
           <Input
             label="Amount (USDC)"
@@ -153,27 +153,24 @@ export function WithdrawModal({
           {maxForSource > 0 && (
             <button
               onClick={handleMax}
-              className="absolute right-3 top-[38px] rounded bg-green-600 px-2 py-0.5 text-xs font-medium text-white transition-colors hover:bg-green-700"
+              className="absolute right-3 top-[38px] rounded-lg bg-sage-500 px-2.5 py-0.5 text-xs font-semibold text-white transition-colors hover:bg-sage-600"
             >
               MAX
             </button>
           )}
         </div>
 
-        {/* Balance info */}
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-gray-500">
           Available: {maxForSource.toFixed(2)} USDC
         </p>
 
-        {/* Error */}
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-500 font-medium">{error}</p>}
 
-        {/* Withdraw Button */}
         <Button
           onClick={handleWithdraw}
           loading={loading}
-          variant="secondary"
           size="lg"
+          className="w-full"
         >
           Withdraw
         </Button>

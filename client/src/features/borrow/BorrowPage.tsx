@@ -57,19 +57,19 @@ export function BorrowPage() {
         <CardTitle>Current Loan</CardTitle>
         <CardValue>${borrowedAmount}</CardValue>
         <div className="mt-2 flex justify-between text-sm">
-          <span className="text-neutral-400">Health Factor</span>
-          <span className={healthFactor > 1.5 ? "text-green-400" : "text-red-400"}>
-            {healthFactor.toFixed(2)}
+          <span className="text-gray-500">Health Factor</span>
+          <span className={healthFactor > 1.5 ? "text-sage-600" : "text-red-500"}>
+            {healthFactor > 99 ? "99+" : healthFactor.toFixed(2)}
           </span>
         </div>
       </Card>
 
       {txError ? (
-        <p className="text-sm text-red-400">{txError}</p>
+        <p className="text-sm text-red-500">{txError}</p>
       ) : null}
 
-      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-        <h3 className="mb-3 text-sm font-medium text-neutral-400">Borrow</h3>
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <h3 className="mb-3 text-sm font-semibold text-gray-700">Borrow</h3>
         <div className="flex flex-col gap-3">
           <Input
             type="number"
@@ -83,8 +83,8 @@ export function BorrowPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-neutral-800 bg-neutral-900 p-4">
-        <h3 className="mb-3 text-sm font-medium text-neutral-400">Repay</h3>
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <h3 className="mb-3 text-sm font-semibold text-gray-700">Repay</h3>
         <div className="flex flex-col gap-3">
           <Input
             type="number"
