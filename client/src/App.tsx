@@ -120,13 +120,13 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
               }}
               className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 transition-colors ${
                 activeTab === id
-                  ? "text-sage-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "text-sage-700"
+                  : "text-gray-600 hover:text-gray-800"
               }`}
               aria-current={activeTab === id ? "page" : undefined}
             >
               <Icon size={22} />
-              <span className="text-[11px] font-medium">{label}</span>
+              <span className="text-[11px] font-semibold">{label}</span>
             </button>
           ))}
         </div>

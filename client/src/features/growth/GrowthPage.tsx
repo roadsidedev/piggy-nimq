@@ -653,11 +653,11 @@ export function GrowthPage() {
       </div>
 
       {/* ── Dashboard Summary Card ── */}
-      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-sage-50 to-white shadow-sm ring-1 ring-sage-100">
+      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-sage-50 to-white shadow-md ring-1 ring-sage-200">
         {/* Top section: Balance + Tree */}
         <div className="flex items-center gap-4 p-5">
           <div className="flex-1 min-w-0">
-            <p className="text-xs font-medium text-gray-500 mb-1">Total Growth Balance</p>
+            <p className="text-xs font-semibold text-gray-600 mb-1">Total Growth Balance</p>
             <p className="text-3xl font-bold text-gray-900">
               ${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </p>
@@ -671,40 +671,40 @@ export function GrowthPage() {
         </div>
 
         {/* Bottom metrics strip */}
-        <div className="grid grid-cols-3 border-t border-sage-100 bg-white/60 px-5 py-3">
+        <div className="grid grid-cols-3 border-t border-sage-200 bg-white/60 px-5 py-3">
           <div className="flex flex-col items-center gap-1">
-            <GoalIcon size={14} className="text-sage-500" />
-            <p className="text-lg font-bold text-sage-700">{goals.length}</p>
-            <p className="text-[11px] font-medium text-gray-500 uppercase">Goals</p>
+            <GoalIcon size={14} className="text-sage-600" />
+            <p className="text-lg font-bold text-sage-800">{goals.length}</p>
+            <p className="text-[11px] font-semibold text-gray-600 uppercase">Goals</p>
           </div>
-          <div className="flex flex-col items-center gap-1 border-x border-sage-100">
-            <TrophyIcon size={14} className="text-sage-500" />
-            <p className="text-lg font-bold text-sage-700">{challenges.length}</p>
-            <p className="text-[11px] font-medium text-gray-500 uppercase">Challenges</p>
+          <div className="flex flex-col items-center gap-1 border-x border-sage-200">
+            <TrophyIcon size={14} className="text-sage-600" />
+            <p className="text-lg font-bold text-sage-800">{challenges.length}</p>
+            <p className="text-[11px] font-semibold text-gray-600 uppercase">Challenges</p>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <FlameIcon size={14} className="text-orange-500" />
-            <p className="text-lg font-bold text-sage-700">
+            <FlameIcon size={14} className="text-orange-600" />
+            <p className="text-lg font-bold text-sage-800">
               {challenges.reduce((max, c) => Math.max(max, c.streak), 0)}
             </p>
-            <p className="text-[11px] font-medium text-gray-500 uppercase">Best Streak</p>
+            <p className="text-[11px] font-semibold text-gray-600 uppercase">Best Streak</p>
           </div>
         </div>
       </div>
 
       {/* ── Segmented Control ── */}
-      <div className="relative flex gap-1 rounded-xl bg-gray-100 p-1">
+      <div className="relative flex gap-1 rounded-xl bg-gray-200/70 p-1">
         {/* Sliding indicator */}
         <div
-          className="absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-lg bg-sage-500 shadow-sm transition-transform duration-300 ease-out"
+          className="absolute top-1 bottom-1 w-[calc(50%-2px)] rounded-lg bg-sage-600 shadow-sm transition-transform duration-300 ease-out"
           style={{
             transform: activeTab === "challenges" ? "translateX(calc(100% + 2px))" : "translateX(0)",
           }}
         />
         <button
           onClick={() => setActiveTab("goals")}
-          className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-colors duration-200 ${
-            activeTab === "goals" ? "text-white" : "text-gray-500 hover:text-gray-700"
+          className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-semibold transition-colors duration-200 ${
+            activeTab === "goals" ? "text-white" : "text-gray-700 hover:text-gray-900"
           }`}
         >
           <GoalIcon size={14} />
@@ -712,8 +712,8 @@ export function GrowthPage() {
         </button>
         <button
           onClick={() => setActiveTab("challenges")}
-          className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-colors duration-200 ${
-            activeTab === "challenges" ? "text-white" : "text-gray-500 hover:text-gray-700"
+          className={`relative z-10 flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-semibold transition-colors duration-200 ${
+            activeTab === "challenges" ? "text-white" : "text-gray-700 hover:text-gray-900"
           }`}
         >
           <TrophyIcon size={14} />
