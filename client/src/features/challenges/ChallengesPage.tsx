@@ -91,7 +91,6 @@ export function ChallengesPage() {
                           <Avatar
                             address={member}
                             username={profile?.username}
-                            avatarUrl={profile?.avatarUrl}
                             size="sm"
                           />
                           <span className="text-xs text-white">

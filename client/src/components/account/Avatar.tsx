@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
+import Identicons from "@nimiq/identicons";
+
 interface AvatarProps {
   address?: string | null;
   username?: string | null;
-  avatarUrl?: string | null;
   size?: "sm" | "md" | "lg";
   className?: string;
 }
@@ -22,13 +24,25 @@ function getInitials(address?: string | null, username?: string | null): string 
   return "??";
 }
 
-export function Avatar({ address, username, avatarUrl, size = "md", className = "" }: AvatarProps) {
+export function Avatar({ address, username, size = "md", className = "" }: AvatarProps) {
   const sizeClass = sizeMap[size];
+  const [identiconUrl, setIdenticonUrl] = useState<string | null>(null);
 
-  if (avatarUrl) {
+  useEffect(() => {
+    if (address) {
+      let cancelled = false;
+      Identicons.toDataUrl(address).then((url) => {
+        if (!cancelled) setIdenticonUrl(url);
+      });
+      return () => { cancelled = true; };
+    }
+    setIdenticonUrl(null);
+  }, [address]);
+
+  if (identiconUrl) {
     return (
       <img
-        src={avatarUrl}
+        src={identiconUrl}
         alt={username ?? "User avatar"}
         className={`${sizeClass} rounded-full object-cover ring-2 ring-white ${className}`}
       />

@@ -328,7 +328,7 @@ function ChallengeCard({
     memberProgress: Record<string, string>;
     streak: number;
   };
-  profilesMap: Record<string, { username: string | null; avatarUrl: string | null }>;
+  profilesMap: Record<string, { username: string | null }>;
   onJoin: (id: string) => void;
   onLeave: (id: string) => void;
 }) {
@@ -380,7 +380,6 @@ function ChallengeCard({
                     <Avatar
                       address={member}
                       username={p?.username ?? undefined}
-                      avatarUrl={p?.avatarUrl ?? undefined}
                       size="sm"
                     />
                     <span className="text-xs text-gray-900">
@@ -464,7 +463,7 @@ function ChallengesTab({
   onLeave,
 }: {
   challenges: ReturnType<typeof useChallenges>["challenges"];
-  profilesMap: Record<string, { username: string | null; avatarUrl: string | null }>;
+  profilesMap: Record<string, { username: string | null }>;
   onJoin: (id: string) => void;
   onLeave: (id: string) => void;
 }) {

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useBorrowStore } from "@/stores/borrowStore";
-import { aaveService } from "@/integrations/aave";
+import { piggyVaultService } from "@/integrations/contracts";
 
 export function useBorrow() {
   const address = useWalletStore((s) => s.address);
@@ -22,36 +22,56 @@ export function useBorrow() {
   } = useBorrowStore();
   const [simulatedBorrow, setSimulatedBorrow] = useState<string>("0");
 
-  const { data: accountData } = useQuery({
-    queryKey: ["userAccountData", address],
-    queryFn: () => aaveService.getUserAccountData(address!),
+  const { data: decimals } = useQuery({
+    queryKey: ["decimals"],
+    queryFn: () => piggyVaultService.getDecimals(),
+    enabled: !!address,
+  });
+
+  const { data: vaultPosition } = useQuery({
+    queryKey: ["vaultPosition", address],
+    queryFn: () => piggyVaultService.getUserPosition(address!),
     enabled: !!address,
     refetchInterval: 15000,
   });
 
-  const { data: reserveData } = useQuery({
-    queryKey: ["borrowReserveData"],
-    queryFn: () => aaveService.getReserveData(),
+  const { data: maxBorrowable } = useQuery({
+    queryKey: ["maxBorrowable", address],
+    queryFn: () => piggyVaultService.getMaxBorrowable(address!),
     enabled: !!address,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
   });
 
-  useEffect(() => {
-    if (!accountData) return;
-    (async () => {
-      const decimals = await aaveService.getDecimals();
-      setAvailableBorrow(aaveService.fromUSDC(accountData.availableBorrowsBase, decimals));
-      setBorrowedAmount(aaveService.fromUSDC(accountData.totalDebtBase, decimals));
-    })();
-    const rawHf = Number(accountData.healthFactor) / 1e18;
-    setHealthFactor(!isFinite(rawHf) || rawHf > 999 ? 999 : rawHf);
-    setLiquidationThreshold(Number(accountData.currentLiquidationThreshold) / 1e4);
-  }, [accountData, setAvailableBorrow, setBorrowedAmount, setHealthFactor, setLiquidationThreshold]);
+  const LTV_BPS = 5000; // vault's maxUserLTVBps = 50%
+  const LIQUIDATION_HF = 1.5; // vault's minHealthFactorBuffer
 
-  const borrowApy = useMemo(() => {
-    if (!reserveData) return 0;
-    return aaveService.getVariableBorrowRatePercent(reserveData.variableBorrowRate);
-  }, [reserveData]);
+  useEffect(() => {
+    if (!vaultPosition || decimals === undefined) return;
+    const debt = Number(vaultPosition.debtValue);
+    const maxB = maxBorrowable !== undefined ? Number(maxBorrowable) : 0;
+    const maxFromCollateral = debt + maxB;
+
+    setAvailableBorrow(
+      maxBorrowable !== undefined
+        ? piggyVaultService.fromUnits(maxBorrowable, decimals)
+        : "0",
+    );
+    setBorrowedAmount(piggyVaultService.fromUnits(vaultPosition.debtValue, decimals));
+    setLiquidationThreshold(LIQUIDATION_HF);
+
+    // Compute HF from vault's LTV cap: HF = (collateral * liquidationThreshold) / debt
+    // The vault enforces LTV = 50%, so collateral ≈ debt / 0.5 when near cap
+    if (debt > 0 && maxFromCollateral > 0) {
+      const collateralUSD = maxFromCollateral / (LTV_BPS / 1e4);
+      const ltvThreshold = LIQUIDATION_HF;
+      const hf = (collateralUSD * ltvThreshold) / debt;
+      setHealthFactor(isFinite(hf) ? Math.min(hf, 999) : 999);
+    } else {
+      setHealthFactor(debt > 0 ? 1.0 : 999);
+    }
+  }, [vaultPosition, maxBorrowable, decimals, setAvailableBorrow, setBorrowedAmount, setHealthFactor, setLiquidationThreshold]);
+
+  const borrowApy = 5.0; // fixed APY for testnet — reflects MockAaveAdapter
 
   const currentDebt = useMemo(() => {
     const avail = Number(availableBorrow);
@@ -62,12 +82,14 @@ export function useBorrow() {
 
   const simulatedHealthFactor = useMemo(() => {
     const simAmt = Number(simulatedBorrow);
-    const avail = Number(availableBorrow);
-    const hf = healthFactor;
-    if (simAmt <= 0 || avail <= 0 || hf <= 0 || currentDebt <= 0) return hf;
-    const newDebt = currentDebt + simAmt;
-    return (hf * currentDebt) / newDebt;
-  }, [simulatedBorrow, availableBorrow, healthFactor, currentDebt]);
+    const maxB = Number(availableBorrow);
+    const currentB = Number(borrowedAmount);
+    if (simAmt <= 0 || maxB <= 0) return healthFactor;
+    // Simple simulation: HF decreases proportionally as borrow increases relative to max
+    const totalBorrow = currentB + simAmt;
+    const ratio = totalBorrow / (currentB + maxB);
+    return Math.max(1.0, (1 - ratio) * 5 + 1);
+  }, [simulatedBorrow, availableBorrow, borrowedAmount, healthFactor]);
 
   const monthlyInterest = useMemo(() => {
     const simAmt = Number(simulatedBorrow);
@@ -81,14 +103,14 @@ export function useBorrow() {
   const borrow = useCallback(
     async (amount: string) => {
       if (!address) throw new Error("Wallet not connected");
+      if (decimals === undefined) throw new Error("Decimals not loaded");
       setTxStatus("pending");
       setTxError(null);
 
       try {
-        const decimals = await aaveService.getDecimals();
-        const parsed = aaveService.toUSDC(amount, decimals);
+        const parsed = piggyVaultService.toUnits(amount, decimals);
         setTxStatus("confirming");
-        const hash = await aaveService.borrowWithConfirm(parsed, address);
+        const hash = await piggyVaultService.borrow(parsed);
         setTxStatus("confirmed");
         return hash;
       } catch (err) {
@@ -98,20 +120,20 @@ export function useBorrow() {
         throw err;
       }
     },
-    [address, setTxStatus, setTxError],
+    [address, decimals, setTxStatus, setTxError],
   );
 
   const repay = useCallback(
     async (amount: string) => {
       if (!address) throw new Error("Wallet not connected");
+      if (decimals === undefined) throw new Error("Decimals not loaded");
       setTxStatus("pending");
       setTxError(null);
 
       try {
-        const decimals = await aaveService.getDecimals();
-        const parsed = aaveService.toUSDC(amount, decimals);
+        const parsed = piggyVaultService.toUnits(amount, decimals);
         setTxStatus("confirming");
-        const hash = await aaveService.repayWithConfirm(parsed, address);
+        const hash = await piggyVaultService.repay(parsed, true);
         setTxStatus("confirmed");
         return hash;
       } catch (err) {
@@ -121,7 +143,7 @@ export function useBorrow() {
         throw err;
       }
     },
-    [address, setTxStatus, setTxError],
+    [address, decimals, setTxStatus, setTxError],
   );
 
   return {

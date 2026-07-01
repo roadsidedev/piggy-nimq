@@ -15,7 +15,6 @@ export type GasStrategy = "native" | "paymaster" | "fallback";
 export interface NimiqProfile {
   name?: string;
   address: string;
-  avatarUrl?: string;
 }
 
 export interface TransactionRecord {
@@ -51,7 +50,6 @@ export interface AuthVerifyResponse {
 
 export interface UpdateProfileRequest {
   username?: string;
-  avatarUrl?: string;
 }
 
 export interface CheckUsernameResponse {
@@ -63,7 +61,6 @@ export interface UserProfile {
   nimiqAddress?: string;
   displayName?: string;
   username?: string;
-  avatarUrl?: string;
   createdAt: string;
   lastSeenAt: string;
 }
@@ -123,7 +120,6 @@ export interface ChallengeMember {
   joinedAt: string;
   displayName?: string;
   username?: string;
-  avatarUrl?: string;
 }
 
 export interface CreateChallengeRequest {

@@ -68,7 +68,7 @@ function PageContent({ activeTab }: { activeTab: Tab }) {
 
 function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (tab: Tab) => void }) {
   const { address } = useWallet();
-  const { username, avatarUrl } = useProfileStore();
+  const { username } = useProfileStore();
   const [prefetched, setPrefetched] = useState(false);
 
   useEffect(() => {
@@ -92,7 +92,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
           onClick={() => onTabChange("account")}
           className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-600 transition-colors hover:bg-green-200"
         >
-          <Avatar address={address} username={username} avatarUrl={avatarUrl} size="sm" />
+          <Avatar address={address} username={username} size="sm" />
         </button>
       </header>
 

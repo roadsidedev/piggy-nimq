@@ -1,7 +1,6 @@
 export interface NimiqProfile {
   name?: string;
   address: string;
-  avatarUrl?: string;
 }
 
 export interface NimiqProvider {

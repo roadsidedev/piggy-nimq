@@ -177,7 +177,6 @@ app.get("/:id", async (c) => {
       joinedAt: challengeMembers.joinedAt,
       displayName: users.displayName,
       username: users.username,
-      avatarUrl: users.avatarUrl,
     })
     .from(challengeMembers)
     .leftJoin(users, eq(challengeMembers.userAddress, users.address))

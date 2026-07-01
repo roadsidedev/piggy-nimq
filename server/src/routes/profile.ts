@@ -15,10 +15,9 @@ const updateProfileSchema = z.object({
     .max(20, "Username must be at most 20 characters")
     .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores")
     .optional(),
-  avatarUrl: z.string().url("Invalid image URL").or(z.literal("")).optional(),
 });
 
-// PATCH /profile — update username and/or avatarUrl
+// PATCH /profile — update username
 app.patch("/", async (c) => {
   const userAddress = c.get("userAddress");
   const body = await c.req.json();
@@ -31,42 +30,36 @@ app.patch("/", async (c) => {
     );
   }
 
-  const { username, avatarUrl } = parsed.data;
-  const updates: Record<string, unknown> = {};
+  const { username } = parsed.data;
 
-  if (username !== undefined) {
-    // Check uniqueness
-    const [existing] = await db
-      .select({ address: users.address })
-      .from(users)
-      .where(eq(users.username, username))
-      .limit(1);
-
-    if (existing && existing.address !== userAddress) {
-      return c.json(
-        { success: false, error: "Username is already taken" },
-        409,
-      );
-    }
-
-    updates.username = username;
-  }
-
-  if (avatarUrl !== undefined) {
-    updates.avatarUrl = avatarUrl === "" ? null : avatarUrl;
-  }
-
-  if (Object.keys(updates).length === 0) {
+  if (!username) {
     return c.json({ success: false, error: "No fields to update" }, 400);
+  }
+
+  // Check uniqueness
+  const [existing] = await db
+    .select({ address: users.address })
+    .from(users)
+    .where(eq(users.username, username))
+    .limit(1);
+
+  if (existing && existing.address !== userAddress) {
+    return c.json(
+      { success: false, error: "Username is already taken" },
+      409,
+    );
   }
 
   await db
     .update(users)
-    .set(updates)
+    .set({ username })
     .where(eq(users.address, userAddress));
 
   const [user] = await db
-    .select()
+    .select({
+      address: users.address,
+      username: users.username,
+    })
     .from(users)
     .where(eq(users.address, userAddress))
     .limit(1);
@@ -76,7 +69,6 @@ app.patch("/", async (c) => {
     data: {
       address: user?.address ?? userAddress,
       username: user?.username ?? null,
-      avatarUrl: user?.avatarUrl ?? null,
     },
   });
 });
@@ -113,7 +105,6 @@ app.get("/:address", async (c) => {
     .select({
       address: users.address,
       username: users.username,
-      avatarUrl: users.avatarUrl,
     })
     .from(users)
     .where(eq(users.address, address))
@@ -124,91 +115,6 @@ app.get("/:address", async (c) => {
   }
 
   return c.json({ success: true, data: user });
-});
-
-// POST /profile/avatar — upload avatar via multipart form data
-app.post("/avatar", async (c) => {
-  const userAddress = c.get("userAddress");
-
-  const body = await c.req.parseBody();
-  const file = body["avatar"];
-
-  if (!file || !(file instanceof File)) {
-    return c.json(
-      { success: false, error: "No image file provided" },
-      400,
-    );
-  }
-
-  // Validate file type
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-  if (!allowedTypes.includes(file.type)) {
-    return c.json(
-      {
-        success: false,
-        error: "Invalid file type. Allowed: JPEG, PNG, GIF, WebP",
-      },
-      400,
-    );
-  }
-
-  // Validate file size (max 5MB)
-  const maxSize = 5 * 1024 * 1024;
-  if (file.size > maxSize) {
-    return c.json(
-      { success: false, error: "File too large. Maximum size: 5MB" },
-      400,
-    );
-  }
-
-  try {
-    // Upload to Cloudinary
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "piggy_pfp");
-    formData.append("folder", "piggy/avatars");
-
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    if (!cloudName) {
-      return c.json(
-        { success: false, error: "Image upload not configured" },
-        500,
-      );
-    }
-
-    const uploadRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-      { method: "POST", body: formData },
-    );
-
-    if (!uploadRes.ok) {
-      const err = await uploadRes.text();
-      console.error("[Cloudinary]", err);
-      return c.json(
-        { success: false, error: "Image upload failed" },
-        500,
-      );
-    }
-
-    const uploadData = (await uploadRes.json()) as { secure_url: string };
-    const avatarUrl = uploadData.secure_url;
-
-    await db
-      .update(users)
-      .set({ avatarUrl })
-      .where(eq(users.address, userAddress));
-
-    return c.json({
-      success: true,
-      data: { avatarUrl },
-    });
-  } catch (err) {
-    console.error("[Avatar Upload]", err);
-    return c.json(
-      { success: false, error: "Image upload failed" },
-      500,
-    );
-  }
 });
 
 export const profileRoutes = app;

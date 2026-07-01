@@ -6,6 +6,8 @@ import { useGoalsStore } from "@/stores/goalsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import { useRecurringStore } from "@/stores/recurringStore";
 import { useWallet } from "@/hooks/useWallet";
+import { useProfileStore } from "@/stores/profileStore";
+import { Avatar } from "@/components/account/Avatar";
 import { DonutChart } from "@/components/account/DonutChart";
 import { RecurringConfig } from "@/components/account/RecurringConfig";
 import { RecurringModal } from "@/components/account/RecurringModal";
@@ -16,6 +18,7 @@ import type { RecurringFrequency } from "@/stores/recurringStore";
 
 export function AccountPage() {
   const address = useWalletStore((s) => s.address);
+  const username = useProfileStore((s) => s.username);
   const { balance } = useVaultStore();
   const { borrowedAmount, healthFactor } = useBorrowStore();
   const goals = useGoalsStore((s) => s.goals);
@@ -61,9 +64,7 @@ export function AccountPage() {
     <div className="flex flex-col gap-4 pb-6">
       {/* Header */}
       <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
-        <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-xl font-bold text-green-600">
-          {address ? address.slice(2, 4).toUpperCase() : "??"}
-        </div>
+        <Avatar address={address} username={username} size="lg" />
         <div className="flex-1">
           <p className="text-sm font-semibold text-gray-900">
             {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}

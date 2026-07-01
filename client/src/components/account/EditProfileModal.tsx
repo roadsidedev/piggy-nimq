@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Modal, Button } from "@/components/common";
 import { Avatar } from "./Avatar";
 import { useProfileStore } from "@/stores/profileStore";
@@ -12,29 +12,22 @@ interface EditProfileModalProps {
 
 export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
   const address = useWalletStore((s) => s.address);
-  const { username: currentUsername, avatarUrl: currentAvatarUrl, updateProfile, uploadAvatar } =
-    useProfileStore();
+  const { username: currentUsername, updateProfile } = useProfileStore();
 
   const [username, setUsername] = useState(currentUsername ?? "");
-  const [avatarUrl, setAvatarUrl] = useState(currentAvatarUrl);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(currentAvatarUrl);
   const [usernameStatus, setUsernameStatus] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const usernameTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Reset state when modal opens
   useEffect(() => {
     if (open) {
       setUsername(currentUsername ?? "");
-      setAvatarUrl(currentAvatarUrl);
-      setPreviewUrl(currentAvatarUrl);
       setUsernameStatus("idle");
       setError(null);
     }
-  }, [open, currentUsername, currentAvatarUrl]);
+  }, [open, currentUsername]);
 
   // Debounced username availability check
   const checkUsername = useCallback(async (value: string) => {
@@ -61,35 +54,6 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
     usernameTimerRef.current = setTimeout(() => checkUsername(value), 400);
   };
 
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Validate size
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be under 5MB");
-      return;
-    }
-
-    // Show local preview immediately
-    const localPreview = URL.createObjectURL(file);
-    setPreviewUrl(localPreview);
-
-    // Upload to server
-    setUploading(true);
-    setError(null);
-    try {
-      const url = await uploadAvatar(file);
-      setAvatarUrl(url);
-      setPreviewUrl(url);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-      setPreviewUrl(currentAvatarUrl);
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleSave = async () => {
     if (!username.trim()) {
       setError("Username is required");
@@ -111,7 +75,7 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
     setSaving(true);
     setError(null);
     try {
-      await updateProfile({ username, avatarUrl: avatarUrl ?? undefined });
+      await updateProfile({ username });
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save profile");
@@ -123,35 +87,9 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
   return (
     <Modal open={open} onClose={onClose} title="Edit Profile">
       <div className="flex flex-col gap-4">
-        {/* Avatar Section */}
+        {/* Avatar Preview */}
         <div className="flex flex-col items-center gap-3">
-          <div className="relative">
-            <Avatar
-              address={address}
-              username={username || currentUsername}
-              avatarUrl={previewUrl}
-              size="lg"
-            />
-            {uploading && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-                <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
-              </div>
-            )}
-          </div>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="text-sm font-medium text-pink-600 hover:text-pink-500 disabled:opacity-50"
-          >
-            {uploading ? "Uploading..." : "Change Photo"}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
+          <Avatar address={address} username={username || currentUsername} size="lg" />
         </div>
 
         {/* Username Section */}
