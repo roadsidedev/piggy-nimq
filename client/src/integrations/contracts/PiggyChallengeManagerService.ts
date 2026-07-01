@@ -1,5 +1,5 @@
 import { type Address, type PublicClient, type TransactionReceipt, createPublicClient, createWalletClient, custom, http } from "viem";
-import { baseSepolia } from "viem/chains";
+import { polygonAmoy } from "viem/chains";
 import { PIGGY_CONTRACTS, PIGGY_CHALLENGE_MANAGER_ABI, RPC_URL } from "./constants";
 import { getEthereumProvider } from "@/integrations/nimiq";
 
@@ -38,7 +38,7 @@ export class PiggyChallengeManagerService {
 
   constructor() {
     this.publicClient = createPublicClient({
-      chain: baseSepolia,
+      chain: polygonAmoy,
       transport: http(RPC_URL),
     }) as unknown as PublicClient;
   }
@@ -117,7 +117,7 @@ export class PiggyChallengeManagerService {
     if (!provider) throw new Error("No EVM provider available");
 
     const currentChainId = await provider.request({ method: "eth_chainId" }) as string;
-    const targetChainId = `0x${baseSepolia.id.toString(16)}`;
+    const targetChainId = `0x${polygonAmoy.id.toString(16)}`;
 
     if (currentChainId === targetChainId) return;
 
@@ -129,7 +129,7 @@ export class PiggyChallengeManagerService {
     } catch (error: unknown) {
       const err = error as { code?: number };
       if (err.code === 4902) {
-        throw new Error("Base Sepolia is not available in your wallet. Please add it manually.");
+        throw new Error("Polygon Amoy is not available in your wallet. Please add it manually.");
       }
       throw error;
     }
@@ -154,7 +154,7 @@ export class PiggyChallengeManagerService {
 
     const walletClient = createWalletClient({
       account,
-      chain: baseSepolia,
+      chain: polygonAmoy,
       transport: custom(provider),
     });
 
@@ -170,7 +170,11 @@ export class PiggyChallengeManagerService {
   }
 
   private async waitForTx(hash: `0x${string}`): Promise<TransactionReceipt> {
-    return this.publicClient.waitForTransactionReceipt({ hash });
+    const receipt = await this.publicClient.waitForTransactionReceipt({ hash });
+    if (receipt.status !== "success") {
+      throw new Error("Transaction reverted on-chain");
+    }
+    return receipt;
   }
 
   async createChallenge(

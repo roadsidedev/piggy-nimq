@@ -6,44 +6,65 @@ async function main() {
   console.log("Deploying with account:", deployer.address);
   console.log("Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)));
 
+  const network = await ethers.provider.getNetwork();
+  const chainId = Number(network.chainId);
+  const isAmoy = chainId === 80002;
+  console.log(`Chain ID: ${chainId} (${isAmoy ? "Polygon Amoy" : chainId === 137 ? "Polygon Mainnet" : "other"})`);
+
   // -----------------------------------------------------------------------
-  // Configuration — set these via hardhat vars or environment
+  // Configuration
   // -----------------------------------------------------------------------
   const config = {
     admin: vars.get("PIGGY_ADMIN", deployer.address),
     operator: vars.get("PIGGY_OPERATOR", deployer.address),
-    asset: vars.get("PIGGY_ASSET", ""),       // Base Sepolia USDC: 0x036CbD53842c5426634e7929541eC2318f3dCF7e
-    aavePool: vars.get("AAVE_POOL", ""),       // Base Sepolia Aave V3 Pool: 0x8bAB6d1b75f19e9eD9fCe8b9BD338844fF79aE27
-    aToken: vars.get("A_TOKEN", ""),           // aUSDC: 0x10F1A9D11CDf50041f3f8cB7191CBE2f31750ACC
-    variableDebtToken: vars.get("VARIABLE_DEBT_TOKEN", ""), // variableDebtUSDC: 0xFB3e85601b7fEb3691bbb8779Ef0E1069E347204
+    asset: vars.get("PIGGY_ASSET", ""),       // If empty, deploys MockERC20 (testnet only)
     maxUserLTVBps: 5000,   // 50%
     minHealthFactorBuffer: ethers.parseEther("1.5"),
   };
 
-  if (!config.asset || !config.aavePool || !config.aToken || !config.variableDebtToken) {
-    console.error("Missing required config. Set PIGGY_ASSET, AAVE_POOL, A_TOKEN, VARIABLE_DEBT_TOKEN");
-    process.exit(1);
+  // -----------------------------------------------------------------------
+  // Step 0: Deploy MockERC20 (USDT) if no asset address provided (testnet)
+  // -----------------------------------------------------------------------
+  let assetAddress: string;
+  let faucetAddress: string | undefined;
+
+  if (config.asset) {
+    console.log(`\n--- Using existing asset at: ${config.asset} ---`);
+    assetAddress = config.asset;
+  } else {
+    console.log("\n--- Deploying MockERC20 (USDT) ---");
+    const MockERC20Factory = await ethers.getContractFactory("MockERC20");
+    const mockUsdt = await MockERC20Factory.deploy("Tether USD", "USDT", 6);
+    await mockUsdt.waitForDeployment();
+    assetAddress = await mockUsdt.getAddress();
+    console.log("Mock USDT deployed at:", assetAddress);
+
+    // Mint 100,000 USDT to deployer for distribution
+    const mintAmount = ethers.parseUnits("100000", 6);
+    await mockUsdt.mint(deployer.address, mintAmount);
+    console.log(`Minted ${ethers.formatUnits(mintAmount, 6)} USDT to deployer`);
+
+    // Deploy Faucet
+    console.log("\n--- Deploying Faucet ---");
+    const FaucetFactory = await ethers.getContractFactory("Faucet");
+    const faucet = await FaucetFactory.deploy(assetAddress);
+    await faucet.waitForDeployment();
+    const faucetAddress = await faucet.getAddress();
+    console.log("Faucet deployed at:", faucetAddress);
   }
 
   // -----------------------------------------------------------------------
-  // Step 1: Deploy AaveV3Adapter (UUPS proxy)
+  // Step 1: Deploy MockAaveAdapter (no real Aave pool needed)
   // -----------------------------------------------------------------------
-  console.log("\n--- Deploying PiggyAaveV3Adapter ---");
-  const AdapterFactory = await ethers.getContractFactory("PiggyAaveV3Adapter");
-  // Temporarily use admin as the vault address in the initializer (ZeroAddress reverts).
-  // We'll update it to the real vault address via setVault() after vault deployment.
-  const TEMP_VAULT = config.admin;
-  const adapter = await upgrades.deployProxy(AdapterFactory, [
-    config.admin,
-    TEMP_VAULT, // placeholder — set to real vault after vault deployment
-    config.aavePool,
-    config.asset,
-    config.aToken,
-    config.variableDebtToken,
-  ], { kind: "uups" });
+  console.log("\n--- Deploying MockAaveAdapter ---");
+  const AdapterFactory = await ethers.getContractFactory("MockAaveAdapter");
+  const adapter = await AdapterFactory.deploy();
   await adapter.waitForDeployment();
   const adapterAddress = await adapter.getAddress();
-  console.log("Adapter proxy:", adapterAddress);
+  console.log("MockAaveAdapter deployed at:", adapterAddress);
+
+  await adapter.setAsset(assetAddress);
+  console.log("Adapter asset set to:", assetAddress);
 
   // -----------------------------------------------------------------------
   // Step 2: Deploy PiggyVault (UUPS proxy)
@@ -53,7 +74,7 @@ async function main() {
   const vault = await upgrades.deployProxy(VaultFactory, [
     config.admin,
     config.operator,
-    config.asset,
+    assetAddress,
     adapterAddress,
     config.maxUserLTVBps,
     config.minHealthFactorBuffer,
@@ -63,10 +84,10 @@ async function main() {
   console.log("Vault proxy:", vaultAddress);
 
   // -----------------------------------------------------------------------
-  // Step 3: Wire adapter back to vault
+  // Step 3: Wire adapter to vault
   // -----------------------------------------------------------------------
   console.log("\n--- Wiring adapter to vault ---");
-  await adapter.connect(deployer).setVault(vaultAddress);
+  await adapter.setVault(vaultAddress);
   console.log("Adapter vault set to:", vaultAddress);
 
   // -----------------------------------------------------------------------
@@ -105,16 +126,27 @@ async function main() {
   // Summary
   // -----------------------------------------------------------------------
   console.log("\n========== DEPLOYMENT SUMMARY ==========");
-  console.log("Network:", await ethers.provider.getNetwork().then(n => n.name));
+  console.log("Network:", network.name);
+  console.log("Chain ID:", chainId);
   console.log("Admin:", config.admin);
   console.log("Operator:", config.operator);
-  console.log("Asset:", config.asset);
-  console.log("Aave Pool:", config.aavePool);
-  console.log("AaveV3Adapter:", adapterAddress);
+  console.log("Asset (USDT):", assetAddress);
+  console.log("MockAaveAdapter:", adapterAddress);
   console.log("PiggyVault:", vaultAddress);
   console.log("PiggyGoalManager:", gmAddress);
   console.log("PiggyChallengeManager:", cmAddress);
+  if (!config.asset) {
+    console.log("Faucet:", faucetAddress);
+  }
   console.log("========================================");
+  console.log("\nRoles on vault:");
+  console.log("  DEFAULT_ADMIN_ROLE ->", config.admin);
+  console.log("  PAUSER_ROLE       ->", config.admin);
+  console.log("  UPGRADER_ROLE     ->", config.admin);
+  console.log("  RISK_MANAGER_ROLE ->", config.admin);
+  console.log("  GOVERNANCE_ROLE   ->", config.admin);
+  console.log("  OPERATOR_ROLE     ->", config.operator);
+  console.log(""); 
 }
 
 main().catch(console.error);

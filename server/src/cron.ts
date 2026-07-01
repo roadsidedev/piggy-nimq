@@ -11,7 +11,7 @@ async function runCron() {
 
     for (const r of reminders) {
       console.log(
-        `  -> ${r.userAddress}: ${r.amount} USDC (${r.frequency})`,
+        `  -> ${r.userAddress}: ${r.amount} USDT (${r.frequency})`,
       );
     }
   } catch (err) {

@@ -70,7 +70,7 @@ export function RecurringPage() {
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="New Schedule">
         <div className="flex flex-col gap-4">
           <Input
-            label="Amount (USDC)"
+            label="Amount (USDT)"
             type="number"
             placeholder="25"
             value={amount}

@@ -40,7 +40,7 @@ export function WithdrawModal({
       id: "idle",
       label: "Idle Balance",
       balance: idleNum.toFixed(2),
-      description: "USDC sitting in vault",
+      description: "USDT sitting in vault",
     },
     {
       id: "yield",
@@ -138,7 +138,7 @@ export function WithdrawModal({
 
         <div className="relative">
           <Input
-            label="Amount (USDC)"
+            label="Amount (USDT)"
             type="number"
             placeholder="0.00"
             value={amount}
@@ -161,7 +161,7 @@ export function WithdrawModal({
         </div>
 
         <p className="text-xs text-gray-500">
-          Available: {maxForSource.toFixed(2)} USDC
+          Available: {maxForSource.toFixed(2)} USDT
         </p>
 
         {error && <p className="text-sm text-red-500 font-medium">{error}</p>}

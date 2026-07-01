@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { TransactionRecord, TxStatus } from "@/types";
 
 interface VaultState {
@@ -28,38 +29,9 @@ interface VaultState {
   reset: () => void;
 }
 
-export const useVaultStore = create<VaultState>((set) => ({
-  balance: "0.00",
-  yieldEnabled: false,
-  yieldAmount: "0.00",
-  apy: 0,
-  earnings: "0.00",
-  vaultAge: 0,
-  transactions: [],
-  depositModalOpen: false,
-  withdrawModalOpen: false,
-  txStatus: "idle",
-  txError: null,
-  setBalance: (balance) => set({ balance }),
-  setYieldEnabled: (yieldEnabled) => set({ yieldEnabled }),
-  setYieldAmount: (yieldAmount) => set({ yieldAmount }),
-  setApy: (apy) => set({ apy }),
-  setEarnings: (earnings) => set({ earnings }),
-  setVaultAge: (vaultAge) => set({ vaultAge }),
-  addTransaction: (tx) =>
-    set((state) => ({ transactions: [tx, ...state.transactions] })),
-  updateTransaction: (id, updates) =>
-    set((state) => ({
-      transactions: state.transactions.map((t) =>
-        t.id === id ? { ...t, ...updates } : t,
-      ),
-    })),
-  setDepositModalOpen: (depositModalOpen) => set({ depositModalOpen }),
-  setWithdrawModalOpen: (withdrawModalOpen) => set({ withdrawModalOpen }),
-  setTxStatus: (txStatus) => set({ txStatus }),
-  setTxError: (txError) => set({ txError }),
-  reset: () =>
-    set({
+export const useVaultStore = create<VaultState>()(
+  persist(
+    (set) => ({
       balance: "0.00",
       yieldEnabled: false,
       yieldAmount: "0.00",
@@ -71,5 +43,44 @@ export const useVaultStore = create<VaultState>((set) => ({
       withdrawModalOpen: false,
       txStatus: "idle",
       txError: null,
+      setBalance: (balance) => set({ balance }),
+      setYieldEnabled: (yieldEnabled) => set({ yieldEnabled }),
+      setYieldAmount: (yieldAmount) => set({ yieldAmount }),
+      setApy: (apy) => set({ apy }),
+      setEarnings: (earnings) => set({ earnings }),
+      setVaultAge: (vaultAge) => set({ vaultAge }),
+      addTransaction: (tx) =>
+        set((state) => ({ transactions: [tx, ...state.transactions] })),
+      updateTransaction: (id, updates) =>
+        set((state) => ({
+          transactions: state.transactions.map((t) =>
+            t.id === id ? { ...t, ...updates } : t,
+          ),
+        })),
+      setDepositModalOpen: (depositModalOpen) => set({ depositModalOpen }),
+      setWithdrawModalOpen: (withdrawModalOpen) => set({ withdrawModalOpen }),
+      setTxStatus: (txStatus) => set({ txStatus }),
+      setTxError: (txError) => set({ txError }),
+      reset: () =>
+        set({
+          balance: "0.00",
+          yieldEnabled: false,
+          yieldAmount: "0.00",
+          apy: 0,
+          earnings: "0.00",
+          vaultAge: 0,
+          transactions: [],
+          depositModalOpen: false,
+          withdrawModalOpen: false,
+          txStatus: "idle",
+          txError: null,
+        }),
     }),
-}));
+    {
+      name: "piggy-vault",
+      partialize: (state) => ({
+        transactions: state.transactions,
+      }),
+    },
+  ),
+);

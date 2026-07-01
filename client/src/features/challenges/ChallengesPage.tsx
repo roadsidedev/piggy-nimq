@@ -139,7 +139,7 @@ export function ChallengesPage() {
             onChange={(e) => setTitle(e.target.value)}
           />
           <Input
-            label="Target Amount (USDC)"
+            label="Target Amount (USDT)"
             type="number"
             placeholder="10"
             value={target}

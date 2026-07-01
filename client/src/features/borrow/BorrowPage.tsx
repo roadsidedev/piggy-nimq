@@ -73,7 +73,7 @@ export function BorrowPage() {
         <div className="flex flex-col gap-3">
           <Input
             type="number"
-            placeholder="Amount (USDC)"
+            placeholder="Amount (USDT)"
             value={borrowAmount}
             onChange={(e) => setBorrowAmount(e.target.value)}
           />
@@ -88,7 +88,7 @@ export function BorrowPage() {
         <div className="flex flex-col gap-3">
           <Input
             type="number"
-            placeholder="Amount (USDC)"
+            placeholder="Amount (USDT)"
             value={repayAmount}
             onChange={(e) => setRepayAmount(e.target.value)}
           />

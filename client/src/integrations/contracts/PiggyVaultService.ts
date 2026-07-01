@@ -1,5 +1,5 @@
 import { type Address, type PublicClient, type TransactionReceipt, createPublicClient, createWalletClient, custom, http, parseUnits, formatUnits, maxUint256 } from "viem";
-import { baseSepolia } from "viem/chains";
+import { polygonAmoy } from "viem/chains";
 import { PIGGY_CONTRACTS, PIGGY_VAULT_ABI, RPC_URL } from "./constants";
 import { ERC20_ABI } from "@/integrations/aave/constants";
 import { getEthereumProvider } from "@/integrations/nimiq";
@@ -17,7 +17,7 @@ export class PiggyVaultService {
 
   constructor() {
     this.publicClient = createPublicClient({
-      chain: baseSepolia,
+      chain: polygonAmoy,
       transport: http(RPC_URL),
     }) as unknown as PublicClient;
   }
@@ -26,8 +26,8 @@ export class PiggyVaultService {
     return PIGGY_CONTRACTS.vault as Address;
   }
 
-  getUsdcAddress(): Address {
-    return PIGGY_CONTRACTS.usdc as Address;
+  getAssetAddress(): Address {
+    return PIGGY_CONTRACTS.usdt as Address;
   }
 
   // ─── Read ──────────────────────────────────────────────────────────────
@@ -59,7 +59,7 @@ export class PiggyVaultService {
 
   async getDecimals(): Promise<number> {
     return this.publicClient.readContract({
-      address: this.getUsdcAddress(),
+      address: this.getAssetAddress(),
       abi: ERC20_ABI,
       functionName: "decimals",
     }) as Promise<number>;
@@ -67,7 +67,7 @@ export class PiggyVaultService {
 
   async getAllowance(owner: Address): Promise<bigint> {
     return this.publicClient.readContract({
-      address: this.getUsdcAddress(),
+      address: this.getAssetAddress(),
       abi: ERC20_ABI,
       functionName: "allowance",
       args: [owner, this.getVaultAddress()],
@@ -81,7 +81,7 @@ export class PiggyVaultService {
     if (!provider) throw new Error("No EVM provider available");
 
     const currentChainId = await provider.request({ method: "eth_chainId" }) as string;
-    const targetChainId = `0x${baseSepolia.id.toString(16)}`;
+    const targetChainId = `0x${polygonAmoy.id.toString(16)}`;
 
     if (currentChainId === targetChainId) return;
 
@@ -93,7 +93,7 @@ export class PiggyVaultService {
     } catch (error: unknown) {
       const err = error as { code?: number };
       if (err.code === 4902) {
-        throw new Error("Base Sepolia is not available in your wallet. Please add it manually.");
+        throw new Error("Polygon Amoy is not available in your wallet. Please add it manually.");
       }
       throw error;
     }
@@ -120,7 +120,7 @@ export class PiggyVaultService {
 
     const walletClient = createWalletClient({
       account,
-      chain: baseSepolia,
+      chain: polygonAmoy,
       transport: custom(provider),
     });
 
@@ -136,12 +136,16 @@ export class PiggyVaultService {
   }
 
   private async waitForTx(hash: `0x${string}`): Promise<TransactionReceipt> {
-    return this.publicClient.waitForTransactionReceipt({ hash });
+    const receipt = await this.publicClient.waitForTransactionReceipt({ hash });
+    if (receipt.status !== "success") {
+      throw new Error("Transaction reverted on-chain");
+    }
+    return receipt;
   }
 
   // ─── ERC20 approval ────────────────────────────────────────────────────
 
-  async approveUsdc(): Promise<`0x${string}`> {
+  async approveAsset(): Promise<`0x${string}`> {
     const provider = getEthereumProvider();
     if (!provider) throw new Error("No EVM provider available");
     await this.ensureCorrectChain();
@@ -149,12 +153,12 @@ export class PiggyVaultService {
 
     const walletClient = createWalletClient({
       account,
-      chain: baseSepolia,
+      chain: polygonAmoy,
       transport: custom(provider),
     });
 
     const hash = await walletClient.writeContract({
-      address: this.getUsdcAddress() as `0x${string}`,
+      address: this.getAssetAddress() as `0x${string}`,
       abi: ERC20_ABI,
       functionName: "approve",
       args: [this.getVaultAddress() as `0x${string}`, maxUint256],
@@ -168,7 +172,7 @@ export class PiggyVaultService {
     const account = await this.getAccount();
     const current = await this.getAllowance(account);
     if (current >= required) return true;
-    const hash = await this.approveUsdc();
+    const hash = await this.approveAsset();
     await this.waitForTx(hash);
     return true;
   }
@@ -309,11 +313,11 @@ export class PiggyVaultService {
 
   // ─── Format helpers ────────────────────────────────────────────────────
 
-  toUSDC(amount: string, decimals: number): bigint {
+  toUnits(amount: string, decimals: number): bigint {
     return parseUnits(amount, decimals);
   }
 
-  fromUSDC(amount: bigint, decimals: number): string {
+  fromUnits(amount: bigint, decimals: number): string {
     return formatUnits(amount, decimals);
   }
 }

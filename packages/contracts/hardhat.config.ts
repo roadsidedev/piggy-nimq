@@ -33,6 +33,7 @@ const config: HardhatUserConfig = {
     polygonAmoy: {
       url: process.env.AMOY_RPC_URL || "https://rpc-amoy.polygon.technology",
       accounts: PRIVATE_KEY ? [PRIVATE_KEY] : [],
+      gasPrice: 50_000_000_000, // 50 gwei cap to avoid "exceeds configured cap"
     },
     polygon: {
       url: process.env.POLYGON_RPC_URL || "https://polygon-rpc.com",

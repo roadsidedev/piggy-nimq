@@ -1,16 +1,17 @@
 import { config } from "@/config/env";
 
-// ─── Deployed contract addresses (Base Sepolia) ─────────────────────────
+// ─── Deployed contract addresses (Polygon Amoy) ─────────────────────────
 export const PIGGY_CONTRACTS = {
   vault: "0x7008DCE2C72F2eb70A7179a2b400A1177a32FA6B" as const,
   goalManager: "0xa0826186E560DA3836621A16a2069a691D9fd234" as const,
   challengeManager: "0x678Ddf520766BD754c8af43802C0bdD2f2CeC253" as const,
-  adapter: "0xEF805f80E405418C2147c25e70248dC2f67D8283" as const,
-  usdc: "0x036CbD53842c5426634e7929541eC2318f3dCF7e" as const,
+  adapter: "0x196064333Efd80c06D0406ab49a4A756B4Ef2f44" as const,
+  usdt: "0x95dFf7AF6FE38a2cF6F3448B829Dc278Ae33873e" as const,
+  faucet: "0x4bD93bB444A9335cBFB52d9459a478C68F7DCe4B" as const,
 } as const;
 
-export const RPC_URL = config.rpc.baseSepolia;
-export const CHAIN_ID = 84532;
+export const RPC_URL = config.rpc.polygonAmoy;
+export const CHAIN_ID = 80002;
 
 // ─── PiggyVault ABI ─────────────────────────────────────────────────────
 export const PIGGY_VAULT_ABI = [

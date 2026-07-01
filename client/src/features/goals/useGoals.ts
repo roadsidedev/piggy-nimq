@@ -40,9 +40,9 @@ export function useGoals() {
       const localGoal: StoredGoal = {
         id: localId,
         title: `Goal #${og.id.toString()}`,
-        targetAmount: og.info.active ? og.info.targetAmount.toString() : "0",
-        currentAmount: og.info.allocated.toString(),
-        targetDate: og.info.targetDate > 0n
+        targetAmount: og.info?.active ? (og.info.targetAmount?.toString() ?? "0") : "0",
+        currentAmount: og.info?.allocated?.toString() ?? "0",
+        targetDate: og.info?.targetDate && og.info.targetDate > 0n
           ? new Date(Number(og.info.targetDate) * 1000).toISOString()
           : null,
         createdAt: new Date().toISOString(),

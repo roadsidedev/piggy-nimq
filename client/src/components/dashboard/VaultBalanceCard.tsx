@@ -14,7 +14,7 @@ export function VaultBalanceCard({ balance, yieldEnabled, apy, earningsToday }: 
         <p className="text-sm font-medium text-green-700/80">Your Vault Balance</p>
         <div className="mt-1 flex items-baseline gap-2">
           <span className="text-3xl font-bold text-green-900">${balance}</span>
-          <span className="text-sm font-medium text-green-600">USDC</span>
+          <span className="text-sm font-medium text-green-600">USDT</span>
         </div>
         {yieldEnabled && apy > 0 ? (
           <p className="mt-1 text-sm text-green-700">

@@ -38,15 +38,17 @@ export function useChallenges() {
 
       const localChallenge: Challenge = {
         id: localId,
-        title: occ.challenge.name,
-        target: occ.challenge.targetAmount.toString(),
+        title: occ.challenge.name ?? "Untitled",
+        target: occ.challenge.targetAmount?.toString() ?? "0",
         frequency: FREQ_MAP[occ.challenge.frequency] ?? "daily",
-        duration: Number(occ.challenge.durationDays),
+        duration: Number(occ.challenge.durationDays ?? 0),
         owner: occ.challenge.owner,
         members: [],
         memberProgress: {},
-        streak: occ.progress.currentStreak,
-        createdAt: new Date(Number(occ.challenge.startDate) * 1000).toISOString(),
+        streak: occ.progress?.currentStreak ?? 0,
+        createdAt: occ.challenge.startDate
+          ? new Date(Number(occ.challenge.startDate) * 1000).toISOString()
+          : new Date().toISOString(),
       };
       addChallenge(localChallenge);
     }

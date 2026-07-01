@@ -54,7 +54,7 @@ export function RecurringModal({ open, onClose, onSubmit, goals }: RecurringModa
       <div className="flex flex-col gap-4">
         {/* Amount */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-sm font-medium text-neutral-300">Amount (USDC)</label>
+          <label className="text-sm font-medium text-neutral-300">Amount (USDT)</label>
           <div className="flex items-center gap-2 rounded-lg border border-neutral-700 bg-neutral-800 px-3 py-2.5 focus-within:ring-2 focus-within:ring-green-600">
             <span className="text-neutral-500">$</span>
             <input

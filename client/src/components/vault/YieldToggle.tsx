@@ -125,7 +125,7 @@ export function YieldPanel({
             <div className="text-left">
               <p className="text-sm font-medium text-green-900">Yield</p>
               <p className="text-xs text-neutral-400">
-                Earn {apy > 0 ? `${apy.toFixed(2)}% APY` : "yield"} on idle USDC
+                Earn {apy > 0 ? `${apy.toFixed(2)}% APY` : "yield"} on idle USDT
               </p>
             </div>
             <div className="h-6 w-11 rounded-full bg-neutral-700 transition-colors">
@@ -166,7 +166,7 @@ export function YieldPanel({
                 className="pr-14"
               />
               <span className="absolute right-3 top-[38px] text-sm text-neutral-500">
-                USDC
+                USDT
               </span>
             </div>
 

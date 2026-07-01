@@ -4,6 +4,7 @@ import { useChallenges } from "@/features/challenges/useChallenges";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { Card, Button, Input, Modal } from "@/components/common";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { SparkleIcon, GoalIcon, TrophyIcon, FlameIcon } from "@/components/common/Icons";
 import { Avatar } from "@/components/account/Avatar";
 import { SavingsTree } from "./SavingsTree";
@@ -134,7 +135,7 @@ function GoalModal({
           onChange={(e) => setTitle(e.target.value)}
         />
         <Input
-          label="Target Amount (USDC)"
+          label="Target Amount (USDT)"
           type="number"
           placeholder="1000"
           value={target}
@@ -196,7 +197,7 @@ function ChallengeModal({
           onChange={(e) => setTitle(e.target.value)}
         />
         <Input
-          label="Target Amount (USDC)"
+          label="Target Amount (USDT)"
           type="number"
           placeholder="10"
           value={target}
@@ -244,8 +245,8 @@ function GoalCard({
   goal: { id: string; title: string; currentAmount: string; targetAmount: string; targetDate: string | null };
   onDelete: (id: string) => void;
 }) {
-  const current = Number(goal.currentAmount);
-  const target = Number(goal.targetAmount);
+  const current = Number(goal.currentAmount ?? 0);
+  const target = Number(goal.targetAmount ?? 0);
   const pct = target > 0 ? Math.min(100, Math.round((current / target) * 100)) : 0;
   const completed = target > 0 && current >= target;
 
@@ -331,9 +332,12 @@ function ChallengeCard({
   onJoin: (id: string) => void;
   onLeave: (id: string) => void;
 }) {
-  const targetNum = Number(challenge.target);
-  const sorted = [...challenge.members].sort(
-    (a, b) => Number(challenge.memberProgress[b] ?? 0) - Number(challenge.memberProgress[a] ?? 0),
+  const members = challenge.members ?? [];
+  const progress = challenge.memberProgress ?? {};
+  const streak = challenge.streak ?? 0;
+  const targetNum = Number(challenge.target) || 0;
+  const sorted = [...members].sort(
+    (a, b) => Number(progress[b] ?? 0) - Number(progress[a] ?? 0),
   );
 
   const rankColor = (i: number) => {
@@ -353,10 +357,10 @@ function ChallengeCard({
             {challenge.members.length} member{challenge.members.length !== 1 ? "s" : ""}
           </p>
         </div>
-        {challenge.streak > 0 && (
+        {streak > 0 && (
           <div className="flex items-center gap-1 rounded-full bg-orange-50 px-2.5 py-1">
             <FlameIcon size={12} className="text-orange-500" />
-            <span className="text-xs font-semibold text-orange-600">{challenge.streak}</span>
+            <span className="text-xs font-semibold text-orange-600">{streak}</span>
           </div>
         )}
       </div>
@@ -365,8 +369,8 @@ function ChallengeCard({
         <div className="mb-3">
           <p className="mb-1.5 text-xs font-medium text-gray-500">Leaderboard</p>
           {sorted.slice(0, 5).map((member, i) => {
-            const p = profilesMap[member.toLowerCase()];
-            const memberAmt = Number(challenge.memberProgress[member] ?? 0);
+            const p = profilesMap[member?.toLowerCase() ?? ""];
+            const memberAmt = Number(progress[member] ?? 0);
             const memberPct = targetNum > 0 ? Math.min(100, (memberAmt / targetNum) * 100) : 0;
             return (
               <div key={member} className="mb-1.5">
@@ -382,11 +386,13 @@ function ChallengeCard({
                     <span className="text-xs text-gray-900">
                       {p?.username
                         ? `@${p.username}`
-                        : `${member.slice(0, 6)}...${member.slice(-4)}`}
+                        : member
+                          ? `${member.slice(0, 6)}...${member.slice(-4)}`
+                          : "Unknown"}
                     </span>
                   </div>
                   <span className="text-xs font-medium text-gray-600">
-                    ${challenge.memberProgress[member] ?? "0"}
+                    ${progress[member] ?? "0"}
                   </span>
                 </div>
                 {/* Per-member progress bar */}
@@ -403,7 +409,7 @@ function ChallengeCard({
       )}
 
       <div className="flex items-center justify-between text-xs">
-        <span className="text-gray-500">Streak: {challenge.streak} days</span>
+        <span className="text-gray-500">Streak: {streak} days</span>
         <div className="flex gap-3">
           <button
             onClick={() => onJoin(challenge.id)}
@@ -470,8 +476,8 @@ function ChallengesTab({
     const q = search.toLowerCase();
     return challenges.filter(
       (c) =>
-        c.title.toLowerCase().includes(q) ||
-        c.frequency.toLowerCase().includes(q),
+        (c.title ?? "").toLowerCase().includes(q) ||
+        (c.frequency ?? "").toLowerCase().includes(q),
     );
   }, [challenges, search]);
 
@@ -479,7 +485,7 @@ function ChallengesTab({
   const popular = useMemo(
     () =>
       [...challenges]
-        .sort((a, b) => b.members.length + b.streak * 0.1 - (a.members.length + a.streak * 0.1))
+        .sort((a, b) => (b.members?.length ?? 0) + (b.streak ?? 0) * 0.1 - ((a.members?.length ?? 0) + (a.streak ?? 0) * 0.1))
         .slice(0, 3),
     [challenges],
   );
@@ -553,7 +559,7 @@ function ChallengesTab({
                   <div className="mt-1 flex items-center gap-2">
                     {/* Avatar stack */}
                     <div className="flex -space-x-1.5">
-                      {c.members.slice(0, 3).map((m) => (
+                      {(c.members ?? []).slice(0, 3).map((m) => (
                         <div
                           key={m}
                           className="h-4 w-4 rounded-full ring-2 ring-white bg-sage-200"
@@ -561,9 +567,9 @@ function ChallengesTab({
                       ))}
                     </div>
                     <span className="text-xs text-gray-500">
-                      {c.members.length} member{c.members.length !== 1 ? "s" : ""}
+                      {(c.members ?? []).length} member{(c.members ?? []).length !== 1 ? "s" : ""}
                     </span>
-                    {c.streak > 0 && (
+                    {(c.streak ?? 0) > 0 && (
                       <span className="inline-flex items-center gap-0.5 rounded-full bg-orange-50 px-1.5 py-0.5 text-[10px] font-semibold text-orange-600">
                         <FlameIcon size={8} className="text-orange-500" />
                         {c.streak}
@@ -685,7 +691,7 @@ export function GrowthPage() {
           <div className="flex flex-col items-center gap-1">
             <FlameIcon size={14} className="text-orange-600" />
             <p className="text-lg font-bold text-sage-800">
-              {challenges.reduce((max, c) => Math.max(max, c.streak), 0)}
+              {challenges.reduce((max, c) => Math.max(max, c.streak ?? 0), 0)}
             </p>
             <p className="text-[11px] font-semibold text-gray-600 uppercase">Best Streak</p>
           </div>
@@ -722,16 +728,18 @@ export function GrowthPage() {
       </div>
 
       {/* ── Tab Content ── */}
-      {activeTab === "goals" ? (
-        <GoalsTab goals={goals} onDelete={(id) => setConfirmDelete(id)} />
-      ) : (
-        <ChallengesTab
-          challenges={challenges}
-          profilesMap={profiles}
-          onJoin={joinChallenge}
-          onLeave={leaveChallenge}
-        />
-      )}
+      <ErrorBoundary>
+        {activeTab === "goals" ? (
+          <GoalsTab goals={goals} onDelete={(id) => setConfirmDelete(id)} />
+        ) : (
+          <ChallengesTab
+            challenges={challenges}
+            profilesMap={profiles}
+            onJoin={joinChallenge}
+            onLeave={leaveChallenge}
+          />
+        )}
+      </ErrorBoundary>
 
       {/* ── FAB ── */}
       <FAB onClick={() => setFabOpen(true)} isOpen={fabOpen} />

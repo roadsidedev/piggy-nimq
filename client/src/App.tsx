@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import { Toaster } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
 import { useProfileStore } from "@/stores/profileStore";
 import { Button, PageSkeleton } from "@/components/common";
@@ -155,6 +156,17 @@ export default function AppRoot() {
   return (
     <ErrorBoundary>
       <App />
+      <Toaster
+        position="bottom-center"
+        toastOptions={{
+          style: {
+            background: "#1a1a1a",
+            color: "#f5f5f5",
+            border: "1px solid #333",
+            fontSize: "14px",
+          },
+        }}
+      />
     </ErrorBoundary>
   );
 }

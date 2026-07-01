@@ -1,13 +1,16 @@
 import { useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
 import { piggyVaultService } from "@/integrations/contracts";
 import { trackError } from "@/utils/analytics";
+import { useCreateTransaction } from "@/hooks/useTransactions";
 
 export function useVault() {
   const address = useWalletStore((s) => s.address);
+  const createTx = useCreateTransaction();
   const {
     balance,
     yieldEnabled,
@@ -56,13 +59,13 @@ export function useVault() {
       const position = await piggyVaultService.getUserPosition(address);
       // Total balance = idle (non-yield) + yield value
       const totalRaw = position.unallocated + position.yieldValue;
-      const formatted = piggyVaultService.fromUSDC(totalRaw, decimals);
+      const formatted = piggyVaultService.fromUnits(totalRaw, decimals);
       setBalance(formatted);
 
       // Yield state: if yieldValue > 0, yield is enabled
       if (position.yieldValue > 0n) {
         setYieldEnabled(true);
-        const yv = piggyVaultService.fromUSDC(position.yieldValue, decimals);
+        const yv = piggyVaultService.fromUnits(position.yieldValue, decimals);
         setYieldAmount(yv);
 
         // Estimate earnings: yieldValue - principal is not tracked on-chain,
@@ -87,7 +90,7 @@ export function useVault() {
 
       try {
         const decimals = await piggyVaultService.getDecimals();
-        const parsed = piggyVaultService.toUSDC(amount, decimals);
+        const parsed = piggyVaultService.toUnits(amount, decimals);
 
         const txRecord = {
           id: crypto.randomUUID(),
@@ -109,6 +112,14 @@ export function useVault() {
           txHash: hash,
         });
 
+        createTx.mutate({
+          type: "deposit",
+          amount,
+          txHash: hash,
+          status: "confirmed",
+        });
+
+        toast.success(`Deposited $${amount} USDT`);
         await fetchBalance();
       } catch (err) {
         const message =
@@ -119,10 +130,11 @@ export function useVault() {
         );
         setTxStatus("failed");
         setTxError(message);
+        toast.error(message);
         throw err;
       }
     },
-    [address, setTxStatus, setTxError, addTransaction, updateTransaction, fetchBalance],
+    [address, setTxStatus, setTxError, addTransaction, updateTransaction, createTx, fetchBalance],
   );
 
   const withdraw = useCallback(
@@ -133,7 +145,7 @@ export function useVault() {
 
       try {
         const decimals = await piggyVaultService.getDecimals();
-        const parsed = piggyVaultService.toUSDC(amount, decimals);
+        const parsed = piggyVaultService.toUnits(amount, decimals);
 
         setTxStatus("confirming");
         // If source is "yield", withdraw from yield position instead
@@ -151,7 +163,15 @@ export function useVault() {
           txHash: hash,
         });
 
+        createTx.mutate({
+          type: "withdraw",
+          amount,
+          txHash: hash,
+          status: "confirmed",
+        });
+
         setTxStatus("confirmed");
+        toast.success(`Withdrew $${amount} USDT`);
         await fetchBalance();
       } catch (err) {
         const message =
@@ -162,10 +182,11 @@ export function useVault() {
         );
         setTxStatus("failed");
         setTxError(message);
+        toast.error(message);
         throw err;
       }
     },
-    [address, setTxStatus, setTxError, addTransaction, fetchBalance],
+    [address, setTxStatus, setTxError, addTransaction, createTx, fetchBalance],
   );
 
   const confirmYield = useCallback(
@@ -176,7 +197,7 @@ export function useVault() {
 
       try {
         const decimals = await piggyVaultService.getDecimals();
-        const parsed = piggyVaultService.toUSDC(amount, decimals);
+        const parsed = piggyVaultService.toUnits(amount, decimals);
 
         const txRecord = {
           id: crypto.randomUUID(),
@@ -205,8 +226,16 @@ export function useVault() {
           txHash: hash,
         });
 
+        createTx.mutate({
+          type: "yield",
+          amount,
+          txHash: hash,
+          status: "confirmed",
+        });
+
         setYieldEnabled(true);
         setYieldAmount(amount);
+        toast.success(`Yield enabled on $${amount} USDT`);
         await fetchBalance();
       } catch (err) {
         const message =
@@ -217,6 +246,7 @@ export function useVault() {
         );
         setTxStatus("failed");
         setTxError(message);
+        toast.error(message);
         throw err;
       }
     },
@@ -227,6 +257,7 @@ export function useVault() {
       setTxError,
       addTransaction,
       updateTransaction,
+      createTx,
       setYieldEnabled,
       setYieldAmount,
       fetchBalance,
@@ -256,9 +287,17 @@ export function useVault() {
         txHash: hash,
       });
 
+      createTx.mutate({
+        type: "withdraw",
+        amount: yieldAmount,
+        txHash: hash,
+        status: "confirmed",
+      });
+
       setYieldEnabled(false);
       setYieldAmount("0.00");
       setTxStatus("confirmed");
+      toast.success("Yield disabled");
       await fetchBalance();
     } catch (err) {
       const message =
@@ -269,6 +308,7 @@ export function useVault() {
       );
       setTxStatus("failed");
       setTxError(message);
+      toast.error(message);
       throw err;
     }
   }, [
@@ -277,6 +317,7 @@ export function useVault() {
     setTxStatus,
     setTxError,
     addTransaction,
+    createTx,
     setYieldEnabled,
     setYieldAmount,
     fetchBalance,

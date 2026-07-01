@@ -96,7 +96,7 @@ export function GoalsPage() {
             onChange={(e) => setTitle(e.target.value)}
           />
           <Input
-            label="Target Amount (USDC)"
+            label="Target Amount (USDT)"
             type="number"
             placeholder="1000"
             value={targetAmount}

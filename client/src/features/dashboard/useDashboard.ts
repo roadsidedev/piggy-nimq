@@ -26,11 +26,18 @@ export function useDashboard() {
     refetchInterval: 30000,
   });
 
-  // Read Aave reserve data for APY
+  // Read Aave reserve data for APY (gracefully degrades on testnet)
   const { data: reserveData, isLoading: reserveLoading } = useQuery({
     queryKey: ["reserveData"],
-    queryFn: () => aaveService.getReserveData(),
+    queryFn: async () => {
+      try {
+        return await aaveService.getReserveData();
+      } catch {
+        return null;
+      }
+    },
     refetchInterval: 30000,
+    retry: 1,
   });
 
   // Sync vault position to store
@@ -39,23 +46,27 @@ export function useDashboard() {
     (async () => {
       const decimals = await piggyVaultService.getDecimals();
       const totalRaw = vaultPosition.unallocated + vaultPosition.yieldValue;
-      setBalance(piggyVaultService.fromUSDC(totalRaw, decimals));
+      setBalance(piggyVaultService.fromUnits(totalRaw, decimals));
 
       // Debt from vault
       const debtRaw = vaultPosition.debtValue;
-      setBorrowedAmount(piggyVaultService.fromUSDC(debtRaw, decimals));
+      setBorrowedAmount(piggyVaultService.fromUnits(debtRaw, decimals));
 
       // Yield state
       const hasYield = vaultPosition.yieldValue > 0n;
       setYieldEnabled(hasYield);
       if (hasYield) {
-        setYieldAmount(piggyVaultService.fromUSDC(vaultPosition.yieldValue, decimals));
+        setYieldAmount(piggyVaultService.fromUnits(vaultPosition.yieldValue, decimals));
       }
     })();
   }, [vaultPosition, setBalance, setBorrowedAmount, setYieldEnabled, setYieldAmount]);
 
   useEffect(() => {
-    if (reserveData) setApy(aaveService.getLiquidityRatePercent(reserveData.liquidityRate));
+    if (reserveData && reserveData.liquidityRate > 0n) {
+      setApy(aaveService.getLiquidityRatePercent(reserveData.liquidityRate));
+    } else {
+      setApy(5.0); // default APY for testnet
+    }
   }, [reserveData, setApy]);
 
   // Read health factor from Aave adapter via vault's debt tracking
