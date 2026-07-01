@@ -32,14 +32,14 @@ export function useBorrow() {
     queryKey: ["vaultPosition", address],
     queryFn: () => piggyVaultService.getUserPosition(address!),
     enabled: !!address,
-    refetchInterval: 15000,
+    refetchInterval: 5000,
   });
 
   const { data: maxBorrowable } = useQuery({
     queryKey: ["maxBorrowable", address],
     queryFn: () => piggyVaultService.getMaxBorrowable(address!),
     enabled: !!address,
-    refetchInterval: 15000,
+    refetchInterval: 5000,
   });
 
   const LTV_BPS = 5000; // vault's maxUserLTVBps = 50%

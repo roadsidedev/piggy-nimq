@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
@@ -10,6 +10,7 @@ import { useCreateTransaction } from "@/hooks/useTransactions";
 
 export function useVault() {
   const address = useWalletStore((s) => s.address);
+  const queryClient = useQueryClient();
   const createTx = useCreateTransaction();
   const {
     balance,
@@ -120,6 +121,8 @@ export function useVault() {
         });
 
         toast.success(`Deposited $${amount} USDT`);
+        queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
+        queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
         await fetchBalance();
       } catch (err) {
         const message =
@@ -172,6 +175,8 @@ export function useVault() {
 
         setTxStatus("confirmed");
         toast.success(`Withdrew $${amount} USDT`);
+        queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
+        queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
         await fetchBalance();
       } catch (err) {
         const message =
@@ -236,6 +241,8 @@ export function useVault() {
         setYieldEnabled(true);
         setYieldAmount(amount);
         toast.success(`Yield enabled on $${amount} USDT`);
+        queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
+        queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
         await fetchBalance();
       } catch (err) {
         const message =
@@ -298,6 +305,8 @@ export function useVault() {
       setYieldAmount("0.00");
       setTxStatus("confirmed");
       toast.success("Yield disabled");
+      queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
+      queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
       await fetchBalance();
     } catch (err) {
       const message =
