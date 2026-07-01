@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { useChallenges } from "./useChallenges";
 import { useProfileStore } from "@/stores/profileStore";
+import { useWalletStore } from "@/stores/walletStore";
 import { Card, Button, Input, Modal } from "@/components/common";
 import { Avatar } from "@/components/account/Avatar";
 
 export function ChallengesPage() {
+  const address = useWalletStore((s) => s.address);
   const { challenges, createChallenge, joinChallenge, leaveChallenge } = useChallenges();
   const { profiles, fetchProfiles } = useProfileStore();
   const [showCreate, setShowCreate] = useState(false);
@@ -58,7 +61,7 @@ export function ChallengesPage() {
         </button>
       </div>
 
-      {tab === "mine" && challenges.length === 0 ? (
+      {tab === "mine" && (!address || challenges.filter((c) => c.members.includes(address)).length === 0) ? (
         <Card className="text-center">
           <p className="text-sm text-neutral-500">
             Join or create a challenge to get started.
@@ -66,7 +69,7 @@ export function ChallengesPage() {
         </Card>
       ) : (
         challenges
-          .filter((c) => tab === "browse" || c.members.includes("__current_user__"))
+          .filter((c) => tab === "browse" || (address && c.members.includes(address)))
           .map((c) => {
             const sorted = [...c.members].sort(
               (a, b) => Number(c.memberProgress[b] ?? 0) - Number(c.memberProgress[a] ?? 0),
@@ -110,6 +113,20 @@ export function ChallengesPage() {
                 <div className="flex justify-between text-xs">
                   <span className="text-neutral-500">Streak: {c.streak} days</span>
                   <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        const chainId = c.id.replace("onchain-", "");
+                        const url = `${window.location.origin}${window.location.pathname}#/challenge/${chainId}`;
+                        navigator.clipboard.writeText(url).then(() => {
+                          toast.success("Challenge link copied!");
+                        }).catch(() => {
+                          toast.error("Could not copy link");
+                        });
+                      }}
+                      className="text-neutral-400 hover:text-green-400"
+                    >
+                      Share
+                    </button>
                     <button
                       onClick={() => joinChallenge(c.id)}
                       className="text-green-400 hover:text-green-300"

@@ -4,6 +4,7 @@ import { useWalletStore } from "@/stores/walletStore";
 import { useChallengesStore, type Challenge } from "@/stores/challengesStore";
 import { parseUnits } from "viem";
 import { piggyChallengeManagerService, piggyVaultService, type ChallengeFrequency } from "@/integrations/contracts";
+import { useAllChallenges } from "./useAllChallenges";
 
 const FREQ_MAP: Record<number, "daily" | "weekly" | "monthly"> = {
   0: "daily",
@@ -16,6 +17,9 @@ export function useChallenges() {
   const qc = useQueryClient();
   const { challenges, addChallenge, joinChallenge, leaveChallenge, updateProgress } =
     useChallengesStore();
+
+  // Discover all public challenges on-chain so they appear in Browse
+  useAllChallenges();
 
   // Fetch on-chain challenges the user is part of
   const { data: onChainChallenges, isLoading } = useQuery({

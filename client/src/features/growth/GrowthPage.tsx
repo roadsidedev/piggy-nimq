@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import { useGoals } from "@/features/goals/useGoals";
 import { useChallenges } from "@/features/challenges/useChallenges";
 import { useVaultStore } from "@/stores/vaultStore";
@@ -410,6 +411,21 @@ function ChallengeCard({
       <div className="flex items-center justify-between text-xs">
         <span className="text-gray-500">Streak: {streak} days</span>
         <div className="flex gap-3">
+          <button
+            onClick={() => {
+              const chainId = challenge.id.replace("onchain-", "");
+              const url = `${window.location.origin}${window.location.pathname}#/challenge/${chainId}`;
+              navigator.clipboard.writeText(url).then(() => {
+                toast.success("Challenge link copied!");
+              }).catch(() => {
+                toast.error("Could not copy link");
+              });
+            }}
+            className="text-gray-400 hover:text-green-400"
+            title="Copy challenge link"
+          >
+            Share
+          </button>
           <button
             onClick={() => onJoin(challenge.id)}
             className="rounded-full bg-sage-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-sage-600"

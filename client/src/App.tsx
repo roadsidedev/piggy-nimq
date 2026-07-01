@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense } from "react";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
 import { useProfileStore } from "@/stores/profileStore";
@@ -6,6 +7,7 @@ import { Button, PageSkeleton } from "@/components/common";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { PiggyLogo } from "@/components/common/PiggyLogo";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
+import { ChallengeDetailPage } from "@/features/challenges/ChallengeDetailPage";
 import { registerTabSetter } from "@/hooks/useNavigate";
 import { HomeIcon, VaultIcon, SavingsIcon, BorrowIcon } from "@/components/common/Icons";
 import { Avatar } from "@/components/account/Avatar";
@@ -155,7 +157,12 @@ function App() {
 export default function AppRoot() {
   return (
     <ErrorBoundary>
-      <App />
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<App />} />
+          <Route path="/challenge/:id" element={<ChallengeDetailPage />} />
+        </Routes>
+      </HashRouter>
       <Toaster
         position="bottom-center"
         toastOptions={{

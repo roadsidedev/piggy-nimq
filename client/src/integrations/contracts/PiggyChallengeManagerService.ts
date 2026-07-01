@@ -88,6 +88,25 @@ export class PiggyChallengeManagerService {
     };
   }
 
+  async getLeaderboard(challengeId: bigint): Promise<{ members: Address[]; progress: MemberProgress[] }> {
+    const data = await this.publicClient.readContract({
+      address: this.getManagerAddress(),
+      abi: PIGGY_CHALLENGE_MANAGER_ABI,
+      functionName: "getLeaderboard",
+      args: [challengeId],
+    }) as [Address[], MemberProgressTuple[]];
+    return {
+      members: data[0],
+      progress: data[1].map((p) => ({
+        isMember: p.isMember,
+        totalSaved: p.totalSaved,
+        lastActivity: typeof p.lastActivity === "bigint" ? p.lastActivity : BigInt(p.lastActivity),
+        currentStreak: Number(p.currentStreak),
+        longestStreak: Number(p.longestStreak),
+      })),
+    };
+  }
+
   async getUserChallengeIds(user: Address): Promise<bigint[]> {
     const data = await this.publicClient.readContract({
       address: this.getManagerAddress(),
