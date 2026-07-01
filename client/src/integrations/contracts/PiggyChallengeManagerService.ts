@@ -2,6 +2,7 @@ import { type Address, type PublicClient, type TransactionReceipt, createPublicC
 import { polygonAmoy } from "viem/chains";
 import { PIGGY_CONTRACTS, PIGGY_CHALLENGE_MANAGER_ABI, RPC_URL } from "./constants";
 import { getEthereumProvider } from "@/integrations/nimiq";
+import { ensureCorrectChain } from "@/integrations/wallet/chain";
 
 export type ChallengeFrequency = 0 | 1 | 2;
 
@@ -113,26 +114,7 @@ export class PiggyChallengeManagerService {
   // ─── Write ─────────────────────────────────────────────────────────────
 
   private async ensureCorrectChain(): Promise<void> {
-    const provider = getEthereumProvider();
-    if (!provider) throw new Error("No EVM provider available");
-
-    const currentChainId = await provider.request({ method: "eth_chainId" }) as string;
-    const targetChainId = `0x${polygonAmoy.id.toString(16)}`;
-
-    if (currentChainId === targetChainId) return;
-
-    try {
-      await provider.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: targetChainId }],
-      });
-    } catch (error: unknown) {
-      const err = error as { code?: number };
-      if (err.code === 4902) {
-        throw new Error("Polygon Amoy is not available in your wallet. Please add it manually.");
-      }
-      throw error;
-    }
+    await ensureCorrectChain();
   }
 
   private async getAccount(): Promise<Address> {
