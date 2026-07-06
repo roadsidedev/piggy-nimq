@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import { parseUnits } from "viem";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
@@ -81,10 +82,37 @@ export function useGoals() {
     [address, addGoal, qc],
   );
 
+  const contribute = useCallback(
+    async (goalId: string, amount: string) => {
+      if (!address) throw new Error("Wallet not connected");
+
+      const decimals = await piggyVaultService.getDecimals();
+      const parsed = piggyVaultService.toUnits(amount, decimals);
+
+      // Extract on-chain goal ID from local ID (e.g. "onchain-3" → 3n)
+      const chainGoalId = BigInt(goalId.replace("onchain-", ""));
+
+      const hash = await piggyVaultService.allocateToGoal(chainGoalId, parsed);
+      toast.success(`$${amount} allocated to goal`);
+
+      // Update local store optimistically
+      const current = goals.find((g) => g.id === goalId);
+      if (current) {
+        const newAmount = (Number(current.currentAmount) + Number(amount)).toFixed(2);
+        updateGoal(goalId, { currentAmount: newAmount });
+      }
+
+      qc.invalidateQueries({ queryKey: ["onChainGoals", address] });
+      return hash;
+    },
+    [address, goals, updateGoal, qc],
+  );
+
   return {
     goals,
     isLoading,
     createGoal,
+    contribute,
     updateGoal,
     deleteGoal,
     allocateFunds,

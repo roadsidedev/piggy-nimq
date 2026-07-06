@@ -9,7 +9,7 @@ const FREQ_MAP: Record<number, "daily" | "weekly" | "monthly"> = {
 };
 
 export function useAllChallenges() {
-  const { challenges, addChallenge } = useChallengesStore();
+  const addChallenge = useChallengesStore((s) => s.addChallenge);
   const syncing = useRef(false);
 
   useEffect(() => {
@@ -21,15 +21,18 @@ export function useAllChallenges() {
         const count = await piggyChallengeManagerService.challengeCount();
         if (count === 0n) return;
 
-        const existingIds = new Set(challenges.map((c) => c.id));
-        const limit = Number(count) > 200 ? 200 : Number(count);
+        // Read latest store state at execution time (not closure time)
+        const currentIds = new Set(
+          useChallengesStore.getState().challenges.map((c) => c.id),
+        );
+        const limit = Math.min(Number(count), 200);
 
-        for (let i = 0n; i < BigInt(limit); i++) {
-          const localId = `onchain-${i.toString()}`;
-          if (existingIds.has(localId)) continue;
+        for (let i = 0; i < limit; i++) {
+          const localId = `onchain-${i}`;
+          if (currentIds.has(localId)) continue;
 
           try {
-            const c = await piggyChallengeManagerService.getChallenge(i);
+            const c = await piggyChallengeManagerService.getChallenge(BigInt(i));
             if (!c.isActive || !c.isPublic) continue;
 
             const newChallenge: Challenge = {
@@ -48,7 +51,7 @@ export function useAllChallenges() {
             };
             addChallenge(newChallenge);
           } catch {
-            // skip challenges that error (e.g. not created yet)
+            // skip challenges that error
           }
         }
       } finally {
@@ -59,5 +62,5 @@ export function useAllChallenges() {
     sync();
     const interval = setInterval(sync, 60000);
     return () => clearInterval(interval);
-  }, [challenges, addChallenge]);
+  }, [addChallenge]);
 }

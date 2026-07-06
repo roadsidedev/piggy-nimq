@@ -24,11 +24,15 @@ function CelebrateBanner() {
 }
 
 export function GoalsPage() {
-  const { goals, createGoal, deleteGoal } = useGoals();
+  const { goals, createGoal, contribute, deleteGoal } = useGoals();
   const [showCreate, setShowCreate] = useState(false);
   const [title, setTitle] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [contributeGoal, setContributeGoal] = useState<string | null>(null);
+  const [contributeAmount, setContributeAmount] = useState("");
+  const [contributeLoading, setContributeLoading] = useState(false);
+  const [contributeError, setContributeError] = useState<string | null>(null);
 
   const handleCreate = () => {
     if (!title || !targetAmount) return;
@@ -36,6 +40,21 @@ export function GoalsPage() {
     setTitle("");
     setTargetAmount("");
     setShowCreate(false);
+  };
+
+  const handleContribute = async () => {
+    if (!contributeGoal || !contributeAmount || Number(contributeAmount) <= 0) return;
+    setContributeLoading(true);
+    setContributeError(null);
+    try {
+      await contribute(contributeGoal, contributeAmount);
+      setContributeAmount("");
+      setContributeGoal(null);
+    } catch (err) {
+      setContributeError(err instanceof Error ? err.message : "Contribution failed");
+    } finally {
+      setContributeLoading(false);
+    }
   };
 
   return (
@@ -68,12 +87,20 @@ export function GoalsPage() {
                     ${goal.currentAmount} / ${goal.targetAmount}
                   </p>
                 </div>
-                <button
-                  onClick={() => setConfirmDelete(goal.id)}
-                  className="text-xs text-neutral-500 hover:text-red-400"
-                >
-                  Delete
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setContributeGoal(goal.id)}
+                    className="text-xs text-green-400 hover:text-green-300"
+                  >
+                    Contribute
+                  </button>
+                  <button
+                    onClick={() => setConfirmDelete(goal.id)}
+                    className="text-xs text-neutral-500 hover:text-red-400"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
               <ProgressBar current={current} target={target} />
               {goal.targetDate ? (
@@ -136,6 +163,29 @@ export function GoalsPage() {
               Delete
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={!!contributeGoal}
+        onClose={() => { setContributeGoal(null); setContributeAmount(""); setContributeError(null); }}
+        title="Contribute to Goal"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-xs text-neutral-400">
+            Funds will be earmarked from your vault balance toward this goal.
+          </p>
+          <Input
+            label="Amount (USDT)"
+            type="number"
+            placeholder="0.00"
+            value={contributeAmount}
+            onChange={(e) => { setContributeAmount(e.target.value); setContributeError(null); }}
+          />
+          {contributeError ? <p className="text-sm text-red-400">{contributeError}</p> : null}
+          <Button onClick={handleContribute} loading={contributeLoading} size="lg">
+            Contribute
+          </Button>
         </div>
       </Modal>
     </div>

@@ -242,9 +242,11 @@ function ChallengeModal({
 function GoalCard({
   goal,
   onDelete,
+  onContribute,
 }: {
   goal: { id: string; title: string; currentAmount: string; targetAmount: string; targetDate: string | null };
   onDelete: (id: string) => void;
+  onContribute: (id: string) => void;
 }) {
   const current = Number(goal.currentAmount ?? 0);
   const target = Number(goal.targetAmount ?? 0);
@@ -265,6 +267,14 @@ function GoalCard({
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {!completed && (
+            <button
+              onClick={() => onContribute(goal.id)}
+              className="text-xs text-green-600 hover:text-green-500 font-medium"
+            >
+              Contribute
+            </button>
+          )}
           <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${
             completed
               ? "bg-sage-100 text-sage-700"
@@ -446,7 +456,7 @@ function ChallengeCard({
 
 /* ── Goals Tab ───────────────────────────────────────────── */
 
-function GoalsTab({ goals, onDelete }: { goals: ReturnType<typeof useGoals>["goals"]; onDelete: (id: string) => void }) {
+function GoalsTab({ goals, onDelete, onContribute }: { goals: ReturnType<typeof useGoals>["goals"]; onDelete: (id: string) => void; onContribute: (id: string) => void }) {
   if (goals.length === 0) {
     return (
       <Card className="bg-white border-gray-200 text-center">
@@ -464,7 +474,7 @@ function GoalsTab({ goals, onDelete }: { goals: ReturnType<typeof useGoals>["goa
   return (
     <div className="flex flex-col gap-3">
       {goals.map((goal) => (
-        <GoalCard key={goal.id} goal={goal} onDelete={onDelete} />
+        <GoalCard key={goal.id} goal={goal} onDelete={onDelete} onContribute={onContribute} />
       ))}
     </div>
   );
@@ -641,7 +651,7 @@ function ChallengesTab({
    ═══════════════════════════════════════════════════════════ */
 
 export function GrowthPage() {
-  const { goals, createGoal, deleteGoal } = useGoals();
+  const { goals, createGoal, contribute, deleteGoal } = useGoals();
   const { challenges, createChallenge, joinChallenge, leaveChallenge } = useChallenges();
   const { profiles, fetchProfiles } = useProfileStore();
   const balance = useVaultStore((s) => s.balance);
@@ -651,6 +661,10 @@ export function GrowthPage() {
   const [goalModalOpen, setGoalModalOpen] = useState(false);
   const [challengeModalOpen, setChallengeModalOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [contributeGoalId, setContributeGoalId] = useState<string | null>(null);
+  const [contributeAmount, setContributeAmount] = useState("");
+  const [contributeLoading, setContributeLoading] = useState(false);
+  const [contributeError, setContributeError] = useState<string | null>(null);
 
   // Fetch profiles for all challenge members
   useEffect(() => {
@@ -745,7 +759,7 @@ export function GrowthPage() {
       {/* ── Tab Content ── */}
       <ErrorBoundary>
         {activeTab === "goals" ? (
-          <GoalsTab goals={goals} onDelete={(id) => setConfirmDelete(id)} />
+          <GoalsTab goals={goals} onDelete={(id) => setConfirmDelete(id)} onContribute={(id) => setContributeGoalId(id)} />
         ) : (
           <ChallengesTab
             challenges={challenges}
@@ -814,6 +828,47 @@ export function GrowthPage() {
               Delete
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Contribute modal */}
+      <Modal
+        open={!!contributeGoalId}
+        onClose={() => { setContributeGoalId(null); setContributeAmount(""); setContributeError(null); }}
+        title="Contribute to Goal"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-xs text-gray-500">
+            Funds will be earmarked from your vault balance toward this goal.
+          </p>
+          <Input
+            label="Amount (USDT)"
+            type="number"
+            placeholder="0.00"
+            value={contributeAmount}
+            onChange={(e) => { setContributeAmount(e.target.value); setContributeError(null); }}
+          />
+          {contributeError ? <p className="text-sm text-red-400">{contributeError}</p> : null}
+          <Button
+            onClick={async () => {
+              if (!contributeGoalId || !contributeAmount || Number(contributeAmount) <= 0) return;
+              setContributeLoading(true);
+              setContributeError(null);
+              try {
+                await contribute(contributeGoalId, contributeAmount);
+                setContributeAmount("");
+                setContributeGoalId(null);
+              } catch (err) {
+                setContributeError(err instanceof Error ? err.message : "Contribution failed");
+              } finally {
+                setContributeLoading(false);
+              }
+            }}
+            loading={contributeLoading}
+            size="lg"
+          >
+            Contribute
+          </Button>
         </div>
       </Modal>
     </div>

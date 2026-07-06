@@ -29,7 +29,11 @@ export const useChallengesStore = create<ChallengesState>()(
       challenges: [],
 
       addChallenge: (challenge) =>
-        set((state) => ({ challenges: [...state.challenges, challenge] })),
+        set((state) => ({
+          challenges: state.challenges.some((c) => c.id === challenge.id)
+            ? state.challenges
+            : [...state.challenges, challenge],
+        })),
 
       joinChallenge: (id, address) =>
         set((state) => ({
