@@ -80,12 +80,15 @@ export const challenges = pgTable(
     frequency: text("frequency").notNull(),
     duration: integer("duration").notNull(),
     streak: integer("streak").notNull().default(0),
-    inviteCode: text("invite_code").unique().notNull(),
+    inviteCode: text("invite_code").unique(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
+    isPublic: boolean("is_public").notNull().default(true),
+    maxMembers: integer("max_members"),
   },
   (t) => [
     index("challenges_owner_idx").on(t.ownerAddress),
     index("challenges_invite_idx").on(t.inviteCode),
+    index("challenges_public_idx").on(t.isPublic),
   ],
 );
 

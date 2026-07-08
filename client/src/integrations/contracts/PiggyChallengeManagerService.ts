@@ -132,6 +132,13 @@ export class PiggyChallengeManagerService {
 
   // ─── Write ─────────────────────────────────────────────────────────────
 
+  async joinChallenge(challengeId: bigint | string): Promise<`0x${string}`> {
+    const id = typeof challengeId === "bigint" ? challengeId.toString() : challengeId;
+    const hash = await this.writeContract("joinChallenge", [id]);
+    await this.waitForTx(hash);
+    return hash;
+  }
+
   private async ensureCorrectChain(): Promise<void> {
     await ensureCorrectChain();
   }
@@ -195,7 +202,7 @@ export class PiggyChallengeManagerService {
     return count - 1n;
   }
 
-  async joinChallenge(challengeId: bigint): Promise<`0x${string}`> {
+  async joinChallenge(challengeId: bigint | string): Promise<`0x${string}`> {
     const hash = await this.writeContract("joinChallenge", [challengeId]);
     await this.waitForTx(hash);
     return hash;

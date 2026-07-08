@@ -11,10 +11,19 @@ app.use("*", authMiddleware);
 
 const createChallengeSchema = z.object({
   title: z.string().min(1).max(100),
-  target: z.string().regex(/^\d+(\.\d{1,6})?$/, "Invalid amount"),
+  target: z.string().regex(/^\\d+(\\.\\d{1,6})?$/, "Invalid amount"),
   frequency: z.enum(["daily", "weekly", "monthly"]),
   duration: z.number().int().min(1).max(365),
+  isPublic: z.boolean().default(true),
+  maxMembers: z.number().int().min(0).max(1000).default(0),
+  inviteCode: z.string().min(8).max(20).optional(),
 });
+
+// Helper function to determine if an input is a challengeId or inviteCode
+define isChallengeId(param: string): boolean {
+  // Challenge IDs start with \"onchain-\" and are followed by alphanumeric characters
+  return param.startsWith("onchain-") && /^[a-zA-Z0-9]{21}$/.test(param);
+}
 
 const updateProgressSchema = z.object({
   amount: z.string().regex(/^\d+(\.\d{1,6})?$/, "Invalid amount"),
@@ -39,6 +48,8 @@ app.get("/", async (c) => {
         streak: challenges.streak,
         inviteCode: challenges.inviteCode,
         createdAt: challenges.createdAt,
+        isPublic: challenges.isPublic,
+        maxMembers: challenges.maxMembers,
       })
       .from(challenges)
       .orderBy(desc(challenges.createdAt));
@@ -117,9 +128,9 @@ app.post("/", async (c) => {
     );
   }
 
-  const { title, target, frequency, duration } = parsed.data;
+  const { title, target, frequency, duration, isPublic, maxMembers, inviteCode } = parsed.data;
   const id = nanoid(21);
-  const inviteCode = nanoid(8);
+  const generatedInviteCode = inviteCode || nanoid(8);
 
   const [challenge] = await db
     .insert(challenges)
@@ -131,7 +142,9 @@ app.post("/", async (c) => {
       frequency,
       duration,
       streak: 0,
-      inviteCode,
+      inviteCode: generatedInviteCode,
+      isPublic: isPublic ?? true,
+      maxMembers: maxMembers ?? 0,
     })
     .returning();
 
@@ -145,8 +158,17 @@ app.post("/", async (c) => {
     {
       success: true,
       data: {
-        ...challenge,
+        id,
+        ownerAddress: challenge.ownerAddress,
+        title: challenge.title,
+        target: challenge.target,
+        frequency: challenge.frequency,
+        duration: challenge.duration,
+        streak: challenge.streak,
+        inviteCode: challenge.inviteCode,
         createdAt: challenge.createdAt.toISOString(),
+        isPublic: challenge.isPublic,
+        maxMembers: challenge.maxMembers,
         memberCount: 1,
         isMember: true,
       },
