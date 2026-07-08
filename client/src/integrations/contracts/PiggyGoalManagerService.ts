@@ -104,9 +104,13 @@ export class PiggyGoalManagerService {
     const receipt = await this.waitForTx(hash);
     if (receipt.status !== "success") throw new Error("Create goal transaction failed on-chain");
 
-    // Derive goalId from nextGoalId after creation
-    const goalId = (await this.nextGoalId(account)) - 1n;
-    return { goalId, hash };
+    // Derive goalId from nextGoalId after creation with retry for RPC staleness
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const count = await this.nextGoalId(account);
+      if (count > 0n) return { goalId: count - 1n, hash };
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+    throw new Error("Failed to read goal ID after creation — try refreshing");
   }
 
   async allocateToGoal(goalId: bigint, amount: bigint): Promise<`0x${string}`> {

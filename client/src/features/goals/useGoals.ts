@@ -86,11 +86,18 @@ export function useGoals() {
     async (goalId: string, amount: string) => {
       if (!address) throw new Error("Wallet not connected");
 
+      // Validate goal ID format: must be "onchain-{non-negative-integer}"
+      const match = goalId.match(/^onchain-(\d+)$/);
+      if (!match) throw new Error("Invalid goal — cannot contribute to locally-created goals");
+
       const decimals = await piggyVaultService.getDecimals();
       const parsed = piggyVaultService.toUnits(amount, decimals);
 
-      // Extract on-chain goal ID from local ID (e.g. "onchain-3" → 3n)
-      const chainGoalId = BigInt(goalId.replace("onchain-", ""));
+      const goalNum = match?.[1];
+      if (goalNum === undefined) throw new Error("Invalid goal ID format");
+
+      const chainGoalId = BigInt(goalNum);
+      if (chainGoalId < 0n) throw new Error("Invalid goal ID");
 
       const hash = await piggyVaultService.allocateToGoal(chainGoalId, parsed);
       toast.success(`$${amount} allocated to goal`);
