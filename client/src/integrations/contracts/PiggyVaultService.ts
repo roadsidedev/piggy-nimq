@@ -120,7 +120,20 @@ export class PiggyVaultService {
   private async waitForTx(hash: `0x${string}`): Promise<TransactionReceipt> {
     const receipt = await this.publicClient.waitForTransactionReceipt({ hash });
     if (receipt.status !== "success") {
-      throw new Error("Transaction reverted on-chain");
+      let reason = "Transaction reverted on-chain";
+      try {
+        const tx = await this.publicClient.getTransaction({ hash });
+        await this.publicClient.call({
+          to: tx.to as `0x${string}` | undefined,
+          data: tx.input as `0x${string}`,
+        });
+      } catch (callErr: unknown) {
+        const err = callErr as { shortMessage?: string; message?: string };
+        const msg = (err?.shortMessage ?? err?.message ?? "") as string;
+        const match = msg.match(/reverted with reason string '([^']+)'/);
+        if (match && match[1]) reason = match[1];
+      }
+      throw new Error(reason);
     }
     return receipt;
   }
@@ -241,6 +254,9 @@ export class PiggyVaultService {
   }
 
   async repay(amount: bigint, fromIdleBalance: boolean): Promise<`0x${string}`> {
+    if (!fromIdleBalance) {
+      await this.ensureAllowance(amount);
+    }
     const hash = await this.writeContract("repay", [amount, fromIdleBalance]);
     await this.waitForTx(hash);
     return hash;

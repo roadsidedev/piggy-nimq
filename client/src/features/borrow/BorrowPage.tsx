@@ -85,17 +85,21 @@ export function BorrowPage() {
 
       <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
         <h3 className="mb-3 text-sm font-semibold text-gray-700">Repay</h3>
-        <div className="flex flex-col gap-3">
-          <Input
-            type="number"
-            placeholder="Amount (USDT)"
-            value={repayAmount}
-            onChange={(e) => setRepayAmount(e.target.value)}
-          />
-          <Button onClick={handleRepay} loading={txInProgress} variant="secondary" size="lg">
-            {txStatus === "confirming" ? "Confirming..." : "Repay"}
-          </Button>
-        </div>
+        {Number(borrowedAmount) <= 0 ? (
+          <p className="text-sm text-gray-500">No outstanding debt.</p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            <Input
+              type="number"
+              placeholder="Amount (USDT)"
+              value={repayAmount}
+              onChange={(e) => setRepayAmount(e.target.value)}
+            />
+            <Button onClick={handleRepay} loading={txInProgress} variant="secondary" size="lg">
+              {txStatus === "confirming" ? "Confirming..." : "Repay"}
+            </Button>
+          </div>
+        )}
       </div>
 
       <RiskSimulator

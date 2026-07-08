@@ -133,7 +133,7 @@ export function useBorrow() {
       try {
         const parsed = piggyVaultService.toUnits(amount, decimals);
         setTxStatus("confirming");
-        const hash = await piggyVaultService.repay(parsed, true);
+        const hash = await piggyVaultService.repay(parsed, false);
         setTxStatus("confirmed");
         return hash;
       } catch (err) {
