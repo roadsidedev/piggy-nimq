@@ -20,7 +20,7 @@ const createChallengeSchema = z.object({
 });
 
 // Helper function to determine if an input is a challengeId or inviteCode
-define isChallengeId(param: string): boolean {
+function isChallengeId(param: string): boolean {
   // Challenge IDs start with \"onchain-\" and are followed by alphanumeric characters
   return param.startsWith("onchain-") && /^[a-zA-Z0-9]{21}$/.test(param);
 }
