@@ -120,24 +120,17 @@ function useReveal() {
 /* ── Phone Mockup (Interactive) ─────────────────────────── */
 
 const CAP = 250;
-const GROW_MAX_SX = 0.34;
-const GROW_MAX_SY = 0.16;
 
 function PhoneMockup() {
-  const [balance, setBalance] = useState(0);
+  const [, setBalance] = useState(0);
   const [coinAnimating, setCoinAnimating] = useState(false);
   const [coinKey, setCoinKey] = useState(0);
   const [plusText, setPlusText] = useState<string | null>(null);
   const [plusKey, setPlusKey] = useState(0);
-  const [squishing, setSquishing] = useState(false);
   const [showCrack, setShowCrack] = useState(false);
   const busyRef = useRef(false);
 
   const prefersReduced = useRef(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-
-  const t = Math.min(balance / CAP, 1);
-  const sx = 1 + GROW_MAX_SX * t;
-  const sy = 1 + GROW_MAX_SY * t;
 
   const dropCoin = useCallback(() => {
     if (busyRef.current) return;
@@ -156,8 +149,6 @@ function PhoneMockup() {
           }
           return next;
         });
-        setSquishing(true);
-        setTimeout(() => setSquishing(false), 320);
 
         setPlusText(`+$${amount}`);
         setPlusKey((k) => k + 1);
@@ -182,76 +173,146 @@ function PhoneMockup() {
   return (
     <div className="phone-stage flex justify-center">
       <div className="phone relative w-[290px] max-w-[82vw] rounded-[44px] p-3.5 shadow-[0_40px_70px_-30px_rgba(16,17,36,0.55),inset_0_0_0_1px_rgba(255,255,255,0.04)]" style={{ aspectRatio: "290/580", background: "linear-gradient(160deg,#1D1E36,#101124)" }}>
-        <div className="phone-screen relative flex h-full w-full flex-col items-center justify-end overflow-hidden rounded-[32px] bg-gradient-to-b from-pink-50 via-pink-50/60 to-white px-4 pb-7 pt-5">
+        <div className="phone-screen relative flex h-full w-full flex-col overflow-hidden rounded-[32px] bg-gradient-to-b from-pink-50 to-white px-3 pt-5 pb-4">
           {/* Notch */}
           <div className="absolute left-1/2 top-2.5 z-10 h-[18px] w-[70px] -translate-x-1/2 rounded-full bg-navy-900" />
 
-          {/* Balance */}
-          <div className="absolute top-[34px] left-0 right-0 text-center">
-            <div className="text-[11px] font-bold tracking-widest text-pink-400/60 uppercase">Vault balance</div>
-            <span className="font-mono text-[30px] font-bold text-ink" style={{ color: "#17182B" }}>
-              ${balance.toLocaleString("en-US")}
-            </span>
+          {/* Header */}
+          <div className="flex items-center justify-between px-1 pt-4 pb-2">
+            <div className="flex items-center gap-1">
+              <PiggySvg className="h-5 w-5" />
+              <span className="text-[11px] font-bold text-ink" style={{ color: "#17182B" }}>Piggy</span>
+            </div>
+            <div className="h-5 w-5 rounded-full bg-pink-200" />
           </div>
 
-          {/* Piggy Zone */}
-          <div className="piggy-zone relative flex flex-1 items-center justify-center">
-            {/* Falling coin */}
-            {coinAnimating && (
-              <div
-                key={coinKey}
-                className="coin-fall absolute left-1/2 top-[-10px] z-10 ml-[-13px] h-[26px] w-[26px] rounded-full border-2 border-gold-500"
-                style={{
-                  background: "radial-gradient(circle at 32% 28%, #FFE29A, #F4B740 60%, #D9932A)",
-                  animation: "fall .55s cubic-bezier(.55,0,.85,.35) forwards",
-                }}
-              />
-            )}
-
-            {/* +$N float */}
-            {plusText && (
-              <div
-                key={plusKey}
-                className="float-plus pointer-events-none absolute left-1/2 top-[40%] z-20 -translate-x-1/2 font-mono text-[15px] font-bold text-mint-500"
-                style={{ animation: "floatUp 0.9s ease forwards" }}
-              >
-                {plusText}
+          {/* Vault Balance Card */}
+          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-100 via-pink-50 to-pink-100 p-3.5 shadow-sm">
+            <div className="relative z-10">
+              <p className="text-[9px] font-medium text-pink-500/80">Your Vault Balance</p>
+              <div className="mt-0.5 flex items-baseline gap-1">
+                <span className="text-[20px] font-bold text-ink" style={{ color: "#17182B" }}>$1,240</span>
+                <span className="text-[9px] font-medium text-pink-400">USDT</span>
               </div>
-            )}
-
-            {/* Piggy */}
-            <div
-              className="piggy-grow origin-bottom"
-              style={{ transform: `scale(${sx.toFixed(3)},${sy.toFixed(3)})` }}
-            >
-              <PiggySvg
-                className={`piggy-svg w-[170px] cursor-pointer ${squishing ? "squish" : ""}`}
-              />
+              <p className="mt-0.5 text-[8px] text-pink-400/70">+$2.40 today (Yield ON · 4.2% APY)</p>
+            </div>
+            <div className="absolute -right-1 -top-1 opacity-70">
+              <PiggySvg className="w-16" />
             </div>
           </div>
 
-          {/* Drop button */}
+          {/* Yield + Borrowed row */}
+          <div className="mt-2 grid grid-cols-2 gap-1.5">
+            <div className="rounded-xl bg-white p-2.5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <span className="text-[9px] font-medium text-gray-800">Yield</span>
+                <div className="h-3 w-6 rounded-full bg-pink-400">
+                  <div className="h-3 w-3 rounded-full bg-white shadow-sm translate-x-3" />
+                </div>
+              </div>
+              <p className="text-[7px] font-medium text-pink-400">ON</p>
+              <p className="text-[14px] font-bold text-gray-900 mt-0.5">4.2%</p>
+            </div>
+            <div className="rounded-xl bg-white p-2.5 shadow-sm">
+              <p className="text-[9px] font-medium text-gray-800">Borrowed</p>
+              <p className="text-[14px] font-bold text-gray-900 mt-0.5">$0</p>
+              <div className="mt-1 flex justify-center">
+                <svg width="28" height="28" viewBox="0 0 28 28">
+                  <circle cx="14" cy="14" r="10" fill="none" stroke="#ffd9e2" strokeWidth="3" />
+                  <circle cx="14" cy="14" r="10" fill="none" stroke="#c93e63" strokeWidth="3" strokeLinecap="round" strokeDasharray="62.8" strokeDashoffset="0" transform="rotate(-90 14 14)" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="mt-2 grid grid-cols-4 gap-1.5">
+            {["Deposit", "Borrow", "Goal", "Challenge"].map((label) => (
+              <div key={label} className="flex flex-col items-center gap-1 rounded-xl bg-white p-1.5 shadow-sm">
+                <div className="flex h-5 w-5 items-center justify-center rounded-lg bg-pink-100">
+                  <div className="h-2 w-2 rounded-full bg-pink-400" />
+                </div>
+                <span className="text-[7px] font-medium text-pink-600">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Goals Preview */}
+          <div className="mt-2 rounded-xl bg-white p-2.5 shadow-sm">
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-semibold text-gray-900">Active Goals</span>
+              <span className="text-[7px] text-pink-400">View all</span>
+            </div>
+            <div className="mt-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[8px] font-medium text-gray-800">Emergency Fund</span>
+                <span className="text-[7px] font-medium text-gray-600">65%</span>
+              </div>
+              <div className="mt-0.5 h-1 w-full overflow-hidden rounded-full bg-gray-100">
+                <div className="h-full rounded-full bg-pink-500" style={{ width: "65%" }} />
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom tab bar */}
+          <div className="mt-auto flex items-center justify-around rounded-2xl bg-white px-2 py-1.5 shadow-sm">
+            {[
+              { label: "Home", active: true },
+              { label: "Vault", active: false },
+              { label: "Growth", active: false },
+              { label: "Borrow", active: false },
+            ].map((tab) => (
+              <div key={tab.label} className="flex flex-col items-center gap-0.5">
+                <div className={`h-3.5 w-3.5 rounded-md ${tab.active ? "bg-pink-400" : "bg-gray-300"}`} />
+                <span className={`text-[7px] font-semibold ${tab.active ? "text-pink-600" : "text-gray-400"}`}>{tab.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Interactive piggy overlay — tap to feed */}
           <button
             onClick={dropCoin}
             type="button"
-            className="tap-btn mt-4 inline-flex items-center gap-1.75 rounded-full bg-pink-300 px-5 py-2.75 text-[13.5px] font-bold text-white shadow-[0_10px_20px_-8px_rgba(255,111,145,0.5)] transition-transform active:scale-95"
+            className="absolute bottom-16 left-1/2 z-20 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-pink-300 px-3 py-1.5 text-[10px] font-bold text-white shadow-[0_6px_16px_-4px_rgba(255,111,145,0.5)] transition-transform active:scale-95"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <circle cx="7" cy="7" r="6" fill="#fff" opacity="0.85" />
             </svg>
             Drop a coin
           </button>
-          <p className="mt-2 text-[11px] font-semibold text-pink-400/50">Tap to feed Piggy — watch them grow.</p>
+
+          {/* Falling coin */}
+          {coinAnimating && (
+            <div
+              key={coinKey}
+              className="coin-fall absolute left-1/2 top-1/2 z-30 ml-[-10px] mt-[-40px] h-[20px] w-[20px] rounded-full border-2 border-gold-500"
+              style={{
+                background: "radial-gradient(circle at 32% 28%, #FFE29A, #F4B740 60%, #D9932A)",
+                animation: "fall .55s cubic-bezier(.55,0,.85,.35) forwards",
+              }}
+            />
+          )}
+
+          {/* +$N float */}
+          {plusText && (
+            <div
+              key={plusKey}
+              className="float-plus pointer-events-none absolute left-1/2 top-[45%] z-30 -translate-x-1/2 font-mono text-[12px] font-bold text-mint-500"
+              style={{ animation: "floatUp 0.9s ease forwards" }}
+            >
+              {plusText}
+            </div>
+          )}
 
           {/* Crack toast */}
           <div
-            className={`crack-toast absolute inset-0 flex flex-col items-center justify-center rounded-[32px] bg-pink-50/97 text-center transition-opacity duration-300 ${
+            className={`crack-toast absolute inset-0 z-40 flex flex-col items-center justify-center rounded-[32px] bg-pink-50/97 text-center transition-opacity duration-300 ${
               showCrack ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
           >
-            <strong className="font-heading text-[17px]" style={{ fontFamily: "var(--font-heading)" }}>🐷 Cracked it open!</strong>
-            <p className="text-[12.5px] leading-relaxed text-pink-400/80">
-              A real piggy bank breaks to give up its savings. Yours doesn't — everything's still there, still yours, always liquid. Let's fill them back up.
+            <strong className="font-heading text-[15px]" style={{ fontFamily: "var(--font-heading)" }}>🐷 Cracked it open!</strong>
+            <p className="mt-1 text-[10px] leading-relaxed text-pink-400/80 px-4">
+              A real piggy bank breaks to give up its savings. Yours doesn't — everything's still there, still yours, always liquid.
             </p>
           </div>
         </div>
@@ -338,8 +399,7 @@ function FaqSection() {
       <div className="mx-auto max-w-[760px] px-6">
         <div ref={sectionRef}>
           <div className="max-w-[60ch]">
-            <span className="text-[12.5px] font-extrabold tracking-[0.08em] uppercase text-pink-500">Questions</span>
-            <h2 className="mt-2.5 font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
+            <h2 className="font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
               Frequently asked questions
             </h2>
             <p className="mt-3 text-[15.5px] leading-relaxed text-pink-400/60 max-w-[52ch]">
@@ -452,7 +512,7 @@ export function LandingPage() {
           </div>
           <button
             onClick={handleOpenPiggy}
-            className="inline-flex items-center gap-1.5 rounded-full bg-ink px-5 py-2.5 text-[14px] font-bold text-white transition-all duration-180 hover:-translate-y-px hover:bg-pink-400" style={{ color: "#17182B" }}
+            className="inline-flex items-center gap-1.5 rounded-full bg-pink-300 px-5 py-2.5 text-[14px] font-bold text-white shadow-[0_4px_14px_-4px_rgba(255,111,145,0.5)] transition-all duration-180 hover:-translate-y-px hover:bg-pink-400"
           >
             Open Piggy <span aria-hidden="true">→</span>
           </button>
@@ -514,11 +574,11 @@ export function LandingPage() {
               </h2>
             </div>
 
-            <div className="mt-9 grid grid-cols-1 gap-3.5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+            <div className="mt-9 flex gap-3.5 overflow-x-auto pb-2 snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 md:grid-cols-3 lg:grid-cols-5">
               {FEATURES.map((f) => (
                 <div
                   key={f.title}
-                  className="rounded-[18px] border border-ink/[0.05] bg-white p-[22px] shadow-[0_20px_40px_-20px_rgba(23,24,43,0.18)]"
+                  className="min-w-[240px] snap-start rounded-[18px] border border-ink/[0.05] bg-white p-[22px] shadow-[0_20px_40px_-20px_rgba(23,24,43,0.18)] sm:min-w-0"
                 >
                   <div className={`mb-3.5 flex h-11 w-11 items-center justify-center rounded-[13px] text-xl ${f.bg}`}>
                     {f.icon}
@@ -632,6 +692,19 @@ export function LandingPage() {
           >
             Open Piggy <span aria-hidden="true">→</span>
           </button>
+          <div className="mt-6">
+            <a
+              href="https://x.com/Piggyvault__"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-[14px] font-semibold text-pink-400/50 transition-colors hover:text-pink-300"
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+              Follow @Piggyvault__ on X
+            </a>
+          </div>
         </div>
       </section>
 

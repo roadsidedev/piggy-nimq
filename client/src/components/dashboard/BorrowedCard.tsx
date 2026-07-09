@@ -16,7 +16,7 @@ function CircularGauge({ percentage, color }: { percentage: number; color: strin
         cy="40"
         r={radius}
         fill="none"
-        stroke="#dcebd6"
+        stroke="#ffd9e2"
         strokeWidth={stroke}
       />
       <circle
@@ -41,7 +41,7 @@ function CircularGauge({ percentage, color }: { percentage: number; color: strin
 
 export function BorrowedCard({ borrowedAmount, healthFactor }: BorrowedCardProps) {
   const gaugePercentage = Math.min(100, healthFactor * 30);
-  const gaugeColor = healthFactor > 2 ? "#38761d" : healthFactor > 1.5 ? "#93c47d" : "#ef4444";
+  const gaugeColor = healthFactor > 2 ? "#c93e63" : healthFactor > 1.5 ? "#ff8fa8" : "#ef4444";
 
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm">

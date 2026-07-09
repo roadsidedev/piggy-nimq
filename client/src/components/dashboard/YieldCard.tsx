@@ -17,7 +17,7 @@ export function YieldCard({ enabled, apy, estimatedMonthly, onToggle, loading }:
     >
       <div className="mb-2 flex items-center justify-between">
         <span className="text-sm font-medium text-gray-800">Yield</span>
-        <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-green-500" : "bg-gray-300"}`}>
+        <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-pink-400" : "bg-gray-300"}`}>
           {loading ? (
             <div className="h-5 w-5 rounded-full bg-white shadow-sm animate-pulse translate-x-0.5" />
           ) : (

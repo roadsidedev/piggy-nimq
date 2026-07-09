@@ -91,13 +91,13 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
   return (
     <div className="flex h-dvh flex-col">
       <header className="flex items-center justify-between px-5 pt-3 pb-2">
-        <div className="flex items-center gap-1.5">
-          <PiggyLogo size={28} showBackground={false} />
+        <a href="#/landing" className="flex items-center gap-1.5">
+          <PiggyLogo size={28} />
           <span className="text-xl font-bold text-gray-900">Piggy</span>
-        </div>
+        </a>
         <button
           onClick={() => onTabChange("account")}
-          className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-600 transition-colors hover:bg-green-200"
+          className="flex h-9 w-9 items-center justify-center rounded-full bg-pink-100 text-sm font-bold text-pink-600 transition-colors hover:bg-pink-200"
         >
           <Avatar address={address} username={username} size="sm" />
         </button>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="80" fill="#F5E6A3"/>
+  <!-- Shadow -->
+  <ellipse cx="270" cy="410" rx="130" ry="30" fill="rgba(0,0,0,0.08)"/>
+  <!-- Body outline -->
+  <path d="M140 280 C80 280, 50 230, 50 180 C50 120, 90 80, 150 70 L160 50 L190 75 C220 60, 260 55, 300 60 C360 70, 420 110, 430 170 C440 230, 410 280, 360 300 L350 340 L320 320 C290 330, 250 335, 210 330 L180 340 L160 300 Z" fill="white" stroke="black" stroke-width="28" stroke-linejoin="round"/>
+  <!-- Ear -->
+  <path d="M155 95 L130 55 L175 80 Z" fill="white" stroke="black" stroke-width="18" stroke-linejoin="round"/>
+  <!-- Eye -->
+  <circle cx="165" cy="175" r="16" fill="black"/>
+  <!-- Coin slot -->
+  <path d="M220 85 C260 75, 310 78, 340 90" stroke="black" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <!-- Tail -->
+  <path d="M410 200 C430 190, 440 170, 435 155 C430 140, 445 130, 450 140" stroke="black" stroke-width="14" stroke-linecap="round" fill="none"/>
+  <!-- Legs -->
+  <rect x="170" y="310" width="40" height="50" rx="14" fill="white" stroke="black" stroke-width="18"/>
+  <rect x="290" y="310" width="40" height="50" rx="14" fill="white" stroke="black" stroke-width="18"/>
+</svg>
