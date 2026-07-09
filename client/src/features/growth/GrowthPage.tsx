@@ -650,13 +650,13 @@ function ChallengesTab({
    GROWTH PAGE (main export)
    ═══════════════════════════════════════════════════════════ */
 
-export function GrowthPage() {
+export function GrowthPage({ initialTab }: { initialTab?: "goals" | "challenges" } = {}) {
   const { goals, createGoal, contribute, deleteGoal } = useGoals();
   const { challenges, createChallenge, joinChallenge, leaveChallenge } = useChallenges();
   const { profiles, fetchProfiles } = useProfileStore();
   const balance = useVaultStore((s) => s.balance);
 
-  const [activeTab, setActiveTab] = useState<"goals" | "challenges">("goals");
+  const [activeTab, setActiveTab] = useState<"goals" | "challenges">(initialTab ?? "goals");
   const [fabOpen, setFabOpen] = useState(false);
   const [goalModalOpen, setGoalModalOpen] = useState(false);
   const [challengeModalOpen, setChallengeModalOpen] = useState(false);

@@ -29,6 +29,42 @@
   --color-sage-700: #2d4a32;
   --color-sage-800: #1e3222;
   --color-sage-900: #111c13;
+
+  --color-pink-50: #fff6f3;
+  --color-pink-100: #ffd9e2;
+  --color-pink-200: #ffbbc8;
+  --color-pink-300: #ff6f91;
+  --color-pink-400: #e14c74;
+  --color-pink-500: #c93e63;
+  --color-pink-600: #a82e50;
+  --color-pink-700: #8a2040;
+  --color-pink-800: #6b1832;
+  --color-pink-900: #4a1024;
+
+  --color-gold-50: #fffbeb;
+  --color-gold-100: #fff1d6;
+  --color-gold-200: #ffe29a;
+  --color-gold-300: #f4b740;
+  --color-gold-400: #d9932a;
+  --color-gold-500: #b9791e;
+
+  --color-mint-50: #ecfdf5;
+  --color-mint-100: #d1fae5;
+  --color-mint-200: #a7f3d0;
+  --color-mint-300: #6ee7b7;
+  --color-mint-400: #2fd98a;
+  --color-mint-500: #1fae6c;
+  --color-mint-600: #15803d;
+
+  --color-navy-700: #252749;
+  --color-navy-800: #1b1d38;
+  --color-navy-900: #101124;
+
+  --color-ink: #17182B;
+
+  --font-heading: "Fredoka", system-ui, sans-serif;
+  --font-body: "Manrope", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 html, body, #root {

@@ -3,14 +3,15 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
 import { useProfileStore } from "@/stores/profileStore";
-import { Button, PageSkeleton } from "@/components/common";
+import { PageSkeleton } from "@/components/common";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
-import { PiggyLogo } from "@/components/common/PiggyLogo";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ChallengeDetailPage } from "@/features/challenges/ChallengeDetailPage";
-import { registerTabSetter } from "@/hooks/useNavigate";
+import { LandingPage } from "@/features/landing/LandingPage";
+import { registerTabSetter, consumeGrowthSubTab } from "@/hooks/useNavigate";
 import { HomeIcon, VaultIcon, SavingsIcon, BorrowIcon } from "@/components/common/Icons";
 import { Avatar } from "@/components/account/Avatar";
+import { PiggyLogo } from "@/components/common/PiggyLogo";
 
 const VaultPage = lazy(() => import("@/features/vault/VaultPage").then((m) => ({ default: m.VaultPage })));
 const BorrowPage = lazy(() => import("@/features/borrow/BorrowPage").then((m) => ({ default: m.BorrowPage })));
@@ -26,34 +27,7 @@ const tabs: { id: Tab; label: string; Icon: typeof HomeIcon }[] = [
   { id: "borrow", label: "Borrow", Icon: BorrowIcon },
 ];
 
-function ConnectScreen() {
-  const { connect, status, error } = useWallet();
-
-  return (
-    <div className="flex h-dvh flex-col items-center justify-center px-6 text-center">
-      <div className="mb-8">
-        <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
-          <PiggyLogo size={80} showBackground={false} />
-        </div>
-        <h1 className="text-3xl font-bold text-gray-900">Piggy</h1>
-        <p className="mt-2 text-gray-500">Save smarter. Borrow smarter. Together.</p>
-      </div>
-
-      <Button
-        onClick={connect}
-        loading={status === "connecting"}
-        size="lg"
-        className="w-full max-w-xs"
-      >
-        {status === "connecting" ? "Connecting..." : "Connect to Nimiq Pay"}
-      </Button>
-
-      {error ? <p className="mt-4 max-w-xs text-sm text-red-500">{error}</p> : null}
-    </div>
-  );
-}
-
-function PageContent({ activeTab }: { activeTab: Tab }) {
+function PageContent({ activeTab, growthSubTab }: { activeTab: Tab; growthSubTab: "goals" | "challenges" | null }) {
   switch (activeTab) {
     case "home":
       return <DashboardPage />;
@@ -62,7 +36,7 @@ function PageContent({ activeTab }: { activeTab: Tab }) {
     case "borrow":
       return <BorrowPage />;
     case "growth":
-      return <GrowthPage />;
+      return <GrowthPage initialTab={growthSubTab ?? undefined} />;
     case "account":
       return <AccountPage />;
   }
@@ -72,6 +46,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
   const { address } = useWallet();
   const { username } = useProfileStore();
   const [prefetched, setPrefetched] = useState(false);
+  const [growthSubTab, setGrowthSubTab] = useState<"goals" | "challenges" | null>(null);
 
   useEffect(() => {
     if (prefetched) return;
@@ -82,6 +57,36 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
     }, 500);
     return () => clearTimeout(timer);
   }, [prefetched]);
+
+  // Listen for piggy:navigate custom event from landing page
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.tab) {
+        if (detail.tab === "growth" && detail.subTab === "challenges") {
+          setGrowthSubTab("challenges");
+        }
+        onTabChange(detail.tab);
+      }
+    };
+    window.addEventListener("piggy:navigate", handler);
+    return () => window.removeEventListener("piggy:navigate", handler);
+  }, [onTabChange]);
+
+  // Consume growthSubTab signal from useNavigate.goToGrowthChallenges
+  useEffect(() => {
+    const signal = consumeGrowthSubTab();
+    if (signal) {
+      setGrowthSubTab(signal);
+    }
+  }, [activeTab]);
+
+  // Reset growthSubTab when navigating away from growth
+  useEffect(() => {
+    if (activeTab !== "growth") {
+      setGrowthSubTab(null);
+    }
+  }, [activeTab]);
 
   return (
     <div className="flex h-dvh flex-col">
@@ -101,7 +106,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
       <main className="flex-1 overflow-y-auto px-4 pt-2 pb-24">
         <ErrorBoundary>
           <Suspense fallback={<PageSkeleton />}>
-            <PageContent activeTab={activeTab} />
+            <PageContent activeTab={activeTab} growthSubTab={growthSubTab} />
           </Suspense>
         </ErrorBoundary>
       </main>
@@ -148,7 +153,7 @@ function App() {
   }, []);
 
   if (!isConnected) {
-    return <ConnectScreen />;
+    return <LandingPage />;
   }
 
   return <AppShell activeTab={activeTab} onTabChange={setActiveTab} />;
@@ -160,6 +165,7 @@ export default function AppRoot() {
       <HashRouter>
         <Routes>
           <Route path="/" element={<App />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/challenge/:id" element={<ChallengeDetailPage />} />
         </Routes>
       </HashRouter>
