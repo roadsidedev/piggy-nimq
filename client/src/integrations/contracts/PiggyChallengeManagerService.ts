@@ -202,12 +202,6 @@ export class PiggyChallengeManagerService {
     return count - 1n;
   }
 
-  async joinChallenge(challengeId: bigint | string): Promise<`0x${string}`> {
-    const hash = await this.writeContract("joinChallenge", [challengeId]);
-    await this.waitForTx(hash);
-    return hash;
-  }
-
   async leaveChallenge(challengeId: bigint): Promise<`0x${string}`> {
     const hash = await this.writeContract("leaveChallenge", [challengeId]);
     await this.waitForTx(hash);
