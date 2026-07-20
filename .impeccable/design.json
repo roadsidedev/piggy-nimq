@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-20T11:16:00Z",
+  "title": "Design System: Piggy",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Coral Pink", "canonical": "#ff6f91", "tonalRamp": ["#6b1832", "#8a2040", "#a82e50", "#c93e63", "#e14c74", "#ff6f91", "#ff8fa8", "#ffbbc8"] },
+      "sage": { "role": "secondary", "displayName": "Sage Rose", "canonical": "#c93e63", "tonalRamp": ["#4a1024", "#6b1832", "#8a2040", "#a82e50", "#c93e63", "#e14c74", "#ff6f91", "#ff8fa8"] },
+      "green-soft": { "role": "tertiary", "displayName": "Mint Green", "canonical": "#2fd98a", "tonalRamp": ["#15803d", "#1fae6c", "#2fd98a", "#6ee7b7", "#a7f3d0", "#d1fae5", "#ecfdf5", "#f0fdf9"] },
+      "gold": { "role": "tertiary", "displayName": "Gold", "canonical": "#f4b740", "tonalRamp": ["#b9791e", "#d9932a", "#f4b740", "#ffe29a", "#fff1d6", "#fffbeb", "#fffdf5", "#fffefb"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#17182B", "tonalRamp": ["#0a0b14", "#101124", "#17182B", "#252749", "#3d3f5c", "#6b6d8a", "#9ca3af", "#e5e7eb"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Hero headlines — vault balance, page titles. Fredoka rounded friendliness." },
+      "headline": { "displayName": "Headline", "purpose": "Section headers — 'Your Vault', 'Savings Goals'." },
+      "body": { "displayName": "Body", "purpose": "All running text, descriptions, explanatory copy." },
+      "label": { "displayName": "Label", "purpose": "Form labels, button text, navigation items." },
+      "mono": { "displayName": "Mono", "purpose": "Transaction hashes, addresses, numerical data." }
+    },
+    "shadows": [
+      { "name": "card-ambient", "value": "0 1px 3px rgba(0,0,0,0.08)", "purpose": "Default card lift — subtle, warm." },
+      { "name": "card-hover", "value": "0 4px 12px rgba(0,0,0,0.1)", "purpose": "Interactive card feedback on hover." },
+      { "name": "modal-backdrop", "value": "0 -4px 24px rgba(0,0,0,0.12)", "purpose": "Bottom sheet upward shadow." },
+      { "name": "modal-content", "value": "0 8px 32px rgba(0,0,0,0.16)", "purpose": "Modal panel prominence." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions." },
+      { "name": "ease-out-quart", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Smooth deceleration for reveals and entrances." },
+      { "name": "duration-fast", "value": "150ms", "purpose": "Micro-interactions — hover, focus, toggle." },
+      { "name": "duration-normal", "value": "250ms", "purpose": "State changes, modal transitions." },
+      { "name": "duration-slow", "value": "400ms", "purpose": "Page transitions, entrance animations." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA button — confident sage rose, playful rounded corners.",
+      "html": "<button class=\"ds-btn-primary\">Enable Yield</button>",
+      "css": ".ds-btn-primary { background: #c93e63; color: #fff; padding: 12px 24px; border-radius: 12px; font-family: Manrope, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; transition: background 0.15s ease-out, transform 0.15s ease-out; } .ds-btn-primary:hover { background: #a82e50; transform: translateY(-1px); } .ds-btn-primary:active { transform: translateY(0); } .ds-btn-primary:focus-visible { outline: 2px solid rgba(201,62,99,0.3); outline-offset: 2px; } .ds-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Less prominent action — light gray, reserved for secondary flows.",
+      "html": "<button class=\"ds-btn-secondary\">Cancel</button>",
+      "css": ".ds-btn-secondary { background: #f3f4f6; color: #6b7280; padding: 12px 24px; border-radius: 12px; font-family: Manrope, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; border: none; cursor: pointer; transition: background 0.15s ease-out; } .ds-btn-secondary:hover { background: #e5e7eb; } .ds-btn-secondary:focus-visible { outline: 2px solid rgba(107,114,128,0.3); outline-offset: 2px; }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Content container — white, soft rounded, warm shadow.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Savings Goal</h3><p class=\"ds-card-value\">$1,250.00</p></div>",
+      "css": ".ds-card { background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.08); } .ds-card-title { font-family: Manrope, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: #6b7280; margin: 0 0 4px 0; } .ds-card-value { font-family: Manrope, system-ui, sans-serif; font-size: 1.5rem; font-weight: 600; color: #17182B; margin: 0; }"
+    },
+    {
+      "name": "Hero Card",
+      "kind": "card",
+      "refersTo": "card-hero",
+      "description": "Vault balance hero — warm pink-to-sand gradient, the garden glow.",
+      "html": "<div class=\"ds-hero-card\"><p class=\"ds-hero-label\">Your Vault Balance</p><p class=\"ds-hero-value\">$2,450.00</p><p class=\"ds-hero-apy\">+$1.20 today (Yield ON · 4.2% APY)</p></div>",
+      "css": ".ds-hero-card { background: linear-gradient(135deg, #fff6f3, #ffe8de); border-radius: 24px; padding: 24px; position: relative; overflow: hidden; } .ds-hero-label { font-family: Manrope, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: rgba(21,128,61,0.8); margin: 0 0 4px 0; } .ds-hero-value { font-family: Fredoka, system-ui, sans-serif; font-size: 2rem; font-weight: 600; color: #101124; margin: 0 0 4px 0; } .ds-hero-apy { font-family: Manrope, system-ui, sans-serif; font-size: 0.875rem; font-weight: 400; color: #1fae6c; margin: 0; }"
+    },
+    {
+      "name": "Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Form input — clean white, subtle border, sage focus ring.",
+      "html": "<div class=\"ds-input-group\"><label class=\"ds-input-label\">Amount</label><input class=\"ds-input\" type=\"text\" placeholder=\"0.00\" /></div>",
+      "css": ".ds-input-group { display: flex; flex-direction: column; gap: 6px; } .ds-input-label { font-family: Manrope, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: #374151; } .ds-input { background: #ffffff; color: #17182B; padding: 10px 12px; border-radius: 8px; border: 1px solid #e5e7eb; font-family: Manrope, system-ui, sans-serif; font-size: 0.9375rem; transition: border-color 0.15s ease-out, box-shadow 0.15s ease-out; } .ds-input::placeholder { color: #9ca3af; } .ds-input:focus { outline: none; border-color: #c93e63; box-shadow: 0 0 0 2px rgba(201,62,99,0.2); } .ds-input-error { border-color: #ef4444; }"
+    },
+    {
+      "name": "Bottom Sheet Modal",
+      "kind": "custom",
+      "refersTo": "modal",
+      "description": "Mobile-native bottom sheet — slides up, rounded top, dark backdrop.",
+      "html": "<div class=\"ds-modal-backdrop\"><div class=\"ds-modal-sheet\"><div class=\"ds-modal-header\"><h2 class=\"ds-modal-title\">Deposit</h2><button class=\"ds-modal-close\">✕</button></div><div class=\"ds-modal-body\"><p>Content here</p></div></div></div>",
+      "css": ".ds-modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: flex-end; z-index: 50; } .ds-modal-sheet { background: #ffffff; border-radius: 24px 24px 0 0; width: 100%; max-width: 28rem; padding: 24px; box-shadow: 0 -4px 24px rgba(0,0,0,0.12); animation: slide-up 0.25s cubic-bezier(0.25,1,0.5,1); } .ds-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; } .ds-modal-title { font-family: Manrope, system-ui, sans-serif; font-size: 1.125rem; font-weight: 600; color: #17182B; margin: 0; } .ds-modal-close { background: none; border: none; color: #9ca3af; cursor: pointer; font-size: 1.25rem; padding: 4px; } @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Savings Garden",
+    "overview": "Piggy's design system grows from the idea of a savings garden — a place where money takes root, grows, and bears fruit. Every screen should feel nurturing and alive, like watching your savings grow in real time. The palette is warm and coral-forward, anchored by a friendly pink that feels distinctly Piggy without crossing into childish territory.",
+    "keyCharacteristics": ["Warm coral-pink primary that reads as distinctly Piggy", "Generous spacing and soft rounded shapes for mobile-first touch", "Playful micro-interactions that celebrate savings milestones", "Clear financial data presentation without cold fintech sterility", "Bottom-sheet modals and mobile-native patterns throughout"],
+    "rules": [
+      { "name": "The Garden Rule", "body": "Every color in Piggy's palette has warmth. Even the greens lean toward mint, not forest. Cold blues, sterile grays, and clinical whites are forbidden.", "section": "colors" },
+      { "name": "The Coral Anchor Rule", "body": "The coral pink (#ff6f91) appears on ≤15% of any given screen. Its rarity makes it meaningful — every pink element signals 'this is important, this is interactive.'", "section": "colors" },
+      { "name": "The Fredoka Reserve Rule", "body": "Fredoka is reserved for headlines and display text. Using it for body copy or labels dilutes its impact and makes the interface feel juvenile.", "section": "typography" },
+      { "name": "The Warm Shadow Rule", "body": "All shadows use warm-tinted rgba values, never pure black. The garden is always bathed in warm light.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use the warm gradient (pink-50 → sand-100) as the body background",
+      "Do celebrate milestones with gold (#f4b740) accents",
+      "Do use mint green (#2fd98a) exclusively for positive growth indicators",
+      "Do keep Fredoka reserved for headlines and display text",
+      "Do use bottom-sheet modals on mobile",
+      "Do show financial data clearly with mono font alignment",
+      "Do use progressive disclosure for complex flows"
+    ],
+    "donts": [
+      "Don't use generic SaaS-cream backgrounds, gradient text, glassmorphism, hero-metrics, identical card grids, or tiny uppercase eyebrows",
+      "Don't use cold blues, sterile grays, or clinical whites",
+      "Don't use Fredoka for body copy or labels",
+      "Don't use pure black (#000000) for text — use ink (#17182B)",
+      "Don't stack cards inside cards",
+      "Don't use border-left/right as colored accent stripes",
+      "Don't gate content visibility on class-triggered transitions"
+    ]
+  }
+}

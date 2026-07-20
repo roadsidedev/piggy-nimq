@@ -10,7 +10,7 @@ function CircularGauge({ percentage, color }: { percentage: number; color: strin
   const offset = circumference - (percentage / 100) * circumference;
 
   return (
-    <svg width="80" height="80" viewBox="0 0 80 80">
+    <svg width="80" height="80" viewBox="0 0 80 80" role="img" aria-label={`Health: ${Math.round(percentage)}%`}>
       <circle
         cx="40"
         cy="40"
@@ -41,17 +41,20 @@ function CircularGauge({ percentage, color }: { percentage: number; color: strin
 
 export function BorrowedCard({ borrowedAmount, healthFactor }: BorrowedCardProps) {
   const gaugePercentage = Math.min(100, healthFactor * 30);
-  const gaugeColor = healthFactor > 2 ? "#c93e63" : healthFactor > 1.5 ? "#ff8fa8" : "#ef4444";
+  const gaugeColor = healthFactor > 2 ? "#2fd98a" : healthFactor > 1.5 ? "#f4b740" : "#ef4444";
 
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm">
-      <p className="text-sm font-medium text-gray-800">Borrowed</p>
-      <p className="mt-1 text-2xl font-bold text-gray-900">${borrowedAmount}</p>
+      <p className="font-body text-sm font-medium text-gray-800">Borrowed</p>
+      <p className="font-heading mt-1 text-2xl font-bold text-gray-900">${borrowedAmount}</p>
       <div className="mt-3 flex justify-center">
         <CircularGauge percentage={gaugePercentage} color={gaugeColor} />
       </div>
       <p className="mt-1 text-center text-xs text-gray-600">
         Health Factor {healthFactor > 99 ? "99+" : healthFactor.toFixed(1)}
+      </p>
+      <p className="mt-0.5 text-center text-xs font-medium" style={{ color: gaugeColor }}>
+        {healthFactor > 2 ? "Safe" : healthFactor > 1.5 ? "Caution" : "Danger"}
       </p>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 import { Button, Input } from "@/components/common";
 import type { TxStatus } from "@/types";
 
@@ -60,6 +61,7 @@ export function YieldPanel({
     setLoading(true);
     try {
       await onConfirm(inputAmount);
+      toast.success("Yield activated!", { description: `Your money is now growing at ${apy.toFixed(1)}% APY` });
       setExpanded(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to enable yield");

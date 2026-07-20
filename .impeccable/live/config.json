@@ -1,0 +1,6 @@
+{
+  "files": ["client/index.html"],
+  "insertBefore": "</head>",
+  "commentSyntax": "<!-- {label} -->",
+  "cspChecked": false
+}

@@ -1,7 +1,9 @@
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 import { useNavigate } from "@/hooks/useNavigate";
 import { useDashboard } from "./useDashboard";
 import { useVault } from "@/features/vault/useVault";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { VaultBalanceCard } from "@/components/dashboard/VaultBalanceCard";
 import { YieldCard } from "@/components/dashboard/YieldCard";
 import { BorrowedCard } from "@/components/dashboard/BorrowedCard";
@@ -37,6 +39,7 @@ export function DashboardPage() {
       setToggleLoading(true);
       try {
         await disableYield();
+        toast.success("Yield disabled", { description: "Your funds are no longer earning yield" });
       } catch {
         // Error is handled by useVault (sets txError in store)
       } finally {
@@ -52,22 +55,28 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <VaultBalanceCard
-        balance={balance}
-        yieldEnabled={yieldEnabled}
-        apy={apy}
-        earningsToday={monthlyEarnings}
-      />
+      <ErrorBoundary fallback={<div className="rounded-2xl bg-white p-4 text-center text-sm text-gray-500">Couldn't load vault balance</div>}>
+        <VaultBalanceCard
+          balance={balance}
+          yieldEnabled={yieldEnabled}
+          apy={apy}
+          earningsToday={monthlyEarnings}
+        />
+      </ErrorBoundary>
 
       <div className="grid grid-cols-2 gap-3">
-        <YieldCard
-          enabled={yieldEnabled}
-          apy={apy}
-          estimatedMonthly={monthlyEarnings}
-          onToggle={handleYieldToggle}
-          loading={toggleLoading}
-        />
-        <BorrowedCard borrowedAmount={borrowedAmount} healthFactor={healthFactor} />
+        <ErrorBoundary fallback={<div className="rounded-2xl bg-white p-4 text-center text-xs text-gray-500">Couldn't load yield data</div>}>
+          <YieldCard
+            enabled={yieldEnabled}
+            apy={apy}
+            estimatedMonthly={monthlyEarnings}
+            onToggle={handleYieldToggle}
+            loading={toggleLoading}
+          />
+        </ErrorBoundary>
+        <ErrorBoundary fallback={<div className="rounded-2xl bg-white p-4 text-center text-xs text-gray-500">Couldn't load borrow data</div>}>
+          <BorrowedCard borrowedAmount={borrowedAmount} healthFactor={healthFactor} />
+        </ErrorBoundary>
       </div>
 
       <QuickActions
@@ -77,9 +86,13 @@ export function DashboardPage() {
         onJoinChallenge={goToGrowth}
       />
 
-      <GoalsPreview goals={goals} onNavigate={goToGrowth} />
+      <ErrorBoundary fallback={<div className="rounded-2xl bg-white p-4 text-center text-xs text-gray-500">Couldn't load goals</div>}>
+        <GoalsPreview goals={goals} onNavigate={goToGrowth} />
+      </ErrorBoundary>
 
-      <ChallengesPreview challenges={challenges} onNavigate={goToGrowth} />
+      <ErrorBoundary fallback={<div className="rounded-2xl bg-white p-4 text-center text-xs text-gray-500">Couldn't load challenges</div>}>
+        <ChallengesPreview challenges={challenges} onNavigate={goToGrowth} />
+      </ErrorBoundary>
     </div>
   );
 }
