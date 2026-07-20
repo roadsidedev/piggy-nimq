@@ -11,9 +11,9 @@ export function VaultBalanceCard({ balance, yieldEnabled, apy, earningsToday }: 
   return (
     <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-pink-100 via-pink-50 to-pink-100 p-6 shadow-sm">
       <div className="relative z-10">
-        <p className="text-sm font-medium text-green-700/80">Your Vault Balance</p>
+        <p className="font-heading text-sm font-medium text-green-700/80">Your Vault Balance</p>
         <div className="mt-1 flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-green-900">${balance}</span>
+          <span className="font-heading text-3xl font-bold text-green-900">${balance}</span>
           <span className="text-sm font-medium text-green-600">USDT</span>
         </div>
         {yieldEnabled && apy > 0 ? (
@@ -25,7 +25,7 @@ export function VaultBalanceCard({ balance, yieldEnabled, apy, earningsToday }: 
         )}
       </div>
       <div className="absolute -right-2 -top-2 opacity-80">
-        <PiggyBank size={100} />
+        <PiggyBank size={100} aria-hidden="true" />
       </div>
     </div>
   );

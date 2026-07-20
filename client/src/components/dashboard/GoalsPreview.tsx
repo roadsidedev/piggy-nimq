@@ -12,14 +12,21 @@ export function GoalsPreview({ goals, onNavigate }: GoalsPreviewProps) {
   return (
     <div className="rounded-2xl bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-gray-900">Active Goals</h3>
-        <button onClick={onNavigate} className="flex items-center text-xs text-green-600">
-          View all <ChevronRightIcon size={14} />
+        <h3 className="font-heading text-sm font-semibold text-gray-900">Active Goals</h3>
+        <button onClick={onNavigate} className="flex items-center text-xs text-green-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 rounded">
+          View all <ChevronRightIcon size={14} aria-hidden="true" />
         </button>
       </div>
 
       {activeGoals.length === 0 ? (
-        <p className="py-2 text-center text-sm text-gray-500">No active goals</p>
+        <button
+          onClick={onNavigate}
+          className="flex flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 py-6 text-center transition-colors hover:border-green-300 hover:bg-green-50"
+        >
+          <span className="text-2xl">🌱</span>
+          <p className="font-body text-sm font-medium text-gray-700">Start your first goal</p>
+          <p className="text-xs text-gray-500">Set a target and watch your savings grow</p>
+        </button>
       ) : (
         <div className="flex flex-col gap-3">
           {activeGoals.map((goal) => {
