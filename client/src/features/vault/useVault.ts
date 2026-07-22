@@ -41,7 +41,9 @@ export function useVault() {
     queryKey: ["aaveReserveData"],
     queryFn: () => aaveService.getReserveData(),
     enabled: yieldEnabled,
-    refetchInterval: 30000,
+    refetchInterval: 120000,
+    staleTime: 60000,
+    placeholderData: (prev) => prev,
   });
 
   useEffect(() => {

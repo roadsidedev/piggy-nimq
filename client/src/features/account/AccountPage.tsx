@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
 import { useWalletStore } from "@/stores/walletStore";
 import { useVaultStore } from "@/stores/vaultStore";
 import { useBorrowStore } from "@/stores/borrowStore";
@@ -13,7 +14,7 @@ import { RecurringConfig } from "@/components/account/RecurringConfig";
 import { RecurringModal } from "@/components/account/RecurringModal";
 import { TransactionHistory } from "@/components/vault/TransactionHistory";
 import { EditProfileModal } from "@/components/account/EditProfileModal";
-import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon, PencilIcon } from "./AccountIcons";
+import { ShieldIcon, WalletIcon, FlameIcon, LogOutIcon, PencilIcon, CopyIcon } from "./AccountIcons";
 import type { RecurringFrequency } from "@/stores/recurringStore";
 
 export function AccountPage() {
@@ -28,6 +29,15 @@ export function AccountPage() {
   const { disconnect } = useWallet();
   const [recurringModalOpen, setRecurringModalOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
+
+  const handleCopyAddress = useCallback(() => {
+    if (!address) return;
+    navigator.clipboard.writeText(address).then(() => {
+      toast.success("Wallet address copied");
+    }).catch(() => {
+      toast.error("Could not copy address");
+    });
+  }, [address]);
 
   const vaultNum = Number(balance) || 0;
   const totalSaved = vaultNum + goals.reduce((sum, g) => sum + Number(g.currentAmount), 0);
@@ -65,10 +75,21 @@ export function AccountPage() {
       {/* Header */}
       <div className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
         <Avatar address={address} username={username} size="lg" />
-        <div className="flex-1">
-          <p className="text-sm font-semibold text-gray-900">
-            {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
-          </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5">
+            <p className="truncate text-sm font-semibold text-gray-900">
+              {address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not connected"}
+            </p>
+            {address && (
+              <button
+                onClick={handleCopyAddress}
+                className="flex-shrink-0 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-sage-600 transition-colors"
+                title="Copy wallet address"
+              >
+                <CopyIcon size={14} />
+              </button>
+            )}
+          </div>
           <p className="text-xs text-gray-500">
             {address ? "Connected via Nimiq Pay" : ""}
           </p>

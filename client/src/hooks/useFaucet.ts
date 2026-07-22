@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { createPublicClient, createWalletClient, custom } from "viem";
+import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { polygonAmoy } from "viem/chains";
-import { PIGGY_CONTRACTS } from "@/integrations/contracts/constants";
+import { PIGGY_CONTRACTS, RPC_URL } from "@/integrations/contracts/constants";
 import { getEthereumProvider } from "@/integrations/nimiq";
-import { ensureCorrectChain } from "@/integrations/wallet/chain";
 
 const FAUCET_ABI = [
   {
@@ -15,6 +14,11 @@ const FAUCET_ABI = [
   },
 ] as const;
 
+const publicClient = createPublicClient({
+  chain: polygonAmoy,
+  transport: http(RPC_URL),
+});
+
 export function useFaucet() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +28,6 @@ export function useFaucet() {
     setError(null);
 
     try {
-      await ensureCorrectChain();
       const provider = getEthereumProvider();
       if (!provider) throw new Error("No wallet provider found");
 
@@ -43,15 +46,23 @@ export function useFaucet() {
 
       if (!hash) throw new Error("Faucet transaction failed");
 
-      const publicClient = createPublicClient({
-        chain: polygonAmoy,
-        transport: custom(provider),
-      });
       await publicClient.waitForTransactionReceipt({ hash });
 
       return true;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Faucet request failed";
+      let message: string;
+      if (err instanceof Error) {
+        const errObj = err as { code?: number; shortMessage?: string };
+        if (errObj.code === 4001) {
+          message = "Transaction was not signed. Please try again and approve the request in your wallet.";
+        } else if (errObj.shortMessage) {
+          message = errObj.shortMessage;
+        } else {
+          message = err.message;
+        }
+      } else {
+        message = "Faucet request failed";
+      }
       setError(message);
       return false;
     } finally {
