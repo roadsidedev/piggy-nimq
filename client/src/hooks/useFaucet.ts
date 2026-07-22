@@ -39,12 +39,21 @@ export function useFaucet() {
         transport: custom(provider),
       });
 
+      const estimatedGas = await publicClient.estimateContractGas({
+        address: PIGGY_CONTRACTS.faucet as `0x${string}`,
+        abi: FAUCET_ABI,
+        functionName: "drip",
+        args: [address],
+        account: address as `0x${string}`,
+      });
+
       const hash = await walletClient.writeContract({
         chain: undefined,
         address: PIGGY_CONTRACTS.faucet as `0x${string}`,
         abi: FAUCET_ABI,
         functionName: "drip",
         args: [address],
+        gas: estimatedGas,
       } as never);
 
       if (!hash) throw new Error("Faucet transaction failed");
