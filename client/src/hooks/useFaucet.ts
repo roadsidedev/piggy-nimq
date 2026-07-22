@@ -43,7 +43,7 @@ export function useFaucet() {
         address: PIGGY_CONTRACTS.faucet as `0x${string}`,
         abi: FAUCET_ABI,
         functionName: "drip",
-        args: [address],
+        args: [address as `0x${string}`],
         account: address as `0x${string}`,
       });
 
