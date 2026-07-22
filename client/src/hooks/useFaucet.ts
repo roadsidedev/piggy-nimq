@@ -39,7 +39,7 @@ export function useFaucet() {
         transport: custom(provider),
       });
 
-      let gas: bigint | undefined;
+      let gas: bigint;
       try {
         gas = await publicClient.estimateContractGas({
           address: PIGGY_CONTRACTS.faucet as `0x${string}`,
@@ -48,13 +48,14 @@ export function useFaucet() {
           args: [address as `0x${string}`],
           account: address as `0x${string}`,
         });
+        gas = (gas * 130n) / 100n;
       } catch {
         // RPC unavailable for estimation — use a safe default for faucet drip
-        gas = 100000n;
+        gas = 100_000n;
       }
 
       const hash = await walletClient.writeContract({
-        chain: undefined,
+        chain: polygonAmoy,
         address: PIGGY_CONTRACTS.faucet as `0x${string}`,
         abi: FAUCET_ABI,
         functionName: "drip",

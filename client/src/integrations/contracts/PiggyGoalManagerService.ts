@@ -60,6 +60,25 @@ export class PiggyGoalManagerService {
     return accounts[0] as Address;
   }
 
+  private async estimateGas(
+    functionName: string,
+    args: unknown[],
+    account: `0x${string}`,
+  ): Promise<bigint> {
+    try {
+      const gas = await this.publicClient.estimateContractGas({
+        address: this.getManagerAddress(),
+        abi: PIGGY_GOAL_MANAGER_ABI,
+        functionName: functionName as never,
+        args: args as never,
+        account,
+      });
+      return (gas * 130n) / 100n;
+    } catch {
+      return 300_000n;
+    }
+  }
+
   private async writeContract(
     functionName: string,
     args: unknown[],
@@ -75,11 +94,14 @@ export class PiggyGoalManagerService {
       transport: custom(provider),
     });
 
+    const gas = await this.estimateGas(functionName, args, account);
+
     const hash = await walletClient.writeContract({
       address: this.getManagerAddress() as `0x${string}`,
       abi: PIGGY_GOAL_MANAGER_ABI,
       functionName: functionName as never,
       args: args as never,
+      gas,
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");

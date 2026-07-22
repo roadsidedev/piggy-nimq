@@ -91,6 +91,27 @@ export class PiggyVaultService {
     return accounts[0] as Address;
   }
 
+  private async estimateGas(
+    address: `0x${string}`,
+    abi: readonly unknown[],
+    functionName: string,
+    args: unknown[],
+    account: `0x${string}`,
+  ): Promise<bigint> {
+    try {
+      const gas = await this.publicClient.estimateContractGas({
+        address,
+        abi: abi as never,
+        functionName: functionName as never,
+        args: args as never,
+        account,
+      });
+      return (gas * 130n) / 100n;
+    } catch {
+      return 300_000n;
+    }
+  }
+
   private async writeContract(
     functionName: string,
     args: unknown[],
@@ -106,11 +127,20 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
+    const gas = await this.estimateGas(
+      this.getVaultAddress(),
+      PIGGY_VAULT_ABI,
+      functionName,
+      args,
+      account,
+    );
+
     const hash = await walletClient.writeContract({
       address: this.getVaultAddress() as `0x${string}`,
       abi: PIGGY_VAULT_ABI,
       functionName: functionName as never,
       args: args as never,
+      gas,
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");
@@ -152,11 +182,20 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
+    const gas = await this.estimateGas(
+      this.getAssetAddress(),
+      ERC20_ABI,
+      "approve",
+      [this.getVaultAddress() as `0x${string}`, maxUint256],
+      account,
+    );
+
     const hash = await walletClient.writeContract({
       address: this.getAssetAddress() as `0x${string}`,
       abi: ERC20_ABI,
       functionName: "approve",
       args: [this.getVaultAddress() as `0x${string}`, maxUint256],
+      gas,
     } as never);
 
     if (!hash) throw new Error("Approval submission returned no hash");

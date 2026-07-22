@@ -72,6 +72,27 @@ export class AaveService {
     return account;
   }
 
+  private async estimateGas(
+    address: Address,
+    abi: typeof AAVE_ABI | typeof ERC20_ABI,
+    functionName: string,
+    args: unknown[],
+    account: Address,
+  ): Promise<bigint> {
+    try {
+      const gas = await this.publicClient.estimateContractGas({
+        address,
+        abi: abi as never,
+        functionName: functionName as never,
+        args: args as never,
+        account,
+      });
+      return (gas * 130n) / 100n;
+    } catch {
+      return 300_000n;
+    }
+  }
+
   private async writeContract(
     address: Address,
     abi: typeof AAVE_ABI | typeof ERC20_ABI,
@@ -81,12 +102,15 @@ export class AaveService {
     const walletClient = createWalletViemClient(this.useTestnet);
     const account = await this.getAccount();
 
+    const gas = await this.estimateGas(address, abi, functionName, args, account);
+
     const hash = await walletClient.writeContract({
       account,
       address,
       abi,
       functionName: functionName as never,
       args: args as never,
+      gas,
     } as never);
 
     if (!hash) {
