@@ -3,6 +3,7 @@ import { createPublicClient, createWalletClient, custom, http } from "viem";
 import { polygonAmoy } from "viem/chains";
 import { PIGGY_CONTRACTS, RPC_URL } from "@/integrations/contracts/constants";
 import { getEthereumProvider } from "@/integrations/nimiq";
+import { ensureCorrectChain } from "@/integrations/wallet/chain";
 
 const FAUCET_ABI = [
   {
@@ -28,6 +29,7 @@ export function useFaucet() {
     setError(null);
 
     try {
+      await ensureCorrectChain();
       const provider = getEthereumProvider();
       if (!provider) throw new Error("No wallet provider found");
 
@@ -38,6 +40,7 @@ export function useFaucet() {
       });
 
       const hash = await walletClient.writeContract({
+        chain: undefined,
         address: PIGGY_CONTRACTS.faucet as `0x${string}`,
         abi: FAUCET_ABI,
         functionName: "drip",
