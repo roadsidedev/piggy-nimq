@@ -1,7 +1,8 @@
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
+import { useAuth } from "@/hooks/useAuth";
 import { useProfileStore } from "@/stores/profileStore";
 import { PageSkeleton } from "@/components/common";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
@@ -143,17 +144,44 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
   );
 }
 
+function AuthLoading() {
+  return (
+    <div className="flex h-dvh flex-col items-center justify-center gap-4 bg-white">
+      <div className="animate-bounce">
+        <PiggyLogo size={48} />
+      </div>
+      <p className="text-sm font-medium text-gray-500">Signing in with your wallet...</p>
+    </div>
+  );
+}
+
 function App() {
   const { isConnected } = useWallet();
+  const { authenticate, status: authStatus } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>("home");
+  const authAttemptedRef = useRef(false);
 
   useEffect(() => {
     const unregister = registerTabSetter(setActiveTab);
     return unregister;
   }, []);
 
+  useEffect(() => {
+    if (isConnected && authStatus === "unauthenticated" && !authAttemptedRef.current) {
+      authAttemptedRef.current = true;
+      authenticate();
+    }
+    if (!isConnected) {
+      authAttemptedRef.current = false;
+    }
+  }, [isConnected, authStatus, authenticate]);
+
   if (!isConnected) {
     return <LandingPage />;
+  }
+
+  if (authStatus === "authenticating") {
+    return <AuthLoading />;
   }
 
   return <AppShell activeTab={activeTab} onTabChange={setActiveTab} />;

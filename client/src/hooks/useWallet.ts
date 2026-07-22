@@ -8,6 +8,7 @@ import { useRecurringStore } from "@/stores/recurringStore";
 import { useProfileStore } from "@/stores/profileStore";
 import { walletService } from "@/integrations/wallet";
 import { isNimiqPay, getEthereumProvider, initNimiqSDK, getLanguage, requestId } from "@/integrations/nimiq";
+import { clearToken } from "@/lib/api";
 
 export function useWallet() {
   const { status, profile, address, error, connect: storeConnect, disconnect, setProfile, setAddress, setError } =
@@ -55,6 +56,7 @@ export function useWallet() {
 
   const handleDisconnect = useCallback(() => {
     walletService.disconnect();
+    clearToken();
     disconnect();
     resetVault();
     resetBorrow();

@@ -26,7 +26,9 @@ export function useGoals() {
       return Promise.all(goalPromises);
     },
     enabled: !!address,
-    refetchInterval: 60000,
+    refetchInterval: 120000,
+    staleTime: 60000,
+    placeholderData: (prev) => prev,
   });
 
   // Sync on-chain goals into local store

@@ -29,7 +29,9 @@ export function useChallenges() {
       return piggyChallengeManagerService.getUserChallenges(address);
     },
     enabled: !!address,
-    refetchInterval: 30000,
+    refetchInterval: 120000,
+    staleTime: 60000,
+    placeholderData: (prev) => prev,
   });
 
   // Sync on-chain challenges into local store when fetched

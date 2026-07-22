@@ -60,7 +60,7 @@ export function useAllChallenges() {
     };
 
     sync();
-    const interval = setInterval(sync, 60000);
+    const interval = setInterval(sync, 300000);
     return () => clearInterval(interval);
   }, [addChallenge]);
 }
