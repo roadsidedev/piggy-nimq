@@ -39,13 +39,19 @@ export function useFaucet() {
         transport: custom(provider),
       });
 
-      const estimatedGas = await publicClient.estimateContractGas({
-        address: PIGGY_CONTRACTS.faucet as `0x${string}`,
-        abi: FAUCET_ABI,
-        functionName: "drip",
-        args: [address as `0x${string}`],
-        account: address as `0x${string}`,
-      });
+      let gas: bigint | undefined;
+      try {
+        gas = await publicClient.estimateContractGas({
+          address: PIGGY_CONTRACTS.faucet as `0x${string}`,
+          abi: FAUCET_ABI,
+          functionName: "drip",
+          args: [address as `0x${string}`],
+          account: address as `0x${string}`,
+        });
+      } catch {
+        // RPC unavailable for estimation — use a safe default for faucet drip
+        gas = 100000n;
+      }
 
       const hash = await walletClient.writeContract({
         chain: undefined,
@@ -53,7 +59,7 @@ export function useFaucet() {
         abi: FAUCET_ABI,
         functionName: "drip",
         args: [address],
-        gas: estimatedGas,
+        gas,
       } as never);
 
       if (!hash) throw new Error("Faucet transaction failed");
