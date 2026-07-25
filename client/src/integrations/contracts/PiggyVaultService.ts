@@ -97,19 +97,33 @@ export class PiggyVaultService {
     functionName: string,
     args: unknown[],
     account: `0x${string}`,
-  ): Promise<bigint> {
+  ): Promise<{ gas: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }> {
+    let gas: bigint;
     try {
-      const gas = await this.publicClient.estimateContractGas({
+      const estimated = await this.publicClient.estimateContractGas({
         address,
         abi: abi as never,
         functionName: functionName as never,
         args: args as never,
         account,
       });
-      return (gas * 130n) / 100n;
+      gas = (estimated * 130n) / 100n;
     } catch {
-      return 300_000n;
+      gas = 2_000_000n;
     }
+
+    let maxFeePerGas: bigint;
+    let maxPriorityFeePerGas: bigint;
+    try {
+      const fees = await this.publicClient.estimateFeesPerGas();
+      maxFeePerGas = fees.maxFeePerGas;
+      maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+    } catch {
+      maxFeePerGas = 50_000_000_000n;
+      maxPriorityFeePerGas = 2_000_000_000n;
+    }
+
+    return { gas, maxFeePerGas, maxPriorityFeePerGas };
   }
 
   private async writeContract(
@@ -127,8 +141,8 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
-    const gas = await this.estimateGas(
-      this.getVaultAddress(),
+    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(
+      this.getVaultAddress() as `0x${string}`,
       PIGGY_VAULT_ABI,
       functionName,
       args,
@@ -141,6 +155,8 @@ export class PiggyVaultService {
       functionName: functionName as never,
       args: args as never,
       gas,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");
@@ -182,8 +198,8 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
-    const gas = await this.estimateGas(
-      this.getAssetAddress(),
+    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(
+      this.getAssetAddress() as `0x${string}`,
       ERC20_ABI,
       "approve",
       [this.getVaultAddress() as `0x${string}`, maxUint256],
@@ -196,6 +212,8 @@ export class PiggyVaultService {
       functionName: "approve",
       args: [this.getVaultAddress() as `0x${string}`, maxUint256],
       gas,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
     } as never);
 
     if (!hash) throw new Error("Approval submission returned no hash");
