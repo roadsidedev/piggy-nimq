@@ -72,6 +72,41 @@ export class AaveService {
     return account;
   }
 
+  private async estimateGas(
+    address: Address,
+    abi: typeof AAVE_ABI | typeof ERC20_ABI,
+    functionName: string,
+    args: unknown[],
+    account: Address,
+  ): Promise<{ gas: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }> {
+    let gas: bigint;
+    try {
+      const estimated = await this.publicClient.estimateContractGas({
+        address,
+        abi: abi as never,
+        functionName: functionName as never,
+        args: args as never,
+        account,
+      });
+      gas = (estimated * 130n) / 100n;
+    } catch {
+      gas = 2_000_000n;
+    }
+
+    let maxFeePerGas: bigint;
+    let maxPriorityFeePerGas: bigint;
+    try {
+      const fees = await this.publicClient.estimateFeesPerGas();
+      maxFeePerGas = fees.maxFeePerGas;
+      maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+    } catch {
+      maxFeePerGas = 50_000_000_000n;
+      maxPriorityFeePerGas = 2_000_000_000n;
+    }
+
+    return { gas, maxFeePerGas, maxPriorityFeePerGas };
+  }
+
   private async writeContract(
     address: Address,
     abi: typeof AAVE_ABI | typeof ERC20_ABI,
@@ -81,12 +116,17 @@ export class AaveService {
     const walletClient = createWalletViemClient(this.useTestnet);
     const account = await this.getAccount();
 
+    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(address, abi, functionName, args, account);
+
     const hash = await walletClient.writeContract({
       account,
       address,
       abi,
       functionName: functionName as never,
       args: args as never,
+      gas,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
     } as never);
 
     if (!hash) {

@@ -132,9 +132,8 @@ export class PiggyChallengeManagerService {
 
   // ─── Write ─────────────────────────────────────────────────────────────
 
-  async joinChallenge(challengeId: bigint | string): Promise<`0x${string}`> {
-    const id = typeof challengeId === "bigint" ? challengeId.toString() : challengeId;
-    const hash = await this.writeContract("joinChallenge", [id]);
+  async joinChallenge(challengeId: bigint): Promise<`0x${string}`> {
+    const hash = await this.writeContract("joinChallenge", [challengeId]);
     await this.waitForTx(hash);
     return hash;
   }
@@ -149,6 +148,39 @@ export class PiggyChallengeManagerService {
     const accounts = await provider.request({ method: "eth_requestAccounts" }) as string[];
     if (!accounts.length) throw new Error("No accounts available");
     return accounts[0] as Address;
+  }
+
+  private async estimateGas(
+    functionName: string,
+    args: unknown[],
+    account: `0x${string}`,
+  ): Promise<{ gas: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }> {
+    let gas: bigint;
+    try {
+      const estimated = await this.publicClient.estimateContractGas({
+        address: this.getManagerAddress() as `0x${string}`,
+        abi: PIGGY_CHALLENGE_MANAGER_ABI,
+        functionName: functionName as never,
+        args: args as never,
+        account,
+      });
+      gas = (estimated * 130n) / 100n;
+    } catch {
+      gas = 2_000_000n;
+    }
+
+    let maxFeePerGas: bigint;
+    let maxPriorityFeePerGas: bigint;
+    try {
+      const fees = await this.publicClient.estimateFeesPerGas();
+      maxFeePerGas = fees.maxFeePerGas;
+      maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+    } catch {
+      maxFeePerGas = 50_000_000_000n;
+      maxPriorityFeePerGas = 2_000_000_000n;
+    }
+
+    return { gas, maxFeePerGas, maxPriorityFeePerGas };
   }
 
   private async writeContract(
@@ -166,11 +198,16 @@ export class PiggyChallengeManagerService {
       transport: custom(provider),
     });
 
+    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(functionName, args, account);
+
     const hash = await walletClient.writeContract({
       address: this.getManagerAddress() as `0x${string}`,
       abi: PIGGY_CHALLENGE_MANAGER_ABI,
       functionName: functionName as never,
       args: args as never,
+      gas,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");

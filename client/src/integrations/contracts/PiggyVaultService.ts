@@ -91,6 +91,41 @@ export class PiggyVaultService {
     return accounts[0] as Address;
   }
 
+  private async estimateGas(
+    address: `0x${string}`,
+    abi: readonly unknown[],
+    functionName: string,
+    args: unknown[],
+    account: `0x${string}`,
+  ): Promise<{ gas: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }> {
+    let gas: bigint;
+    try {
+      const estimated = await this.publicClient.estimateContractGas({
+        address,
+        abi: abi as never,
+        functionName: functionName as never,
+        args: args as never,
+        account,
+      });
+      gas = (estimated * 130n) / 100n;
+    } catch {
+      gas = 2_000_000n;
+    }
+
+    let maxFeePerGas: bigint;
+    let maxPriorityFeePerGas: bigint;
+    try {
+      const fees = await this.publicClient.estimateFeesPerGas();
+      maxFeePerGas = fees.maxFeePerGas;
+      maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+    } catch {
+      maxFeePerGas = 50_000_000_000n;
+      maxPriorityFeePerGas = 2_000_000_000n;
+    }
+
+    return { gas, maxFeePerGas, maxPriorityFeePerGas };
+  }
+
   private async writeContract(
     functionName: string,
     args: unknown[],
@@ -106,11 +141,22 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
+    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(
+      this.getVaultAddress() as `0x${string}`,
+      PIGGY_VAULT_ABI,
+      functionName,
+      args,
+      account,
+    );
+
     const hash = await walletClient.writeContract({
       address: this.getVaultAddress() as `0x${string}`,
       abi: PIGGY_VAULT_ABI,
       functionName: functionName as never,
       args: args as never,
+      gas,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");
@@ -152,11 +198,22 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
+    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(
+      this.getAssetAddress() as `0x${string}`,
+      ERC20_ABI,
+      "approve",
+      [this.getVaultAddress() as `0x${string}`, maxUint256],
+      account,
+    );
+
     const hash = await walletClient.writeContract({
       address: this.getAssetAddress() as `0x${string}`,
       abi: ERC20_ABI,
       functionName: "approve",
       args: [this.getVaultAddress() as `0x${string}`, maxUint256],
+      gas,
+      maxFeePerGas,
+      maxPriorityFeePerGas,
     } as never);
 
     if (!hash) throw new Error("Approval submission returned no hash");
