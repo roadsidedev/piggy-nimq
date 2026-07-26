@@ -122,6 +122,7 @@ export class AaveService {
       args: args as never,
       gas,
       gasPrice,
+      type: "legacy",
     } as never);
 
     if (!hash) {

@@ -64,6 +64,7 @@ export function useFaucet() {
         args: [address],
         gas,
         gasPrice,
+        type: "legacy",
       } as never);
 
       if (!hash) throw new Error("Faucet transaction failed");

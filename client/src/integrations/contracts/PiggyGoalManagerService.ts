@@ -113,6 +113,7 @@ export class PiggyGoalManagerService {
       args: args as never,
       gas,
       gasPrice,
+      type: "legacy",
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");

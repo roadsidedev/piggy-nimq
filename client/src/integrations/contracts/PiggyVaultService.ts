@@ -152,6 +152,7 @@ export class PiggyVaultService {
       args: args as never,
       gas,
       gasPrice,
+      type: "legacy",
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");
@@ -208,6 +209,7 @@ export class PiggyVaultService {
       args: [this.getVaultAddress() as `0x${string}`, maxUint256],
       gas,
       gasPrice,
+      type: "legacy",
     } as never);
 
     if (!hash) throw new Error("Approval submission returned no hash");
