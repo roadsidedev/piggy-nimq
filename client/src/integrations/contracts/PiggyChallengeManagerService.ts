@@ -154,7 +154,7 @@ export class PiggyChallengeManagerService {
     functionName: string,
     args: unknown[],
     account: `0x${string}`,
-  ): Promise<{ gas: bigint; maxFeePerGas: bigint; maxPriorityFeePerGas: bigint }> {
+  ): Promise<{ gas: bigint; gasPrice: bigint }> {
     let gas: bigint;
     try {
       const estimated = await this.publicClient.estimateContractGas({
@@ -169,18 +169,14 @@ export class PiggyChallengeManagerService {
       gas = 2_000_000n;
     }
 
-    let maxFeePerGas: bigint;
-    let maxPriorityFeePerGas: bigint;
+    let gasPrice: bigint;
     try {
-      const fees = await this.publicClient.estimateFeesPerGas();
-      maxFeePerGas = fees.maxFeePerGas;
-      maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+      gasPrice = await this.publicClient.getGasPrice();
     } catch {
-      maxFeePerGas = 50_000_000_000n;
-      maxPriorityFeePerGas = 2_000_000_000n;
+      gasPrice = 50_000_000_000n;
     }
 
-    return { gas, maxFeePerGas, maxPriorityFeePerGas };
+    return { gas, gasPrice };
   }
 
   private async writeContract(
@@ -198,7 +194,7 @@ export class PiggyChallengeManagerService {
       transport: custom(provider),
     });
 
-    const { gas, maxFeePerGas, maxPriorityFeePerGas } = await this.estimateGas(functionName, args, account);
+    const { gas, gasPrice } = await this.estimateGas(functionName, args, account);
 
     const hash = await walletClient.writeContract({
       address: this.getManagerAddress() as `0x${string}`,
@@ -206,8 +202,8 @@ export class PiggyChallengeManagerService {
       functionName: functionName as never,
       args: args as never,
       gas,
-      maxFeePerGas,
-      maxPriorityFeePerGas,
+      gasPrice,
+      type: "legacy",
     } as never);
 
     if (!hash) throw new Error("Transaction submission returned no hash");

@@ -40,8 +40,7 @@ export function useFaucet() {
       });
 
       let gas: bigint;
-      let maxFeePerGas: bigint;
-      let maxPriorityFeePerGas: bigint;
+      let gasPrice: bigint;
       try {
         const estimated = await publicClient.estimateContractGas({
           address: PIGGY_CONTRACTS.faucet as `0x${string}`,
@@ -51,14 +50,10 @@ export function useFaucet() {
           account: address as `0x${string}`,
         });
         gas = (estimated * 130n) / 100n;
-
-        const fees = await publicClient.estimateFeesPerGas();
-        maxFeePerGas = fees.maxFeePerGas;
-        maxPriorityFeePerGas = fees.maxPriorityFeePerGas;
+        gasPrice = await publicClient.getGasPrice();
       } catch {
         gas = 200_000n;
-        maxFeePerGas = 50_000_000_000n;
-        maxPriorityFeePerGas = 2_000_000_000n;
+        gasPrice = 50_000_000_000n;
       }
 
       const hash = await walletClient.writeContract({
@@ -68,8 +63,8 @@ export function useFaucet() {
         functionName: "drip",
         args: [address],
         gas,
-        maxFeePerGas,
-        maxPriorityFeePerGas,
+        gasPrice,
+        type: "legacy",
       } as never);
 
       if (!hash) throw new Error("Faucet transaction failed");
