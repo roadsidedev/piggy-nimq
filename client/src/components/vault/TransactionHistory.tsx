@@ -1,3 +1,5 @@
+const EXPLORER_BASE = "https://amoy.polygonscan.com/tx/";
+
 interface TransactionRow {
   id: string;
   type: string;
@@ -27,6 +29,19 @@ const statusStyles: Record<string, string> = {
   failed: "text-red-500",
 };
 
+function formatTime(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const diffHrs = Math.floor(diffMin / 60);
+  if (diffHrs < 24) return `${diffHrs}h ago`;
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString();
+}
+
 export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   if (transactions.length === 0) {
     return (
@@ -44,16 +59,37 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
           key={tx.id}
           className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"
         >
-          <div>
+          <div className="min-w-0 flex-1">
             <p className="text-sm font-medium text-gray-800">{typeLabels[tx.type] ?? tx.type}</p>
-            <p className={`text-xs font-medium ${statusStyles[tx.status] ?? "text-gray-500"}`}>
-              {tx.status}
-            </p>
+            <div className="flex items-center gap-2">
+              <p className={`text-xs font-medium ${statusStyles[tx.status] ?? "text-gray-500"}`}>
+                {tx.status}
+              </p>
+              <span className="text-xs text-gray-400">·</span>
+              <span className="text-xs text-gray-400">{formatTime(tx.timestamp)}</span>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-sm font-semibold text-gray-800">${tx.amount}</p>
-            {tx.error ? (
-              <p className="text-xs text-red-500">{tx.error}</p>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-sm font-semibold text-gray-800">${tx.amount}</p>
+              {tx.error ? (
+                <p className="text-xs text-red-500">{tx.error}</p>
+              ) : null}
+            </div>
+            {tx.txHash ? (
+              <a
+                href={`${EXPLORER_BASE}${tx.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-pink-50 hover:text-pink-500"
+                title="View on explorer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
             ) : null}
           </div>
         </div>

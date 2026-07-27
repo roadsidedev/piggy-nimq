@@ -6,7 +6,7 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
 import { piggyVaultService } from "@/integrations/contracts";
 import { trackError } from "@/utils/analytics";
-import { useCreateTransaction } from "@/hooks/useTransactions";
+import { useCreateTransaction, useTransactions } from "@/hooks/useTransactions";
 
 export function useVault() {
   const address = useWalletStore((s) => s.address);
@@ -54,6 +54,27 @@ export function useVault() {
       setApy(apyPercent);
     }
   }, [reserveData, setApy]);
+
+  // Sync transactions from server into the local store on mount
+  const { data: serverTxPage } = useTransactions(1, 100);
+  useEffect(() => {
+    if (!serverTxPage?.items) return;
+    const localIds = new Set(transactions.map((t) => t.id));
+    for (const serverTx of serverTxPage.items) {
+      if (!localIds.has(serverTx.id)) {
+        addTransaction({
+          id: serverTx.id,
+          type: serverTx.type,
+          amount: serverTx.amount,
+          timestamp: new Date(serverTx.timestamp),
+          status: serverTx.status,
+          txHash: serverTx.txHash,
+          error: serverTx.error,
+        });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [serverTxPage]);
 
   const fetchBalance = useCallback(async () => {
     if (!address) return;
@@ -337,6 +358,9 @@ export function useVault() {
   useEffect(() => {
     if (address) {
       fetchBalance();
+    } else {
+      // Clear transactions when wallet disconnects to prevent stale cross-account data
+      useVaultStore.setState({ transactions: [] });
     }
   }, [address, fetchBalance]);
 
