@@ -16,7 +16,7 @@ function FAB({ onClick, isOpen }: { onClick: () => void; isOpen: boolean }) {
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-sage-500 text-white shadow-lg shadow-sage-500/30 transition-all duration-300 hover:bg-sage-600 hover:scale-105 active:scale-95"
+      className="fixed bottom-24 right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-sage-500 text-white shadow-lg shadow-sage-500/30 transition-all duration-700 hover:bg-sage-600 hover:scale-105 active:scale-95"
       aria-label={isOpen ? "Close menu" : "Create new"}
       style={{
         animation: isOpen ? "none" : "fab-pulse 2s ease-in-out infinite",
@@ -62,7 +62,7 @@ function ActionSheet({ open, onClose, onGoal, onChallenge }: ActionSheetProps) {
         <div className="flex flex-col gap-2">
           <button
             onClick={onGoal}
-            className="flex items-center gap-4 rounded-2xl bg-sage-50 p-4 text-left transition-all hover:bg-sage-100 hover:scale-[1.02] active:scale-[0.98]"
+            className="flex items-center gap-4 rounded-2xl bg-sage-50 p-4 text-left transition-all duration-700 hover:bg-sage-100 hover:scale-[1.02] active:scale-[0.98]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sage-500 text-xl">
               🎯
@@ -74,7 +74,7 @@ function ActionSheet({ open, onClose, onGoal, onChallenge }: ActionSheetProps) {
           </button>
           <button
             onClick={onChallenge}
-            className="flex items-center gap-4 rounded-2xl bg-sage-50 p-4 text-left transition-all hover:bg-sage-100 hover:scale-[1.02] active:scale-[0.98]"
+            className="flex items-center gap-4 rounded-2xl bg-sage-50 p-4 text-left transition-all duration-700 hover:bg-sage-100 hover:scale-[1.02] active:scale-[0.98]"
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sage-600 text-xl">
               🏆
@@ -258,7 +258,7 @@ function GoalCard({
     : null;
 
   return (
-    <Card className="bg-white border-gray-200">
+    <Card className="bg-white">
       <div className="flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <h3 className="font-medium text-gray-900">{goal.title}</h3>
@@ -270,7 +270,7 @@ function GoalCard({
           {!completed && (
             <button
               onClick={() => onContribute(goal.id)}
-              className="text-xs text-green-600 hover:text-green-500 font-medium"
+              className="text-xs text-green-600 hover:text-green-500 font-medium transition-colors duration-700"
             >
               Contribute
             </button>
@@ -313,7 +313,7 @@ function GoalCard({
       </div>
       {completed && (
         <div className="mt-3 rounded-xl bg-gradient-to-br from-sage-50 to-sage-100 border border-sage-200 p-3 text-center">
-          <p className="text-lg animate-bounce">🎉</p>
+          <p className="text-lg">🎉</p>
           <p className="text-sm font-medium text-sage-600">Goal completed!</p>
         </div>
       )}
@@ -359,7 +359,7 @@ function ChallengeCard({
   };
 
   return (
-    <Card className="bg-white border-gray-200">
+    <Card className="bg-white">
       <div className="mb-3 flex items-start justify-between">
         <div className="min-w-0 flex-1">
           <h3 className="font-medium text-gray-900">{challenge.title}</h3>
@@ -438,7 +438,7 @@ function ChallengeCard({
           </button>
           <button
             onClick={() => onJoin(challenge.id)}
-            className="rounded-full bg-sage-500 px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-sage-600"
+            className="rounded-full bg-sage-500 px-3 py-1 text-xs font-medium text-white transition-all duration-700 hover:bg-sage-600"
           >
             Join
           </button>
@@ -459,7 +459,7 @@ function ChallengeCard({
 function GoalsTab({ goals, onDelete, onContribute }: { goals: ReturnType<typeof useGoals>["goals"]; onDelete: (id: string) => void; onContribute: (id: string) => void }) {
   if (goals.length === 0) {
     return (
-      <Card className="bg-white border-gray-200 text-center">
+      <Card className="bg-white text-center">
         <div className="py-6">
           <div className="mx-auto mb-3 w-16 h-16">
             <SavingsTree balance={0} size={64} />
@@ -561,7 +561,7 @@ function ChallengesTab({
             placeholder="Search challenges..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 transition-colors focus:border-sage-300 focus:outline-none focus:ring-2 focus:ring-sage-200"
+            className="w-full rounded-xl border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-500 transition-all duration-700 focus:border-sage-300 focus:outline-none focus:ring-2 focus:ring-sage-200"
           />
         </div>
       )}
@@ -604,7 +604,7 @@ function ChallengesTab({
                 </div>
                 <button
                   onClick={() => onJoin(c.id)}
-                  className="ml-3 flex-shrink-0 rounded-lg bg-sage-500 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-sage-600 active:scale-95"
+                  className="ml-3 flex-shrink-0 rounded-lg bg-sage-500 px-3 py-1.5 text-xs font-medium text-white transition-all duration-700 hover:bg-sage-600 active:scale-95"
                 >
                   Join
                 </button>
@@ -616,7 +616,7 @@ function ChallengesTab({
 
       {/* Challenge list */}
       {displayChallenges.length === 0 ? (
-        <Card className="bg-white border-gray-200 text-center">
+        <Card className="bg-white text-center">
           <div className="py-6">
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-sage-50">
               <TrophyIcon size={28} className="text-sage-400" />
@@ -688,7 +688,7 @@ export function GrowthPage({ initialTab }: { initialTab?: "goals" | "challenges"
       </div>
 
       {/* ── Dashboard Summary Card ── */}
-      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-sage-50 to-white shadow-md ring-1 ring-sage-200">
+      <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-sage-50 to-white shadow-md ring-1 ring-sage-100">
         {/* Top section: Balance + Tree */}
         <div className="flex items-center gap-4 p-5">
           <div className="flex-1 min-w-0">

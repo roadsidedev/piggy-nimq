@@ -84,7 +84,7 @@ export function AccountPage() {
               <button
                 onClick={handleCopyAddress}
                 className="flex-shrink-0 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-sage-600 transition-colors"
-                title="Copy wallet address"
+                aria-label="Copy wallet address"
               >
                 <CopyIcon size={14} />
               </button>
@@ -97,14 +97,14 @@ export function AccountPage() {
         <button
           onClick={() => setEditProfileOpen(true)}
           className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-sage-600"
-          title="Edit profile"
+          aria-label="Edit profile"
         >
           <PencilIcon size={18} />
         </button>
         <button
           onClick={disconnect}
           className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 hover:text-red-500"
-          title="Disconnect wallet"
+          aria-label="Disconnect wallet"
         >
           <LogOutIcon size={18} />
         </button>
@@ -113,17 +113,17 @@ export function AccountPage() {
       <EditProfileModal open={editProfileOpen} onClose={() => setEditProfileOpen(false)} />
 
       {/* Savings Overview Donut */}
-      <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <section className="rounded-2xl bg-white p-4 shadow-sm">
         <h3 className="mb-3 text-sm font-semibold text-gray-900">Savings Overview</h3>
         {segments.length > 0 ? (
           <DonutChart segments={segments} total={totalSaved} />
         ) : (
           <p className="py-4 text-center text-sm text-gray-500">No savings yet</p>
         )}
-      </div>
+      </section>
 
       {/* Loan Balance */}
-      <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <section className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="flex items-center gap-2">
           <WalletIcon size={18} className="text-gray-600" />
           <h3 className="text-sm font-semibold text-gray-900">Loan Balance</h3>
@@ -145,13 +145,13 @@ export function AccountPage() {
             >
               {!isFinite(healthFactor) || healthFactor > 999 ? "999+" : healthFactor.toFixed(1)}
             </div>
-            <span className="mt-1 text-[11px] font-medium text-gray-500">Health</span>
+            <span className="mt-1 text-xs font-medium text-gray-500">Health</span>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* Active Challenges */}
-      <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <section className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="flex items-center gap-2">
           <FlameIcon size={18} className="text-orange-500" />
           <h3 className="text-sm font-semibold text-gray-900">Active Challenges</h3>
@@ -174,7 +174,7 @@ export function AccountPage() {
             ))}
           </div>
         )}
-      </div>
+      </section>
 
       {/* Recurring Savings */}
       <RecurringConfig
@@ -192,13 +192,13 @@ export function AccountPage() {
       />
 
       {/* Transaction History */}
-      <div className="rounded-2xl bg-white p-4 shadow-sm">
+      <section className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="mb-3 flex items-center gap-2">
           <ShieldIcon size={18} className="text-gray-600" />
           <h3 className="text-sm font-semibold text-gray-900">Transaction History</h3>
         </div>
         <TransactionHistory transactions={transactions} />
-      </div>
+      </section>
     </div>
   );
 }

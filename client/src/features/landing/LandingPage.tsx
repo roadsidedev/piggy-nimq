@@ -23,17 +23,17 @@ const FAQ_ITEMS = [
 ];
 
 const FEATURES = [
-  { icon: "🐷", bg: "bg-pink-100", title: "Save", desc: "A self-custodial vault for your stablecoins. Deposit and withdraw whenever — nothing is ever locked without your say." },
-  { icon: "🌱", bg: "bg-mint-50", title: "Grow", desc: "Choose how much of your savings earns yield through Aave — even a portion. The rest stays put, exactly as idle as you want it." },
-  { icon: "💸", bg: "bg-gold-100", title: "Borrow", desc: "Need cash? Borrow against your savings instead of cashing out. See your health factor before you ever sign anything." },
-  { icon: "🎯", bg: "bg-[#E4E7FF]", title: "Goals", desc: "Give a slice of your savings a name and a deadline. Rent, a trip, an emergency fund — track it separately, on purpose." },
-  { icon: "🔥", bg: "bg-pink-100", title: "Frens", desc: "Join a savings challenge, keep a streak alive, and see where you land on the board. Saving is more fun with an audience." },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 5c-1.5 0-2.8 1.4-3 2-3.5-1.5-11-.3-11 5 0 1.8 0 3 2 4.5V20h4v-2h3v2h4v-4c1-0.5 1.7-1 2-2h2v-4h-2c0-1-.5-1.5-1-2" /><path d="M2 9.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" fill="currentColor" /></svg>, bg: "bg-pink-100", title: "Save", desc: "A self-custodial vault for your stablecoins. Deposit and withdraw whenever — nothing is ever locked without your say." },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 20h10" /><path d="M10 20c5.5-2.5.8-6.4 3-10" /><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z" /><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z" /></svg>, bg: "bg-mint-50", title: "Grow", desc: "Choose how much of your savings earns yield through Aave — even a portion. The rest stays put, exactly as idle as you want it." },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23" /><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>, bg: "bg-gold-100", title: "Borrow", desc: "Need cash? Borrow against your savings instead of cashing out. See your health factor before you ever sign anything." },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>, bg: "bg-[#E4E7FF]", title: "Goals", desc: "Give a slice of your savings a name and a deadline. Rent, a trip, an emergency fund — track it separately, on purpose." },
+  { icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg>, bg: "bg-pink-100", title: "Frens", desc: "Join a savings challenge, keep a streak alive, and see where you land on the board. Saving is more fun with an audience." },
 ];
 
 const LEADERBOARD = [
-  { rank: "01", name: "amaka.eth", streak: "18 day streak 🔥", amt: "$540", color: "bg-pink-300", initial: "A" },
-  { rank: "02", name: "tobi.eth", streak: "14 day streak 🔥", amt: "$410", color: "bg-gold-300", initial: "T" },
-  { rank: "03", name: "you", streak: "9 day streak 🔥", amt: "$255", color: "bg-mint-400", initial: "Y" },
+  { rank: "01", name: "amaka.eth", streak: "18 day streak", amt: "$540", color: "bg-pink-300", initial: "A" },
+  { rank: "02", name: "tobi.eth", streak: "14 day streak", amt: "$410", color: "bg-gold-300", initial: "T" },
+  { rank: "03", name: "you", streak: "9 day streak", amt: "$255", color: "bg-mint-400", initial: "Y" },
 ];
 
 const STEPS = [
@@ -310,7 +310,7 @@ function PhoneMockup() {
               showCrack ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
             }`}
           >
-            <strong className="font-heading text-[15px]" style={{ fontFamily: "var(--font-heading)" }}>🐷 Cracked it open!</strong>
+            <strong className="font-heading text-base" style={{ fontFamily: "var(--font-heading)" }}>🐷 Cracked it open</strong>
             <p className="mt-1 text-[10px] leading-relaxed text-pink-400/80 px-4">
               A real piggy bank breaks to give up its savings. Yours doesn't — everything's still there, still yours, always liquid.
             </p>
@@ -340,11 +340,11 @@ function NuggetsSection() {
         <div ref={sectionRef} className="nugget-section rounded-[36px] px-4 py-[56px] text-white sm:mx-4" style={{ background: "#101124" }}>
           <div className="mx-auto max-w-[1120px] px-6">
             <div className="max-w-[60ch]">
-              <span className="text-[12.5px] font-extrabold tracking-[0.08em] uppercase text-gold-300">Money, in plain terms</span>
+              <span className="text-xs font-extrabold tracking-[0.08em] uppercase text-gold-300">Money, in plain terms</span>
               <h2 className="mt-2.5 font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
                 A few things worth knowing before you save.
               </h2>
-              <p className="mt-3 text-[15.5px] leading-relaxed text-white/65 max-w-[52ch]">No jargon, no lecture — just the ideas Piggy is actually built around.</p>
+              <p className="mt-3 text-base leading-relaxed text-white/65 max-w-[52ch]">No jargon, no lecture — just the ideas Piggy is actually built around.</p>
             </div>
 
             <div className="relative mt-9 min-h-[150px]">
@@ -402,7 +402,7 @@ function FaqSection() {
             <h2 className="font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
               Frequently asked questions
             </h2>
-            <p className="mt-3 text-[15.5px] leading-relaxed text-pink-400/60 max-w-[52ch]">
+            <p className="mt-3 text-base leading-relaxed text-pink-400/60 max-w-[52ch]">
               Everything you were about to ask, answered before you scroll away.
             </p>
           </div>
@@ -415,7 +415,7 @@ function FaqSection() {
                   <button
                     onClick={() => setOpenIdx(isOpen ? null : i)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-[16.5px] font-medium text-ink" style={{ fontFamily: "var(--font-heading)" }}
+                    className="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-base font-medium text-ink" style={{ fontFamily: "var(--font-heading)" }}
                   >
                     {item.q}
                     <svg
@@ -436,7 +436,7 @@ function FaqSection() {
                       opacity: isOpen ? 1 : 0,
                     }}
                   >
-                    <div className="pb-5 text-[14.5px] leading-[1.65] text-pink-400/60 max-w-[66ch]">
+                    <div className="pb-5 text-sm leading-[1.65] text-pink-400/60 max-w-[66ch]">
                       {item.a}
                     </div>
                   </div>
@@ -504,7 +504,7 @@ export function LandingPage() {
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-40 border-b border-ink/[0.06]" style={{ background: "rgba(255,246,243,0.86)", backdropFilter: "blur(10px)" }}>
         <div className="mx-auto flex max-w-[1120px] items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-2.5 font-heading text-[19px] font-semibold" style={{ fontFamily: "var(--font-heading)" }}>
+          <div className="flex items-center gap-2.5 font-heading text-lg font-semibold" style={{ fontFamily: "var(--font-heading)" }}>
             <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-pink-300 shadow-[0_6px_14px_-6px_rgba(255,111,145,0.6)]">
               <PiggySvg className="h-full w-full p-1.5" />
             </span>
@@ -512,7 +512,7 @@ export function LandingPage() {
           </div>
           <button
             onClick={handleOpenPiggy}
-            className="inline-flex items-center gap-1.5 rounded-full bg-pink-300 px-5 py-2.5 text-[14px] font-bold text-white shadow-[0_4px_14px_-4px_rgba(255,111,145,0.5)] transition-all duration-180 hover:-translate-y-px hover:bg-pink-400"
+            className="inline-flex items-center gap-1.5 rounded-full bg-pink-300 px-5 py-2.5 text-sm font-bold text-white shadow-[0_4px_14px_-4px_rgba(255,111,145,0.5)] transition-all duration-700 hover:-translate-y-px hover:bg-pink-400"
           >
             Open Piggy <span aria-hidden="true">→</span>
           </button>
@@ -523,7 +523,7 @@ export function LandingPage() {
       <section className="relative overflow-hidden px-6 pb-10 pt-14">
         <div className="mx-auto grid max-w-[1120px] items-center gap-10 md:grid-cols-2">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full bg-pink-100 px-3.5 py-[7px] text-[13px] font-bold tracking-[0.02em] text-pink-500">
+            <span className="inline-flex items-center gap-2 rounded-full bg-pink-100 px-3.5 py-[7px] text-xs font-bold tracking-[0.02em] text-pink-500">
               <span className="h-1.5 w-1.5 rounded-full bg-pink-500" />
               Lives inside Nimiq Pay
             </span>
@@ -532,24 +532,24 @@ export function LandingPage() {
               <br />
               Watch it <em className="not-italic text-pink-300">grow</em>.
             </h1>
-            <p className="mt-4 max-w-[46ch] text-[17px] leading-[1.55] text-pink-400/70">
+            <p className="mt-4 max-w-[46ch] text-base leading-[1.55] text-pink-400/70">
               Piggy is a self-custodial savings companion built into Nimiq Pay — save stablecoins, earn optional yield, borrow against your stash without selling it, and hit goals with friends.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <button
                 onClick={handleOpenPiggy}
-                className="inline-flex items-center gap-2 rounded-full bg-pink-300 px-6 py-[15px] text-[15.5px] font-bold text-white shadow-[0_14px_30px_-12px_rgba(255,111,145,0.45)] transition-all duration-180 hover:-translate-0.5 hover:bg-pink-400 hover:shadow-[0_18px_34px_-12px_rgba(255,111,145,0.55)] active:translate-px active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-full bg-pink-300 px-6 py-[15px] text-base font-bold text-white shadow-[0_14px_30px_-12px_rgba(255,111,145,0.45)] transition-all duration-700 hover:-translate-0.5 hover:bg-pink-400 hover:shadow-[0_18px_34px_-12px_rgba(255,111,145,0.55)] active:translate-px active:scale-[0.98]"
               >
                 Open Piggy <span aria-hidden="true">→</span>
               </button>
               <button
                 onClick={handleScrollToHow}
-                className="rounded-full border-2 border-ink/[0.14] bg-transparent px-[22px] py-[15px] text-[15.5px] font-bold text-ink transition-all duration-180 hover:border-ink hover:bg-ink/[0.03]" style={{ color: "#17182B" }}
+                className="rounded-full border-2 border-ink/[0.14] bg-transparent px-[22px] py-[15px] text-base font-bold text-ink transition-all duration-700 hover:border-ink hover:bg-ink/[0.03]" style={{ color: "#17182B" }}
               >
                 See how it works
               </button>
             </div>
-            <div className="mt-5 flex flex-wrap gap-4 text-[12.5px] font-semibold text-pink-400/40">
+            <div className="mt-5 flex flex-wrap gap-4 text-xs font-semibold text-pink-400/40">
               {["Self-custodial, always", "Yield via Aave", "No app to download"].map((t) => (
                 <span key={t} className="inline-flex items-center gap-1.5">
                   <span className="h-[5px] w-[5px] rounded-full bg-mint-500" />
@@ -568,7 +568,7 @@ export function LandingPage() {
         <div className="mx-auto max-w-[1120px] px-6">
           <div ref={featRef}>
             <div className="max-w-[60ch]">
-              <span className="text-[12.5px] font-extrabold tracking-[0.08em] uppercase text-pink-500">What's inside</span>
+              <span className="text-xs font-extrabold tracking-[0.08em] uppercase text-pink-500">What's inside</span>
               <h2 className="mt-2.5 font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
                 Five ways to make your money work without making it complicated.
               </h2>
@@ -580,11 +580,11 @@ export function LandingPage() {
                   key={f.title}
                   className="min-w-[240px] snap-start rounded-[18px] border border-ink/[0.05] bg-white p-[22px] shadow-[0_20px_40px_-20px_rgba(23,24,43,0.18)] sm:min-w-0"
                 >
-                  <div className={`mb-3.5 flex h-11 w-11 items-center justify-center rounded-[13px] text-xl ${f.bg}`}>
-                    {f.icon}
-                  </div>
-                  <h3 className="mb-1.5 font-heading text-[17px] font-semibold" style={{ fontFamily: "var(--font-heading)" }}>{f.title}</h3>
-                  <p className="text-[13.5px] leading-[1.5] text-pink-400/60">{f.desc}</p>
+                <div className={`mb-3.5 flex h-11 w-11 items-center justify-center rounded-[13px] text-pink-500 ${f.bg}`}>
+                  {f.icon}
+                </div>
+                  <h3 className="mb-1.5 font-heading text-base font-semibold" style={{ fontFamily: "var(--font-heading)" }}>{f.title}</h3>
+                  <p className="text-sm leading-[1.5] text-pink-400/60">{f.desc}</p>
                 </div>
               ))}
             </div>
@@ -600,11 +600,11 @@ export function LandingPage() {
         <div className="mx-auto max-w-[1120px] px-6">
           <div ref={howRef}>
             <div className="max-w-[60ch]">
-              <span className="text-[12.5px] font-extrabold tracking-[0.08em] uppercase text-pink-500">How it works</span>
+              <span className="text-xs font-extrabold tracking-[0.08em] uppercase text-pink-500">How it works</span>
               <h2 className="mt-2.5 font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
                 Not a one-time setup. A loop you stay in.
               </h2>
-              <p className="mt-3 text-[15.5px] leading-relaxed text-pink-400/60 max-w-[52ch]">
+              <p className="mt-3 text-base leading-relaxed text-pink-400/60 max-w-[52ch]">
                 There's no finish line here — just a cycle that keeps your savings moving.
               </p>
             </div>
@@ -615,15 +615,15 @@ export function LandingPage() {
                   key={s.n}
                   className="rounded-[18px] border border-ink/[0.05] bg-white p-6 shadow-[0_20px_40px_-20px_rgba(23,24,43,0.18)]"
                 >
-                  <div className="mb-3.5 flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-pink-100 text-[14px] font-extrabold text-pink-500">
+                  <div className="mb-3.5 flex h-[34px] w-[34px] items-center justify-center rounded-[10px] bg-pink-100 text-sm font-extrabold text-pink-500">
                     {s.n}
                   </div>
-                  <h3 className="mb-1.5 font-heading text-[16.5px] font-semibold" style={{ fontFamily: "var(--font-heading)" }}>{s.title}</h3>
-                  <p className="text-[13.5px] leading-[1.5] text-pink-400/60">{s.desc}</p>
+                  <h3 className="mb-1.5 font-heading text-base font-semibold" style={{ fontFamily: "var(--font-heading)" }}>{s.title}</h3>
+                  <p className="text-sm leading-[1.5] text-pink-400/60">{s.desc}</p>
                 </div>
               ))}
             </div>
-            <div className="mt-6 flex items-center justify-center gap-2 text-[12.5px] font-bold text-pink-400/40">
+            <div className="mt-6 flex items-center justify-center gap-2 text-xs font-bold text-pink-400/40">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                 <path d="M2 8a6 6 0 1 1 2 4.5M2 8V4M2 8h4" stroke="#8C8DA3" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
@@ -638,16 +638,16 @@ export function LandingPage() {
         <div className="mx-auto max-w-[1120px] px-6">
           <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2">
             <div ref={frensRef}>
-              <span className="text-[12.5px] font-extrabold tracking-[0.08em] uppercase text-pink-500">Save with frens</span>
+              <span className="text-xs font-extrabold tracking-[0.08em] uppercase text-pink-500">Save with frens</span>
               <h2 className="mt-2.5 font-heading text-[clamp(26px,4.6vw,38px)] font-bold leading-[1.08]" style={{ fontFamily: "var(--font-heading)" }}>
                 Saving hits different with an audience.
               </h2>
-              <p className="mt-3.5 text-[15.5px] leading-relaxed text-pink-400/60 max-w-[52ch]">
+              <p className="mt-3.5 text-base leading-relaxed text-pink-400/60 max-w-[52ch]">
                 Join a public challenge or start a private one with friends. Keep your streak alive, climb the board, and share it when you do.
               </p>
               <button
                 onClick={handleBrowseChallenges}
-                className="mt-5.5 inline-flex items-center rounded-full border-2 border-ink/[0.14] bg-transparent px-[22px] py-[15px] text-[15.5px] font-bold text-ink transition-all duration-180 hover:border-ink hover:bg-ink/[0.03]" style={{ color: "#17182B" }}
+                className="mt-5.5 inline-flex items-center rounded-full border-2 border-ink/[0.14] bg-transparent px-[22px] py-[15px] text-base font-bold text-ink transition-all duration-700 hover:border-ink hover:bg-ink/[0.03]" style={{ color: "#17182B" }}
               >
                 Browse challenges
               </button>
@@ -656,16 +656,16 @@ export function LandingPage() {
             <div ref={frensBoardRef} className="rounded-[18px] border border-ink/[0.05] bg-white p-5 shadow-[0_20px_40px_-20px_rgba(23,24,43,0.18)]">
               {LEADERBOARD.map((r) => (
                 <div key={r.rank} className="flex items-center gap-3 border-b border-ink/[0.06] px-1.5 py-[11px] last:border-b-0">
-                  <span className="w-[22px] font-mono text-[13px] font-bold text-pink-400/40">{r.rank}</span>
-                  <span className={`flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-full text-[14px] font-bold text-white ${r.color}`}>
+                  <span className="w-[22px] font-mono text-sm font-bold text-pink-400/40">{r.rank}</span>
+                  <span className={`flex h-[34px] w-[34px] flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white ${r.color}`}>
                     {r.initial}
                   </span>
-                  <span className="flex-1 text-[13.5px] font-bold text-ink" style={{ color: "#17182B" }}>
+                  <span className="flex-1 text-sm font-bold text-ink" style={{ color: "#17182B" }}>
                     {r.name}
                     <br />
-                    <span className="text-[12px] font-semibold text-pink-400/40">{r.streak}</span>
+                    <span className="text-xs font-semibold text-pink-400/40">{r.streak}</span>
                   </span>
-                  <span className="font-mono text-[13px] font-bold text-mint-500">{r.amt}</span>
+                  <span className="font-mono text-sm font-bold text-mint-500">{r.amt}</span>
                 </div>
               ))}
             </div>
@@ -683,12 +683,12 @@ export function LandingPage() {
           <h2 className="font-heading text-[clamp(28px,5vw,42px)] font-bold" style={{ fontFamily: "var(--font-heading)" }}>
             Your savings deserve better than a drawer.
           </h2>
-          <p className="mx-auto mt-3.5 max-w-[44ch] text-[16px] text-pink-400/60">
+          <p className="mx-auto mt-3.5 max-w-[44ch] text-base text-pink-400/60">
             Piggy runs right inside Nimiq Pay — no new app, no new wallet, no seed phrase to write down twice.
           </p>
           <button
             onClick={handleOpenPiggy}
-            className="mt-6 inline-flex items-center gap-2 rounded-full bg-pink-300 px-6 py-[15px] text-[15.5px] font-bold text-white shadow-[0_14px_30px_-12px_rgba(255,111,145,0.45)] transition-all duration-180 hover:-translate-0.5 hover:bg-pink-400 hover:shadow-[0_18px_34px_-12px_rgba(255,111,145,0.55)] active:translate-px active:scale-[0.98]"
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-pink-300 px-6 py-[15px] text-base font-bold text-white shadow-[0_14px_30px_-12px_rgba(255,111,145,0.45)] transition-all duration-700 hover:-translate-0.5 hover:bg-pink-400 hover:shadow-[0_18px_34px_-12px_rgba(255,111,145,0.55)] active:translate-px active:scale-[0.98]"
           >
             Open Piggy <span aria-hidden="true">→</span>
           </button>
@@ -697,7 +697,7 @@ export function LandingPage() {
               href="https://x.com/Piggyvault__"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-[14px] font-semibold text-pink-400/50 transition-colors hover:text-pink-300"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-pink-400/50 transition-colors hover:text-pink-300"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                 <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -709,8 +709,12 @@ export function LandingPage() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="px-6 pb-10 pt-7 text-center text-[12.5px] text-pink-400/40">
-        Piggy is self-custodial software. Saving carries no risk beyond holding your own assets; enabling yield or borrowing carries DeFi-specific risk — read the in-app details before you turn either on.
+      <footer className="px-6 pb-10 pt-7 text-center text-xs text-pink-400/40">
+        <p className="mb-3">Piggy is self-custodial software. Saving carries no risk beyond holding your own assets; enabling yield or borrowing carries DeFi-specific risk — read the in-app details before you turn either on.</p>
+        <div className="flex items-center justify-center gap-4">
+          <a href="#/privacy" className="hover:text-pink-300 transition-colors duration-700">Privacy Policy</a>
+          <a href="#/terms" className="hover:text-pink-300 transition-colors duration-700">Terms of Service</a>
+        </div>
       </footer>
 
       {/* ── Inline keyframes ── */}
