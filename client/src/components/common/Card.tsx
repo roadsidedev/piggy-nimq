@@ -10,7 +10,7 @@ export function Card({ children, className = "", onClick }: CardProps) {
   return (
     <div
       onClick={onClick}
-      className={`rounded-xl border border-gray-200 bg-white p-4 shadow-sm ${onClick ? "cursor-pointer" : ""} ${className}`}
+      className={`rounded-xl bg-white p-4 shadow-sm ${onClick ? "cursor-pointer" : ""} ${className}`}
     >
       {children}
     </div>

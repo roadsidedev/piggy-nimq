@@ -9,7 +9,7 @@ interface VaultBalanceCardProps {
 
 export function VaultBalanceCard({ balance, yieldEnabled, apy, earningsToday }: VaultBalanceCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-pink-100 via-pink-50 to-pink-100 p-6 shadow-sm">
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-sage-50 via-sage-100 to-sand-100 p-6 shadow-sm">
       <div className="relative z-10">
         <p className="font-heading text-sm font-medium text-green-700/80">Your Vault Balance</p>
         <div className="mt-1 flex items-baseline gap-2">

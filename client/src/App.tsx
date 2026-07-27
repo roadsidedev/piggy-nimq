@@ -9,6 +9,7 @@ import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { DashboardPage } from "@/features/dashboard/DashboardPage";
 import { ChallengeDetailPage } from "@/features/challenges/ChallengeDetailPage";
 import { LandingPage } from "@/features/landing/LandingPage";
+import { NotFoundPage } from "@/features/NotFoundPage";
 import { registerTabSetter, consumeGrowthSubTab } from "@/hooks/useNavigate";
 import { HomeIcon, VaultIcon, SavingsIcon, BorrowIcon } from "@/components/common/Icons";
 import { Avatar } from "@/components/account/Avatar";
@@ -128,8 +129,11 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
 
   return (
     <div className="flex h-dvh flex-col">
+      <a href="#main-content" className="skip-link">
+        Skip to content
+      </a>
       <header className="flex items-center justify-between px-5 pt-3 pb-2">
-        <a href="#/landing" className="flex items-center gap-2.5 font-heading text-[19px] font-semibold" style={{ fontFamily: "var(--font-heading)" }}>
+        <a href="#/landing" className="flex items-center gap-2.5 font-heading text-lg font-semibold" style={{ fontFamily: "var(--font-heading)" }}>
           <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-pink-300 shadow-[0_6px_14px_-6px_rgba(255,111,145,0.6)]">
             <PiggySvg className="h-full w-full p-1.5" />
           </span>
@@ -143,7 +147,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
         </button>
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 pt-2 pb-24">
+      <main id="main-content" className="flex-1 overflow-y-auto px-4 pt-2 pb-24">
         <ErrorBoundary>
           <Suspense fallback={<PageSkeleton />}>
             <PageContent activeTab={activeTab} growthSubTab={growthSubTab} />
@@ -151,7 +155,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
         </ErrorBoundary>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white/90 backdrop-blur-md">
+      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md">
         <div className="flex items-center justify-around px-2 py-1.5">
           {tabs.map(({ id, label, Icon }) => (
             <button
@@ -174,7 +178,7 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
               aria-current={activeTab === id ? "page" : undefined}
             >
               <Icon size={22} />
-              <span className="text-[11px] font-semibold">{label}</span>
+              <span className="text-xs font-semibold">{label}</span>
             </button>
           ))}
         </div>
@@ -236,6 +240,7 @@ export default function AppRoot() {
           <Route path="/" element={<App />} />
           <Route path="/landing" element={<LandingPage />} />
           <Route path="/challenge/:id" element={<ChallengeDetailPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </HashRouter>
       <Toaster

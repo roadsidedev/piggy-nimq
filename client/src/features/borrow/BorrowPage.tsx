@@ -68,7 +68,7 @@ export function BorrowPage() {
         <p className="text-sm text-red-500">{txError}</p>
       ) : null}
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <section className="rounded-xl bg-white p-4 shadow-sm">
         <h3 className="mb-3 text-sm font-semibold text-gray-700">Borrow</h3>
         <div className="flex flex-col gap-3">
           <Input
@@ -81,9 +81,9 @@ export function BorrowPage() {
             {txStatus === "confirming" ? "Confirming..." : "Borrow"}
           </Button>
         </div>
-      </div>
+      </section>
 
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <section className="rounded-xl bg-white p-4 shadow-sm">
         <h3 className="mb-3 text-sm font-semibold text-gray-700">Repay</h3>
         {Number(borrowedAmount) <= 0 ? (
           <p className="text-sm text-gray-500">No outstanding debt.</p>
@@ -100,7 +100,7 @@ export function BorrowPage() {
             </Button>
           </div>
         )}
-      </div>
+      </section>
 
       <RiskSimulator
         availableBorrow={availableBorrow}

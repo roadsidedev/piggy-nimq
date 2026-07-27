@@ -1,4 +1,5 @@
 import { TrendingUpIcon } from "@/components/common/Icons";
+import { Toggle } from "@/components/common/Toggle";
 
 interface YieldCardProps {
   enabled: boolean;
@@ -13,17 +14,11 @@ export function YieldCard({ enabled, apy, estimatedMonthly, onToggle, loading }:
     <button
       onClick={onToggle}
       disabled={loading}
-      className={`w-full rounded-2xl p-4 text-left shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 ${enabled ? "bg-green-50" : "bg-white"} ${loading ? "opacity-60 cursor-wait" : ""}`}
+      className={`w-full rounded-2xl p-4 text-left shadow-sm transition-all duration-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 ${enabled ? "bg-green-50" : "bg-white"} ${loading ? "opacity-60 cursor-wait" : ""}`}
     >
       <div className="mb-2 flex items-center justify-between">
         <span className="font-body text-sm font-medium text-gray-800">Yield</span>
-        <div className={`h-5 w-9 rounded-full transition-colors ${enabled ? "bg-pink-400" : "bg-gray-300"}`}>
-          {loading ? (
-            <div className="h-5 w-5 rounded-full bg-white shadow-sm animate-pulse translate-x-0.5" />
-          ) : (
-            <div className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? "translate-x-4" : "translate-x-0.5"}`} />
-          )}
-        </div>
+        <Toggle enabled={enabled} disabled={loading} size="sm" label="Toggle yield" />
       </div>
       <p className={`text-xs font-medium ${enabled ? "text-green-600" : "text-gray-500"}`}>
         {loading ? "Confirm in wallet..." : enabled ? "ON" : "OFF"}
