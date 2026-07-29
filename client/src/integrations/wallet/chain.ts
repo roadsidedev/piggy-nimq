@@ -1,16 +1,20 @@
 import { polygonAmoy } from "viem/chains";
-import { getEthereumProvider } from "@/integrations/nimiq";
+import { getEthereumProvider, isNimiqPay } from "@/integrations/nimiq";
+import { config } from "@/config/env";
 
 const TARGET_CHAIN = polygonAmoy;
 const TARGET_CHAIN_ID = `0x${TARGET_CHAIN.id.toString(16)}`;
 
-const ADD_CHAIN_PARAMS = {
-  chainId: TARGET_CHAIN_ID,
-  chainName: TARGET_CHAIN.name,
-  nativeCurrency: TARGET_CHAIN.nativeCurrency,
-  rpcUrls: [TARGET_CHAIN.rpcUrls.default.http[0]],
-  blockExplorerUrls: [TARGET_CHAIN.blockExplorers.default.url],
-};
+function getAddChainParams() {
+  const rpcUrl = config.rpc.polygonAmoy;
+  return {
+    chainId: TARGET_CHAIN_ID,
+    chainName: TARGET_CHAIN.name,
+    nativeCurrency: TARGET_CHAIN.nativeCurrency,
+    rpcUrls: [rpcUrl],
+    blockExplorerUrls: [TARGET_CHAIN.blockExplorers.default.url],
+  };
+}
 
 async function sleep(ms: number) {
   return new Promise((r) => setTimeout(r, ms));
@@ -24,6 +28,27 @@ export async function ensureCorrectChain(): Promise<void> {
     method: "eth_chainId",
   })) as string;
 
+  const nimiq = isNimiqPay();
+
+  // Nimiq Pay may have a broken/stale RPC for Amoy — always re-add the chain
+  // with our working Alchemy RPC to override it
+  if (nimiq) {
+    await provider.request({
+      method: "wallet_addEthereumChain",
+      params: [getAddChainParams()],
+    });
+    // Verify it took effect
+    for (let verify = 0; verify < 5; verify++) {
+      const after = (await provider.request({
+        method: "eth_chainId",
+      })) as string;
+      if (after === TARGET_CHAIN_ID) return;
+      await sleep(500);
+    }
+    // Fall through to switch attempt
+  }
+
+  // Already on correct chain
   if (currentChainId === TARGET_CHAIN_ID) return;
 
   let triedAdd = false;
@@ -41,7 +66,7 @@ export async function ensureCorrectChain(): Promise<void> {
           // Chain not in wallet — add it
           await provider.request({
             method: "wallet_addEthereumChain",
-            params: [ADD_CHAIN_PARAMS],
+            params: [getAddChainParams()],
           });
           triedAdd = true;
         } else {

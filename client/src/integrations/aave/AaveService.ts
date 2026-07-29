@@ -112,7 +112,10 @@ export class AaveService {
     const walletClient = createWalletViemClient(this.useTestnet);
     const account = await this.getAccount();
 
-    const { gas, gasPrice } = await this.estimateGas(address, abi, functionName, args, account);
+    const [nonce, { gas, gasPrice }] = await Promise.all([
+      this.publicClient.getTransactionCount({ address: account }),
+      this.estimateGas(address, abi, functionName, args, account),
+    ]);
 
     const hash = await walletClient.writeContract({
       account,
@@ -122,6 +125,7 @@ export class AaveService {
       args: args as never,
       gas,
       gasPrice,
+      nonce,
       type: "legacy",
     } as never);
 

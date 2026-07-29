@@ -194,7 +194,10 @@ export class PiggyChallengeManagerService {
       transport: custom(provider),
     });
 
-    const { gas, gasPrice } = await this.estimateGas(functionName, args, account);
+    const [nonce, { gas, gasPrice }] = await Promise.all([
+      this.publicClient.getTransactionCount({ address: account }),
+      this.estimateGas(functionName, args, account),
+    ]);
 
     const hash = await walletClient.writeContract({
       address: this.getManagerAddress() as `0x${string}`,
@@ -203,6 +206,7 @@ export class PiggyChallengeManagerService {
       args: args as never,
       gas,
       gasPrice,
+      nonce,
       type: "legacy",
     } as never);
 
