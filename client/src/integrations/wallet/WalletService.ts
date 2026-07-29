@@ -1,5 +1,6 @@
 import type { NimiqProfile } from "@/types/nimiq";
 import { getEthereumProvider, isNimiqPay, NIMIQ_EVENTS, POLYGON_CHAIN_ID, initNimiqSDK } from "@/integrations/nimiq";
+import { ensureCorrectChain } from "./chain";
 
 export class WalletService {
   private profile: NimiqProfile | null = null;
@@ -25,6 +26,13 @@ export class WalletService {
 
     const account = accounts[0] as `0x${string}`;
     this.address = account;
+
+    // Ensure wallet is on correct chain with working RPC before any tx
+    try {
+      await ensureCorrectChain();
+    } catch {
+      // Chain switch may fail — transactions will retry if needed
+    }
 
     this.profile = {
       address: account,

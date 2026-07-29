@@ -41,19 +41,26 @@ export function useFaucet() {
 
       let gas: bigint;
       let gasPrice: bigint;
+      let nonce: number;
       try {
-        const estimated = await publicClient.estimateContractGas({
-          address: PIGGY_CONTRACTS.faucet as `0x${string}`,
-          abi: FAUCET_ABI,
-          functionName: "drip",
-          args: [address as `0x${string}`],
-          account: address as `0x${string}`,
-        });
+        const [estimated, price, count] = await Promise.all([
+          publicClient.estimateContractGas({
+            address: PIGGY_CONTRACTS.faucet as `0x${string}`,
+            abi: FAUCET_ABI,
+            functionName: "drip",
+            args: [address as `0x${string}`],
+            account: address as `0x${string}`,
+          }),
+          publicClient.getGasPrice(),
+          publicClient.getTransactionCount({ address: address as `0x${string}` }),
+        ]);
         gas = (estimated * 130n) / 100n;
-        gasPrice = await publicClient.getGasPrice();
+        gasPrice = price;
+        nonce = count;
       } catch {
         gas = 200_000n;
         gasPrice = 50_000_000_000n;
+        nonce = await publicClient.getTransactionCount({ address: address as `0x${string}` }).catch(() => 0);
       }
 
       const hash = await walletClient.writeContract({
@@ -64,6 +71,7 @@ export function useFaucet() {
         args: [address],
         gas,
         gasPrice,
+        nonce,
         type: "legacy",
       } as never);
 

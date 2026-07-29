@@ -137,13 +137,16 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
-    const { gas, gasPrice } = await this.estimateGas(
-      this.getVaultAddress() as `0x${string}`,
-      PIGGY_VAULT_ABI,
-      functionName,
-      args,
-      account,
-    );
+    const [nonce, { gas, gasPrice }] = await Promise.all([
+      this.publicClient.getTransactionCount({ address: account }),
+      this.estimateGas(
+        this.getVaultAddress() as `0x${string}`,
+        PIGGY_VAULT_ABI,
+        functionName,
+        args,
+        account,
+      ),
+    ]);
 
     const hash = await walletClient.writeContract({
       address: this.getVaultAddress() as `0x${string}`,
@@ -152,6 +155,7 @@ export class PiggyVaultService {
       args: args as never,
       gas,
       gasPrice,
+      nonce,
       type: "legacy",
     } as never);
 
@@ -194,13 +198,16 @@ export class PiggyVaultService {
       transport: custom(provider),
     });
 
-    const { gas, gasPrice } = await this.estimateGas(
-      this.getAssetAddress() as `0x${string}`,
-      ERC20_ABI,
-      "approve",
-      [this.getVaultAddress() as `0x${string}`, maxUint256],
-      account,
-    );
+    const [nonce, { gas, gasPrice }] = await Promise.all([
+      this.publicClient.getTransactionCount({ address: account }),
+      this.estimateGas(
+        this.getAssetAddress() as `0x${string}`,
+        ERC20_ABI,
+        "approve",
+        [this.getVaultAddress() as `0x${string}`, maxUint256],
+        account,
+      ),
+    ]);
 
     const hash = await walletClient.writeContract({
       address: this.getAssetAddress() as `0x${string}`,
@@ -209,6 +216,7 @@ export class PiggyVaultService {
       args: [this.getVaultAddress() as `0x${string}`, maxUint256],
       gas,
       gasPrice,
+      nonce,
       type: "legacy",
     } as never);
 
