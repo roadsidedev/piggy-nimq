@@ -7,6 +7,7 @@ import { useGoalsStore } from "@/stores/goalsStore";
 import { useChallengesStore } from "@/stores/challengesStore";
 import { useRecurringStore } from "@/stores/recurringStore";
 import { useWallet } from "@/hooks/useWallet";
+import { useSyncTransactions } from "@/hooks/useSyncTransactions";
 import { useProfileStore } from "@/stores/profileStore";
 import { Avatar } from "@/components/account/Avatar";
 import { DonutChart } from "@/components/account/DonutChart";
@@ -27,6 +28,7 @@ export function AccountPage() {
   const { schedules, addSchedule, deleteSchedule, togglePause } = useRecurringStore();
   const { transactions } = useVaultStore();
   const { disconnect } = useWallet();
+  useSyncTransactions();
   const [recurringModalOpen, setRecurringModalOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
 

@@ -6,20 +6,18 @@ import { piggyVaultService } from "@/integrations/contracts";
 
 export function useBorrow() {
   const address = useWalletStore((s) => s.address);
-  const {
-    availableBorrow,
-    borrowedAmount,
-    healthFactor,
-    liquidationThreshold,
-    txStatus,
-    txError,
-    setAvailableBorrow,
-    setBorrowedAmount,
-    setHealthFactor,
-    setLiquidationThreshold,
-    setTxStatus,
-    setTxError,
-  } = useBorrowStore();
+  const availableBorrow = useBorrowStore((s) => s.availableBorrow);
+  const borrowedAmount = useBorrowStore((s) => s.borrowedAmount);
+  const healthFactor = useBorrowStore((s) => s.healthFactor);
+  const liquidationThreshold = useBorrowStore((s) => s.liquidationThreshold);
+  const txStatus = useBorrowStore((s) => s.txStatus);
+  const txError = useBorrowStore((s) => s.txError);
+  const setAvailableBorrow = useBorrowStore((s) => s.setAvailableBorrow);
+  const setBorrowedAmount = useBorrowStore((s) => s.setBorrowedAmount);
+  const setHealthFactor = useBorrowStore((s) => s.setHealthFactor);
+  const setLiquidationThreshold = useBorrowStore((s) => s.setLiquidationThreshold);
+  const setTxStatus = useBorrowStore((s) => s.setTxStatus);
+  const setTxError = useBorrowStore((s) => s.setTxError);
   const [simulatedBorrow, setSimulatedBorrow] = useState<string>("0");
 
   const { data: decimals } = useQuery({
@@ -32,14 +30,14 @@ export function useBorrow() {
     queryKey: ["vaultPosition", address],
     queryFn: () => piggyVaultService.getUserPosition(address!),
     enabled: !!address,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
   });
 
   const { data: maxBorrowable } = useQuery({
     queryKey: ["maxBorrowable", address],
     queryFn: () => piggyVaultService.getMaxBorrowable(address!),
     enabled: !!address,
-    refetchInterval: 5000,
+    refetchInterval: 30000,
   });
 
   const LTV_BPS = 5000; // vault's maxUserLTVBps = 50%

@@ -10,8 +10,17 @@ import { piggyVaultService } from "@/integrations/contracts";
 
 export function useDashboard() {
   const address = useWalletStore((s) => s.address);
-  const { balance, yieldEnabled, apy, setBalance, setApy, setYieldEnabled, setYieldAmount } = useVaultStore();
-  const { borrowedAmount, healthFactor, setBorrowedAmount, setHealthFactor } = useBorrowStore();
+  const balance = useVaultStore((s) => s.balance);
+  const yieldEnabled = useVaultStore((s) => s.yieldEnabled);
+  const apy = useVaultStore((s) => s.apy);
+  const setBalance = useVaultStore((s) => s.setBalance);
+  const setApy = useVaultStore((s) => s.setApy);
+  const setYieldEnabled = useVaultStore((s) => s.setYieldEnabled);
+  const setYieldAmount = useVaultStore((s) => s.setYieldAmount);
+  const borrowedAmount = useBorrowStore((s) => s.borrowedAmount);
+  const healthFactor = useBorrowStore((s) => s.healthFactor);
+  const setBorrowedAmount = useBorrowStore((s) => s.setBorrowedAmount);
+  const setHealthFactor = useBorrowStore((s) => s.setHealthFactor);
   const goals = useGoalsStore((s) => s.goals);
   const challenges = useChallengesStore((s) => s.challenges);
 
@@ -30,7 +39,7 @@ export function useDashboard() {
 
   // Read Aave reserve data for APY (gracefully degrades on testnet)
   const { data: reserveData, isLoading: reserveLoading } = useQuery({
-    queryKey: ["reserveData"],
+    queryKey: ["aaveReserveData"],
     queryFn: async () => {
       try {
         return await aaveService.getReserveData();

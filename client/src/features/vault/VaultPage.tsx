@@ -1,4 +1,5 @@
 import { useVault } from "./useVault";
+import { useSyncTransactions } from "@/hooks/useSyncTransactions";
 import { BalanceCard } from "@/components/vault/BalanceCard";
 import { YieldPanel } from "@/components/vault/YieldToggle";
 import { DepositModal } from "@/components/vault/DepositModal";
@@ -7,6 +8,7 @@ import { TransactionHistory } from "@/components/vault/TransactionHistory";
 import { Button } from "@/components/common";
 
 export function VaultPage() {
+  useSyncTransactions();
   const {
     balance,
     yieldEnabled,

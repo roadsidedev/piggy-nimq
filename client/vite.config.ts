@@ -15,7 +15,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          if (id.includes("node_modules/react") || id.includes("node_modules/zustand") || id.includes("node_modules/@tanstack")) return "vendor";
+          if (id.includes("node_modules/react") || id.includes("node_modules/zustand") || id.includes("node_modules/@tanstack") || id.includes("node_modules/react-router")) return "vendor";
           if (id.includes("node_modules/viem")) return "web3";
           if (id.includes("node_modules")) return "deps";
         },
