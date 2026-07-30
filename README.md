@@ -151,21 +151,6 @@ npm run test:watch
 
 ---
 
-## Available Scripts
-
-| Script | Description |
-|---|---|
-| `npm run dev` | Start Vite dev server |
-| `npm run build` | TypeScript check + Vite production build |
-| `npm run preview` | Preview production build |
-| `npm run lint` | ESLint check |
-| `npm run format` | Format with Prettier |
-| `npm run format:check` | Check formatting without writing |
-| `npm test` | Run Vitest tests |
-| `npm run test:watch` | Run tests in watch mode |
-
----
-
 ## Key Integrations
 
 ### Nimiq Mini App SDK
@@ -203,34 +188,7 @@ See [`AGENT.md`](./AGENT.md) for full development conventions. The project follo
 
 ---
 
-## Implementation Roadmap
+## License
 
-| Phase | Status | Description |
-|---|---|---|
-| Phase 0: Foundation | Complete | Project setup, TypeScript, ESLint, Prettier, UI components |
-| Phase 1: Nimiq Integration | Complete | Mini App SDK, wallet connection, provider events |
-| Phase 2: Aave Integration | Complete | Deposit, withdraw, borrow, repay, health factor, APY |
-| Phase 3: Vault MVP | Complete | Balance, deposit/withdraw modals, yield toggle, transaction history |
-| Phase 4: Borrow Module | Complete | Borrow flow, repayment, risk simulator, health tracking |
-| Phase 5: Goals System | Complete | Create/edit/delete goals, allocate funds, progress tracking |
-| Phase 6: Recurring Savings | Complete | Weekly/monthly schedules, pause/resume |
-| Phase 7: Save with Frens | Complete | Challenges, leaderboards, streaks |
-| Phase 8: Gas & AA | Complete | Paymaster integration, sponsorship logic |
-| Phase 9: Production Polish | In Progress | Testing, analytics, optimization, accessibility |
-
----
-
-## Production Readiness
-
-Current status: **D+** — Functional but gaps remain. See the [Production Audit Report](#) for the full breakdown.
-
-### Known Areas for Improvement
-
-- **Testing coverage** — currently ~21 tests across stores + components. Target: 80%+ coverage
-- **Error monitoring** — basic `/api/log` endpoint logging in place; Sentry integration recommended
-- **Environment validation** — startup crash on missing env vars; `.env.example` documents all required vars
-- **Loading states** — dashboard has loading skeleton; other pages should follow
-- **Accessibility** — Modal has focus trapping + ARIA attributes; remaining components need audit
-
----
+[MIT](./LICENSE)
 
