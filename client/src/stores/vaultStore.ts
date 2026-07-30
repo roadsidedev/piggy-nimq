@@ -47,7 +47,12 @@ export const useVaultStore = create<VaultState>()((set) => ({
   setEarnings: (earnings) => set({ earnings }),
   setVaultAge: (vaultAge) => set({ vaultAge }),
   addTransaction: (tx) =>
-    set((state) => ({ transactions: [tx, ...state.transactions] })),
+    set((state) => ({
+      transactions: [
+        { ...tx, timestamp: tx.timestamp instanceof Date ? tx.timestamp : new Date(tx.timestamp ?? Date.now()) },
+        ...state.transactions,
+      ],
+    })),
   updateTransaction: (id, updates) =>
     set((state) => ({
       transactions: state.transactions.map((t) =>

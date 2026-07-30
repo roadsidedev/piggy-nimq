@@ -56,7 +56,9 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-semibold text-gray-700">History</h3>
-      {transactions.map((tx) => (
+      {transactions
+        .filter((tx) => tx.timestamp != null)
+        .map((tx) => (
         <div
           key={tx.id}
           className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"
