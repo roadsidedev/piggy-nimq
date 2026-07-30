@@ -1,9 +1,11 @@
 import { useCallback, useEffect } from "react";
+import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useChallengesStore, type Challenge } from "@/stores/challengesStore";
 import { parseUnits } from "viem";
 import { piggyChallengeManagerService, piggyVaultService, type ChallengeFrequency } from "@/integrations/contracts";
+import { fireConfetti } from "@/utils/confetti";
 import { useAllChallenges } from "./useAllChallenges";
 
 const FREQ_MAP: Record<number, "daily" | "weekly" | "monthly"> = {
@@ -98,6 +100,8 @@ export function useChallenges() {
         createdAt: new Date().toISOString(),
       };
       addChallenge(challenge);
+      toast.success("Challenge created!");
+      fireConfetti();
       qc.invalidateQueries({ queryKey: ["onChainChallenges", address] });
     },
     [address, addChallenge, qc],
@@ -109,6 +113,8 @@ export function useChallenges() {
       if (id.startsWith("onchain-")) {
         const challengeId = BigInt(id.replace("onchain-", ""));
         await piggyChallengeManagerService.joinChallenge(challengeId);
+        toast.success("Joined challenge!");
+        fireConfetti();
         qc.invalidateQueries({ queryKey: ["onChainChallenges", address] });
       }
       joinChallenge(id, address);
@@ -123,6 +129,8 @@ export function useChallenges() {
         const challengeId = BigInt(id.replace("onchain-", ""));
         try {
           await piggyChallengeManagerService.leaveChallenge(challengeId);
+          toast.success("Left challenge");
+          fireConfetti();
         } catch {
           // Owner cannot leave - expected
         }

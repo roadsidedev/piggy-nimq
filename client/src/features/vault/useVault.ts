@@ -6,6 +6,7 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
 import { piggyVaultService } from "@/integrations/contracts";
 import { trackError } from "@/utils/analytics";
+import { fireConfetti } from "@/utils/confetti";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 
 export function useVault() {
@@ -121,6 +122,7 @@ export function useVault() {
         });
 
         toast.success(`Deposited $${amount} USDT`);
+        fireConfetti();
         queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
         queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
         await fetchBalance();
@@ -175,6 +177,7 @@ export function useVault() {
 
         setTxStatus("confirmed");
         toast.success(`Withdrew $${amount} USDT`);
+        fireConfetti();
         queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
         queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
         await fetchBalance();
@@ -241,6 +244,7 @@ export function useVault() {
         setYieldEnabled(true);
         setYieldAmount(amount);
         toast.success(`Yield enabled on $${amount} USDT`);
+        fireConfetti();
         queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
         queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
         await fetchBalance();
@@ -305,6 +309,7 @@ export function useVault() {
       setYieldAmount("0.00");
       setTxStatus("confirmed");
       toast.success("Yield disabled");
+      fireConfetti();
       queryClient.invalidateQueries({ queryKey: ["vaultPosition", address] });
       queryClient.invalidateQueries({ queryKey: ["maxBorrowable", address] });
       await fetchBalance();

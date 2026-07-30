@@ -1,5 +1,4 @@
 import { useCallback, useState } from "react";
-import { toast } from "sonner";
 import { useNavigate } from "@/hooks/useNavigate";
 import { useDashboard } from "./useDashboard";
 import { useVault } from "@/features/vault/useVault";
@@ -39,7 +38,6 @@ export function DashboardPage() {
       setToggleLoading(true);
       try {
         await disableYield();
-        toast.success("Yield disabled", { description: "Your funds are no longer earning yield" });
       } catch {
         // Error is handled by useVault (sets txError in store)
       } finally {
