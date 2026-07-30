@@ -4,7 +4,7 @@ interface TransactionRow {
   id: string;
   type: string;
   amount: string;
-  timestamp: Date;
+  timestamp: Date | string;
   status: string;
   txHash?: string;
   error?: string;
@@ -29,9 +29,11 @@ const statusStyles: Record<string, string> = {
   failed: "text-red-500",
 };
 
-function formatTime(date: Date): string {
+function formatTime(date: Date | string | null | undefined): string {
+  const d = date instanceof Date ? date : new Date(date ?? 0);
+  if (isNaN(d.getTime())) return "";
   const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
+  const diffMs = now.getTime() - d.getTime();
   const diffMin = Math.floor(diffMs / 60000);
   if (diffMin < 1) return "just now";
   if (diffMin < 60) return `${diffMin}m ago`;
@@ -39,7 +41,7 @@ function formatTime(date: Date): string {
   if (diffHrs < 24) return `${diffHrs}h ago`;
   const diffDays = Math.floor(diffHrs / 24);
   if (diffDays < 7) return `${diffDays}d ago`;
-  return date.toLocaleDateString();
+  return d.toLocaleDateString();
 }
 
 export function TransactionHistory({ transactions }: TransactionHistoryProps) {
@@ -54,7 +56,9 @@ export function TransactionHistory({ transactions }: TransactionHistoryProps) {
   return (
     <div className="flex flex-col gap-2">
       <h3 className="text-sm font-semibold text-gray-700">History</h3>
-      {transactions.map((tx) => (
+      {transactions
+        .filter((tx) => tx.timestamp != null)
+        .map((tx) => (
         <div
           key={tx.id}
           className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 shadow-sm"

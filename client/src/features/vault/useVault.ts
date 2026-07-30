@@ -6,36 +6,34 @@ import { useVaultStore } from "@/stores/vaultStore";
 import { aaveService } from "@/integrations/aave";
 import { piggyVaultService } from "@/integrations/contracts";
 import { trackError } from "@/utils/analytics";
-import { useCreateTransaction, useTransactions } from "@/hooks/useTransactions";
+import { useCreateTransaction } from "@/hooks/useTransactions";
 
 export function useVault() {
   const address = useWalletStore((s) => s.address);
   const queryClient = useQueryClient();
   const createTx = useCreateTransaction();
-  const {
-    balance,
-    yieldEnabled,
-    yieldAmount,
-    apy,
-    earnings,
-    vaultAge,
-    transactions,
-    depositModalOpen,
-    withdrawModalOpen,
-    txStatus,
-    txError,
-    setBalance,
-    setYieldEnabled,
-    setYieldAmount,
-    setApy,
-    setEarnings,
-    addTransaction,
-    updateTransaction,
-    setDepositModalOpen,
-    setWithdrawModalOpen,
-    setTxStatus,
-    setTxError,
-  } = useVaultStore();
+  const balance = useVaultStore((s) => s.balance);
+  const yieldEnabled = useVaultStore((s) => s.yieldEnabled);
+  const yieldAmount = useVaultStore((s) => s.yieldAmount);
+  const apy = useVaultStore((s) => s.apy);
+  const earnings = useVaultStore((s) => s.earnings);
+  const vaultAge = useVaultStore((s) => s.vaultAge);
+  const transactions = useVaultStore((s) => s.transactions);
+  const depositModalOpen = useVaultStore((s) => s.depositModalOpen);
+  const withdrawModalOpen = useVaultStore((s) => s.withdrawModalOpen);
+  const txStatus = useVaultStore((s) => s.txStatus);
+  const txError = useVaultStore((s) => s.txError);
+  const setBalance = useVaultStore((s) => s.setBalance);
+  const setYieldEnabled = useVaultStore((s) => s.setYieldEnabled);
+  const setYieldAmount = useVaultStore((s) => s.setYieldAmount);
+  const setApy = useVaultStore((s) => s.setApy);
+  const setEarnings = useVaultStore((s) => s.setEarnings);
+  const addTransaction = useVaultStore((s) => s.addTransaction);
+  const updateTransaction = useVaultStore((s) => s.updateTransaction);
+  const setDepositModalOpen = useVaultStore((s) => s.setDepositModalOpen);
+  const setWithdrawModalOpen = useVaultStore((s) => s.setWithdrawModalOpen);
+  const setTxStatus = useVaultStore((s) => s.setTxStatus);
+  const setTxError = useVaultStore((s) => s.setTxError);
 
   const { data: reserveData } = useQuery({
     queryKey: ["aaveReserveData"],
@@ -54,27 +52,6 @@ export function useVault() {
       setApy(apyPercent);
     }
   }, [reserveData, setApy]);
-
-  // Sync transactions from server into the local store on mount
-  const { data: serverTxPage } = useTransactions(1, 100);
-  useEffect(() => {
-    if (!serverTxPage?.items) return;
-    const localIds = new Set(transactions.map((t) => t.id));
-    for (const serverTx of serverTxPage.items) {
-      if (!localIds.has(serverTx.id)) {
-        addTransaction({
-          id: serverTx.id,
-          type: serverTx.type,
-          amount: serverTx.amount,
-          timestamp: new Date(serverTx.timestamp),
-          status: serverTx.status,
-          txHash: serverTx.txHash,
-          error: serverTx.error,
-        });
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serverTxPage]);
 
   const fetchBalance = useCallback(async () => {
     if (!address) return;

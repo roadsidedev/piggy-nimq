@@ -24,7 +24,8 @@ const updateTransactionSchema = z.object({
 });
 
 function serializeTx(tx: typeof transactions.$inferSelect) {
-  return { ...tx, createdAt: tx.createdAt.toISOString() };
+  const { createdAt, ...rest } = tx;
+  return { ...rest, timestamp: createdAt.toISOString() };
 }
 
 // GET /transactions
