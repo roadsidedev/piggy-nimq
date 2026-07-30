@@ -119,8 +119,18 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
         </ErrorBoundary>
       </main>
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md">
-        <div className="flex items-center justify-around px-2 py-1.5">
+      <nav className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2">
+        <div
+          className="flex items-center gap-1 rounded-full px-2 py-1.5"
+          style={{
+            background: "rgba(255, 255, 255, 0.65)",
+            backdropFilter: "blur(24px) saturate(180%)",
+            WebkitBackdropFilter: "blur(24px) saturate(180%)",
+            boxShadow:
+              "0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
+            border: "1px solid rgba(255, 255, 255, 0.5)",
+          }}
+        >
           {tabs.map(({ id, label, Icon }) => (
             <button
               key={id}
@@ -134,15 +144,24 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
                 };
                 map[id]?.();
               }}
-              className={`flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 transition-colors ${
+              className={`relative flex flex-col items-center gap-0.5 rounded-full px-4 py-2 transition-all duration-300 ${
                 activeTab === id
                   ? "text-sage-700"
-                  : "text-gray-600 hover:text-gray-800"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
               aria-current={activeTab === id ? "page" : undefined}
             >
-              <Icon size={22} />
-              <span className="text-xs font-semibold">{label}</span>
+              {activeTab === id && (
+                <span
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: "rgba(201, 62, 99, 0.1)",
+                    boxShadow: "inset 0 1px 2px rgba(201, 62, 99, 0.06)",
+                  }}
+                />
+              )}
+              <Icon size={20} />
+              <span className="relative text-[10px] font-semibold leading-none">{label}</span>
             </button>
           ))}
         </div>
@@ -213,6 +232,7 @@ export default function AppRoot() {
       </HashRouter>
       <Toaster
         position="bottom-center"
+        offset={100}
         toastOptions={{
           style: {
             background: "#1a1a1a",

@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { Modal, Button, Input } from "@/components/common";
 import { useWalletStore } from "@/stores/walletStore";
 import { useFaucet } from "@/hooks/useFaucet";
+import { fireConfetti } from "@/utils/confetti";
 
 interface DepositModalProps {
   open: boolean;
@@ -41,6 +42,7 @@ export function DepositModal({ open, onClose, onDeposit }: DepositModalProps) {
     const ok = await drip(address);
     if (ok) {
       toast.success("1,000 test USDT claimed from faucet");
+      fireConfetti();
     }
   };
 

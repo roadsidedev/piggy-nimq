@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useGoalsStore, type StoredGoal } from "@/stores/goalsStore";
 import { piggyGoalManagerService, piggyVaultService, type OnChainGoalInfo } from "@/integrations/contracts";
+import { fireConfetti } from "@/utils/confetti";
 
 export function useGoals() {
   const address = useWalletStore((s) => s.address);
@@ -79,6 +80,8 @@ export function useGoals() {
         createdAt: new Date().toISOString(),
       };
       addGoal(goal);
+      toast.success("Goal created!");
+      fireConfetti();
       qc.invalidateQueries({ queryKey: ["onChainGoals", address] });
     },
     [address, addGoal, qc],
@@ -103,6 +106,7 @@ export function useGoals() {
 
       const hash = await piggyVaultService.allocateToGoal(chainGoalId, parsed);
       toast.success(`$${amount} allocated to goal`);
+      fireConfetti();
 
       // Update local store optimistically
       const current = goals.find((g) => g.id === goalId);

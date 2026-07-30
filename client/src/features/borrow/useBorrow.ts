@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
+import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useWalletStore } from "@/stores/walletStore";
 import { useBorrowStore } from "@/stores/borrowStore";
 import { piggyVaultService } from "@/integrations/contracts";
+import { fireConfetti } from "@/utils/confetti";
 
 export function useBorrow() {
   const address = useWalletStore((s) => s.address);
@@ -110,6 +112,8 @@ export function useBorrow() {
         setTxStatus("confirming");
         const hash = await piggyVaultService.borrow(parsed);
         setTxStatus("confirmed");
+        toast.success(`Borrowed $${amount} USDT`);
+        fireConfetti();
         return hash;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Borrow failed";
@@ -133,6 +137,8 @@ export function useBorrow() {
         setTxStatus("confirming");
         const hash = await piggyVaultService.repay(parsed, false);
         setTxStatus("confirmed");
+        toast.success(`Repaid $${amount} USDT`);
+        fireConfetti();
         return hash;
       } catch (err) {
         const message = err instanceof Error ? err.message : "Repay failed";
