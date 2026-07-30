@@ -119,9 +119,9 @@ function AppShell({ activeTab, onTabChange }: { activeTab: Tab; onTabChange: (ta
         </ErrorBoundary>
       </main>
 
-      <nav className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2">
+      <nav className="fixed bottom-5 left-3 right-3 z-50">
         <div
-          className="flex items-center gap-1 rounded-full px-2 py-1.5"
+          className="mx-auto flex w-full max-w-md items-center justify-around rounded-full px-2 py-1.5"
           style={{
             background: "rgba(255, 255, 255, 0.65)",
             backdropFilter: "blur(24px) saturate(180%)",
