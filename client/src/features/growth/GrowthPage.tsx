@@ -54,7 +54,7 @@ interface ActionSheetProps {
 function ActionSheet({ open, onClose, onGoal, onChallenge }: ActionSheetProps) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center">
       <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-md rounded-t-3xl bg-white p-4 pb-8 animate-slide-up shadow-2xl">
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gray-300" />
